@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hormuz Hawk — OSINT Dashboard</title>
+    <style>
+        :root {
+            --bg: #0a0e17;
+            --surface: #111827;
+            --border: #1f2937;
+            --text: #e5e7eb;
+            --muted: #6b7280;
+            --accent: #f59e0b;
+            --green: #10b981;
+            --red: #ef4444;
+            --blue: #3b82f6;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+            background: var(--bg);
+            color: var(--text);
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        .container { max-width: 1400px; margin: 0 auto; padding: 20px; }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 0;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 24px;
+        }
+        header h1 { color: var(--accent); font-size: 20px; }
+        header .meta { color: var(--muted); font-size: 12px; }
+
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 24px; }
+        .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-bottom: 24px; }
+
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 16px;
+        }
+        .card h2 {
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--muted);
+            margin-bottom: 12px;
+        }
+
+        .signal-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 16px;
+        }
+        .signal-ESCALATION { background: #7f1d1d; color: #fca5a5; }
+        .signal-STEADY_BURN { background: #78350f; color: #fde68a; }
+        .signal-FAKE_DE_ESCALATION { background: #713f12; color: #fef08a; }
+        .signal-REAL_DE_ESCALATION { background: #064e3b; color: #6ee7b7; }
+        .signal-BLACK_SWAN { background: #4c1d95; color: #c4b5fd; }
+        .signal-UNKNOWN { background: #374151; color: #9ca3af; }
+
+        .stat { margin-bottom: 8px; }
+        .stat .label { color: var(--muted); font-size: 11px; text-transform: uppercase; }
+        .stat .value { font-size: 20px; font-weight: bold; }
+        .stat .value.green { color: var(--green); }
+        .stat .value.red { color: var(--red); }
+
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 8px 12px; text-align: left; border-bottom: 1px solid var(--border); }
+        th { color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: 1px; }
+        td { font-size: 13px; }
+
+        .btn {
+            padding: 6px 14px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .btn-approve { background: var(--green); color: #000; }
+        .btn-reject { background: var(--red); color: #fff; }
+        .btn-approve:hover { opacity: 0.85; }
+        .btn-reject:hover { opacity: 0.85; }
+
+        .indicator-list { list-style: none; }
+        .indicator-list li {
+            padding: 4px 0;
+            border-bottom: 1px solid var(--border);
+            font-size: 12px;
+        }
+        .indicator-list li:last-child { border: none; }
+
+        .summary-item { margin-bottom: 8px; }
+        .summary-item .src {
+            color: var(--accent);
+            font-size: 11px;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+        .summary-item .text { color: var(--text); font-size: 12px; }
+
+        .timeline { max-height: 400px; overflow-y: auto; }
+        .timeline-entry {
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+        .timeline-entry .time { color: var(--muted); font-size: 11px; min-width: 60px; }
+        .timeline-entry .signal-sm {
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 3px;
+        }
+
+        .refresh-bar {
+            text-align: center;
+            padding: 8px;
+            color: var(--muted);
+            font-size: 11px;
+        }
+
+        .full-width { grid-column: 1 / -1; }
+
+        @media (max-width: 800px) {
+            .grid, .grid-3 { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>HORMUZ HAWK</h1>
+            <div class="meta">
+                OSINT Trading Dashboard &mdash; All trades require manual approval
+                <br>Last scan: <span id="last-scan">{{ latest.timestamp if latest else 'N/A' }}</span>
+            </div>
+        </header>
+
+        <!-- Signal & Market Row -->
+        <div class="grid-3">
+            <div class="card">
+                <h2>Current Signal</h2>
+                {% if latest %}
+                <span class="signal-badge signal-{{ latest.signal }}">{{ latest.signal }}</span>
+                <div class="stat" style="margin-top: 12px;">
+                    <div class="label">Confidence</div>
+                    <div class="value">{{ "%.0f"|format(latest.confidence_score) }}%</div>
+                </div>
+                <div class="stat">
+                    <div class="label">Corroborating Sources</div>
+                    <div class="value">{{ latest.corroborating_sources }}</div>
+                </div>
+                <div class="stat">
+                    <div class="label">Cycle #</div>
+                    <div class="value">{{ latest.cycle_number }}</div>
+                </div>
+                {% else %}
+                <p style="color: var(--muted);">No scan data yet. Start the bot.</p>
+                {% endif %}
+            </div>
+
+            <div class="card">
+                <h2>Market Snapshot</h2>
+                {% if latest and latest.market_snapshot %}
+                {% set m = latest.market_snapshot %}
+                <div class="stat">
+                    <div class="label">Brent Crude</div>
+                    <div class="value">${{ m.brent if m.brent else '—' }}</div>
+                </div>
+                <div class="stat">
+                    <div class="label">WTI Crude</div>
+                    <div class="value">${{ m.wti if m.wti else '—' }}</div>
+                </div>
+                <div class="stat">
+                    <div class="label">Natural Gas</div>
+                    <div class="value">${{ m.natgas if m.natgas else '—' }}</div>
+                </div>
+                <div class="stat">
+                    <div class="label">Gold</div>
+                    <div class="value">${{ m.gold if m.gold else '—' }}</div>
+                </div>
+                <div class="stat">
+                    <div class="label">VIX</div>
+                    <div class="value">{{ m.vix if m.vix else '—' }}</div>
+                </div>
+                {% else %}
+                <p style="color: var(--muted);">No market data yet.</p>
+                {% endif %}
+            </div>
+
+            <div class="card">
+                <h2>Risk Status</h2>
+                {% if latest and latest.risk %}
+                {% set r = latest.risk %}
+                <div class="stat">
+                    <div class="label">Equity</div>
+                    <div class="value">${{ "%.0f"|format(r.equity) if r.equity else '—' }}</div>
+                </div>
+                <div class="stat">
+                    <div class="label">Cash</div>
+                    <div class="value">${{ "%.0f"|format(r.cash) if r.cash else '—' }}</div>
+                </div>
+                <div class="stat">
+                    <div class="label">Positions</div>
+                    <div class="value">{{ r.positions if r.positions else 0 }}</div>
+                </div>
+                {% if r.violations %}
+                <div style="margin-top: 8px;">
+                    {% for v in r.violations %}
+                    <div style="color: var(--red); font-size: 12px; margin-bottom: 4px;">{{ v }}</div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div style="color: var(--green); margin-top: 8px;">All risk checks passed</div>
+                {% endif %}
+                {% else %}
+                <p style="color: var(--muted);">Connect eToro API to see risk data.</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Intelligence Summary & Indicators -->
+        <div class="grid">
+            <div class="card">
+                <h2>Intelligence Summary</h2>
+                {% if latest and latest.summary %}
+                {% for src, text in latest.summary.items() %}
+                <div class="summary-item">
+                    <div class="src">{{ src }}</div>
+                    <div class="text">{{ text }}</div>
+                </div>
+                {% endfor %}
+                {% else %}
+                <p style="color: var(--muted);">No intelligence data yet.</p>
+                {% endif %}
+            </div>
+
+            <div class="card">
+                <h2>Escalation Indicators</h2>
+                {% if latest and latest.escalation_indicators %}
+                <ul class="indicator-list">
+                    {% for i in latest.escalation_indicators %}
+                    <li style="color: var(--red);">{{ i }}</li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <p style="color: var(--muted);">No escalation indicators.</p>
+                {% endif %}
+
+                <h2 style="margin-top: 16px;">De-escalation Indicators</h2>
+                {% if latest and latest.deescalation_indicators %}
+                <ul class="indicator-list">
+                    {% for i in latest.deescalation_indicators %}
+                    <li style="color: var(--green);">{{ i }}</li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <p style="color: var(--muted);">No de-escalation indicators.</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Pending Trades (approval queue) -->
+        <div class="card" style="margin-bottom: 24px;">
+            <h2>Pending Trade Recommendations (Approval Required)</h2>
+            {% if pending %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Instrument</th>
+                        <th>Action</th>
+                        <th>Amount</th>
+                        <th>Leverage</th>
+                        <th>Stop Loss</th>
+                        <th>Reasoning</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for t in pending %}
+                    <tr>
+                        <td>{{ t.id }}</td>
+                        <td>{{ t.instrument }}</td>
+                        <td>{{ t.action }}</td>
+                        <td>${{ t.amount }}</td>
+                        <td>{{ t.leverage }}x</td>
+                        <td>{{ "%.0f"|format(t.stop_loss_pct * 100) }}%</td>
+                        <td>{{ t.reasoning }}</td>
+                        <td>
+                            <button class="btn btn-approve" onclick="approveTrade('{{ t.id }}')">Approve</button>
+                            <button class="btn btn-reject" onclick="rejectTrade('{{ t.id }}')">Reject</button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p style="color: var(--muted);">No pending trades. Recommendations appear here when the bot detects actionable signals.</p>
+            {% endif %}
+        </div>
+
+        <!-- Trade Recommendations from Latest Cycle -->
+        <div class="card" style="margin-bottom: 24px;">
+            <h2>Latest Cycle Recommendations</h2>
+            {% if latest and latest.recommendations %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Tier</th>
+                        <th>Instrument</th>
+                        <th>Action</th>
+                        <th>Leverage</th>
+                        <th>Stop</th>
+                        <th>Reasoning</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for r in latest.recommendations %}
+                    <tr>
+                        <td>{{ r.tier }}</td>
+                        <td>{{ r.instrument }}</td>
+                        <td>{{ r.action }}</td>
+                        <td>{{ r.leverage }}x</td>
+                        <td>{{ "%.0f"|format(r.stop_pct * 100) }}%</td>
+                        <td>{{ r.reasoning }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p style="color: var(--muted);">No recommendations from latest cycle.</p>
+            {% endif %}
+        </div>
+
+        <!-- Executed Trades -->
+        <div class="card" style="margin-bottom: 24px;">
+            <h2>Executed / Rejected Trades</h2>
+            {% if executed %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Instrument</th>
+                        <th>Action</th>
+                        <th>Amount</th>
+                        <th>Status</th>
+                        <th>Time</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for t in executed|reverse %}
+                    <tr>
+                        <td>{{ t.id }}</td>
+                        <td>{{ t.instrument }}</td>
+                        <td>{{ t.action }}</td>
+                        <td>${{ t.amount }}</td>
+                        <td style="color: {{ 'var(--green)' if t.status == 'executed' else 'var(--red)' if t.status == 'rejected' else 'var(--muted)' }}">
+                            {{ t.status }}
+                        </td>
+                        <td>{{ t.get('executed_at', t.get('rejected_at', '')) }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p style="color: var(--muted);">No trade history yet.</p>
+            {% endif %}
+        </div>
+
+        <!-- Cycle Timeline -->
+        <div class="card">
+            <h2>Cycle Timeline (Today)</h2>
+            <div class="timeline">
+                {% for c in cycles|reverse %}
+                <div class="timeline-entry">
+                    <span class="time">{{ c.timestamp[11:16] if c.timestamp|length > 16 else c.timestamp }}</span>
+                    <span class="signal-sm signal-badge signal-{{ c.signal }}">{{ c.signal }}</span>
+                    <span style="color: var(--muted); font-size: 12px;">
+                        #{{ c.cycle_number }} &mdash; {{ "%.0f"|format(c.confidence_score) }}% conf
+                        &mdash; {{ c.intel_count }} reports
+                    </span>
+                </div>
+                {% endfor %}
+                {% if not cycles %}
+                <p style="color: var(--muted);">No cycles recorded today.</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="refresh-bar">
+            Auto-refreshes every 60 seconds &mdash; <a href="/" style="color: var(--accent);">Refresh now</a>
+        </div>
+    </div>
+
+    <script>
+        // Auto-refresh
+        setTimeout(() => location.reload(), 60000);
+
+        async function approveTrade(id) {
+            if (!confirm('Execute this trade on eToro?')) return;
+            const resp = await fetch(`/api/approve/${id}`, { method: 'POST' });
+            if (resp.ok) location.reload();
+            else alert('Failed to approve trade');
+        }
+
+        async function rejectTrade(id) {
+            const resp = await fetch(`/api/reject/${id}`, { method: 'POST' });
+            if (resp.ok) location.reload();
+            else alert('Failed to reject trade');
+        }
+    </script>
+</body>
+</html>
