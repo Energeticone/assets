@@ -134,6 +134,62 @@
 
         .full-width { grid-column: 1 / -1; }
 
+        .paste-zone {
+            border: 2px dashed var(--border);
+            border-radius: 6px;
+            padding: 28px 16px;
+            text-align: center;
+            color: var(--muted);
+            font-size: 13px;
+            background: #0f1420;
+            outline: none;
+            cursor: text;
+            transition: border-color 0.15s, color 0.15s;
+        }
+        .paste-zone:focus,
+        .paste-zone.is-active {
+            border-color: var(--accent);
+            color: var(--text);
+        }
+        .paste-zone kbd {
+            background: var(--border);
+            color: var(--text);
+            padding: 1px 6px;
+            border-radius: 3px;
+            font-family: inherit;
+            font-size: 11px;
+        }
+        .paste-controls {
+            display: flex;
+            gap: 8px;
+            margin-top: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .paste-controls input[type="text"] {
+            flex: 1;
+            min-width: 180px;
+            padding: 6px 10px;
+            background: var(--bg);
+            color: var(--text);
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            font-family: inherit;
+            font-size: 12px;
+        }
+        .paste-status {
+            margin-top: 8px;
+            font-size: 12px;
+            min-height: 16px;
+        }
+        .paste-status.ok { color: var(--green); }
+        .paste-status.err { color: var(--red); }
+        .uploads-list {
+            margin-top: 12px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
         @media (max-width: 800px) {
             .grid, .grid-3 { grid-template-columns: 1fr; }
         }
@@ -270,6 +326,38 @@
                 {% else %}
                 <p style="color: var(--muted);">No de-escalation indicators.</p>
                 {% endif %}
+            </div>
+        </div>
+
+        <!-- Paste a File -->
+        <div class="card" style="margin-bottom: 24px;">
+            <h2>Paste a File</h2>
+            <div
+                id="paste-zone"
+                class="paste-zone"
+                contenteditable="true"
+                tabindex="0"
+                spellcheck="false"
+                aria-label="Paste target: focus this box then press Ctrl+V or Cmd+V"
+            >Click here, then press <kbd>Ctrl+V</kbd> / <kbd>⌘+V</kbd> to paste text or an image.</div>
+            <div class="paste-controls">
+                <input type="text" id="paste-filename" placeholder="Optional filename (e.g. trades.csv) — leave blank for auto" autocomplete="off">
+                <button type="button" class="btn btn-approve" id="paste-clear">Clear box</button>
+            </div>
+            <div id="paste-status" class="paste-status"></div>
+            <div class="uploads-list">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>File</th>
+                            <th>Size</th>
+                            <th>Modified (UTC)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="uploads-tbody">
+                        <tr><td colspan="3" style="color: var(--muted);">Loading…</td></tr>
+                    </tbody>
+                </table>
             </div>
         </div>
 
@@ -422,6 +510,135 @@
             if (resp.ok) location.reload();
             else alert('Failed to reject trade');
         }
+
+        // ----- Paste-to-file -----
+        const pasteZone = document.getElementById('paste-zone');
+        const pasteStatus = document.getElementById('paste-status');
+        const pasteFilenameInput = document.getElementById('paste-filename');
+        const pasteClearBtn = document.getElementById('paste-clear');
+        const uploadsTbody = document.getElementById('uploads-tbody');
+
+        function setPasteStatus(message, kind) {
+            pasteStatus.textContent = message;
+            pasteStatus.classList.remove('ok', 'err');
+            if (kind) pasteStatus.classList.add(kind);
+        }
+
+        function formatBytes(n) {
+            if (n < 1024) return n + ' B';
+            if (n < 1024 * 1024) return (n / 1024).toFixed(1) + ' KB';
+            return (n / (1024 * 1024)).toFixed(2) + ' MB';
+        }
+
+        async function refreshUploads() {
+            try {
+                const resp = await fetch('/api/uploads');
+                const list = await resp.json();
+                if (!Array.isArray(list) || list.length === 0) {
+                    uploadsTbody.innerHTML = '<tr><td colspan="3" style="color: var(--muted);">No pasted files yet.</td></tr>';
+                    return;
+                }
+                uploadsTbody.innerHTML = list.map(e => (
+                    '<tr>' +
+                    '<td>' + e.filename + '</td>' +
+                    '<td>' + formatBytes(e.size) + '</td>' +
+                    '<td style="color: var(--muted); font-size: 12px;">' + e.modified + '</td>' +
+                    '</tr>'
+                )).join('');
+            } catch (err) {
+                uploadsTbody.innerHTML = '<tr><td colspan="3" style="color: var(--red);">Failed to load uploads.</td></tr>';
+            }
+        }
+
+        async function postPaste(payload) {
+            const resp = await fetch('/api/paste-file', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload),
+            });
+            const data = await resp.json().catch(() => ({}));
+            if (!resp.ok || !data.ok) {
+                const msg = (data && data.error) ? data.error : ('HTTP ' + resp.status);
+                setPasteStatus('Save failed: ' + msg, 'err');
+                return;
+            }
+            setPasteStatus(
+                'Saved ' + data.path + ' (' + formatBytes(data.size) + ')',
+                'ok'
+            );
+            pasteFilenameInput.value = '';
+            pasteZone.textContent = 'Click here, then press Ctrl+V / ⌘+V to paste text or an image.';
+            refreshUploads();
+        }
+
+        function readBlobAsDataURL(blob) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = () => reject(reader.error);
+                reader.readAsDataURL(blob);
+            });
+        }
+
+        pasteZone.addEventListener('focus', () => pasteZone.classList.add('is-active'));
+        pasteZone.addEventListener('blur', () => pasteZone.classList.remove('is-active'));
+
+        pasteZone.addEventListener('paste', async (event) => {
+            event.preventDefault();
+            const cd = event.clipboardData;
+            if (!cd) {
+                setPasteStatus('Clipboard not accessible in this browser.', 'err');
+                return;
+            }
+            const filename = pasteFilenameInput.value.trim();
+
+            // Look for an image item first (Ctrl+V on a copied screenshot)
+            for (const item of cd.items) {
+                if (item.kind === 'file' && item.type.startsWith('image/')) {
+                    const blob = item.getAsFile();
+                    if (!blob) continue;
+                    setPasteStatus('Saving image…');
+                    try {
+                        const dataUrl = await readBlobAsDataURL(blob);
+                        await postPaste({
+                            kind: 'image',
+                            mime: blob.type,
+                            filename: filename,
+                            content: dataUrl,
+                        });
+                    } catch (err) {
+                        setPasteStatus('Failed to read image: ' + err, 'err');
+                    }
+                    return;
+                }
+            }
+
+            // Otherwise treat as text
+            const text = cd.getData('text/plain') || cd.getData('text');
+            if (!text) {
+                setPasteStatus('Nothing pasteable found in clipboard.', 'err');
+                return;
+            }
+            // Guess mime from filename extension if user supplied one
+            let mime = 'text/plain';
+            if (/\.csv$/i.test(filename)) mime = 'text/csv';
+            else if (/\.json$/i.test(filename)) mime = 'application/json';
+            else if (/\.md$/i.test(filename)) mime = 'text/markdown';
+            setPasteStatus('Saving text…');
+            await postPaste({
+                kind: 'text',
+                mime: mime,
+                filename: filename,
+                content: text,
+            });
+        });
+
+        pasteClearBtn.addEventListener('click', () => {
+            pasteZone.textContent = 'Click here, then press Ctrl+V / ⌘+V to paste text or an image.';
+            setPasteStatus('');
+        });
+
+        refreshUploads();
     </script>
 </body>
 </html>
