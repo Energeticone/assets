@@ -1,0 +1,124 @@
+:root{
+  --bg:#f1f5f9; --panel:#ffffff; --ink:#0f172a; --muted:#64748b;
+  --line:#e2e8f0; --brand:#2563eb; --brand-ink:#1d4ed8;
+  --radius:16px; --shadow:0 10px 30px rgba(15,23,42,.08);
+  --ocean1:#bfe3ff; --ocean2:#7cc0f5;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  color:var(--ink); background:var(--bg); display:flex; flex-direction:column; min-height:100vh;
+}
+h1{font-size:20px;margin:0;letter-spacing:-.02em}
+.tagline{margin:0;font-size:12px;color:var(--muted)}
+
+/* top bar */
+.topbar{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  padding:10px 16px;background:var(--panel);border-bottom:1px solid var(--line);
+  position:sticky;top:0;z-index:20;
+}
+.brand{display:flex;align-items:center;gap:10px}
+.logo{font-size:26px}
+.topbar-actions{display:flex;align-items:center;gap:10px}
+.view-toggle{display:flex;background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:3px}
+.view-toggle button{
+  border:0;background:transparent;color:var(--muted);font-weight:600;font-size:13px;
+  padding:6px 14px;border-radius:999px;cursor:pointer
+}
+.view-toggle button.active{background:var(--brand);color:#fff}
+.install-btn{
+  border:1px solid var(--brand);color:var(--brand);background:#fff;font-weight:600;
+  padding:7px 14px;border-radius:999px;cursor:pointer;font-size:13px
+}
+.install-btn:hover{background:var(--brand);color:#fff}
+
+/* layout */
+.layout{flex:1;display:grid;grid-template-columns:1fr 380px;gap:16px;padding:16px;min-height:0}
+.map-wrap{
+  position:relative;background:linear-gradient(180deg,#eaf4ff,#f7fbff);
+  border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow)
+}
+#globe{display:block;width:100%;height:100%;cursor:grab;touch-action:none}
+#globe:active{cursor:grabbing}
+.map-hint{
+  position:absolute;left:14px;bottom:12px;font-size:12px;color:var(--muted);
+  background:rgba(255,255,255,.75);padding:4px 10px;border-radius:999px;backdrop-filter:blur(4px)
+}
+.loading{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:14px}
+
+/* tooltip */
+.tooltip{position:absolute;pointer-events:none;z-index:25;background:#0f172a;color:#fff;
+  font-size:13px;padding:8px 10px;border-radius:10px;box-shadow:var(--shadow);max-width:220px;display:flex;flex-direction:column;gap:6px}
+.tooltip strong{font-weight:600}
+.tt-badge{align-self:flex-start;font-size:11px;font-weight:700;padding:2px 8px;border-radius:999px;color:#fff}
+
+/* legend */
+.legend{position:absolute;right:14px;top:14px;background:rgba(255,255,255,.92);
+  border:1px solid var(--line);border-radius:12px;padding:10px 12px;font-size:12px;box-shadow:var(--shadow)}
+.legend-title{display:block;font-weight:700;margin-bottom:6px;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+.legend ul{list-style:none;margin:0;padding:0;display:grid;gap:5px}
+.legend li{display:flex;align-items:center;gap:7px}
+.sw{width:12px;height:12px;border-radius:3px;display:inline-block}
+
+/* panel */
+.panel{display:flex;flex-direction:column;gap:14px;min-height:0;overflow:auto}
+.passport-picker label{display:block;font-size:12px;font-weight:700;color:var(--muted);margin-bottom:6px;text-transform:uppercase;letter-spacing:.04em}
+.combo{position:relative}
+.passport-button{
+  width:100%;display:flex;align-items:center;gap:10px;background:var(--panel);
+  border:1px solid var(--line);border-radius:12px;padding:12px 14px;cursor:pointer;font-size:15px;font-weight:600;box-shadow:var(--shadow)
+}
+.passport-button .flag{font-size:20px}
+.passport-button #passport-name{flex:1;text-align:left}
+.passport-button .caret{color:var(--muted)}
+.dropdown{
+  position:absolute;top:calc(100% + 6px);left:0;right:0;background:var(--panel);
+  border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);z-index:30;padding:8px;
+}
+.dropdown input{width:100%;border:1px solid var(--line);border-radius:8px;padding:9px 10px;font-size:14px;margin-bottom:6px}
+.dropdown ul{list-style:none;margin:0;padding:0;max-height:300px;overflow:auto}
+.dropdown li{display:flex;align-items:center;gap:10px;padding:9px 8px;border-radius:8px;cursor:pointer;font-size:14px}
+.dropdown li:hover,.dropdown li.active{background:var(--bg)}
+.dropdown li .flag{font-size:18px}
+
+/* summary */
+.summary{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px;box-shadow:var(--shadow)}
+.score{display:flex;align-items:center;gap:14px;margin-bottom:14px}
+.score-num{font-size:46px;font-weight:800;line-height:1;color:var(--brand-ink);letter-spacing:-.03em}
+.score-label{font-size:13px;color:var(--muted);line-height:1.35}
+.rank{display:block;margin-top:4px;color:var(--ink)}
+.rank strong{color:var(--brand-ink)}
+.breakdown{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.brk{border:1px solid var(--line);background:var(--bg);border-radius:10px;padding:8px 4px;text-align:center;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:3px}
+.brk i{width:10px;height:10px;border-radius:50%}
+.brk b{font-size:17px}
+.brk span{font-size:10px;color:var(--muted)}
+.brk.active{outline:2px solid var(--brand);background:#eff6ff}
+
+/* destinations */
+.dest{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:12px;box-shadow:var(--shadow);display:flex;flex-direction:column;min-height:200px;flex:1}
+.dest-head{display:flex;gap:8px;margin-bottom:8px}
+.dest-head input{flex:1;border:1px solid var(--line);border-radius:8px;padding:9px 10px;font-size:14px}
+.dest-head select{border:1px solid var(--line);border-radius:8px;padding:0 8px;font-size:13px;background:#fff}
+.dest-list{list-style:none;margin:0;padding:0;overflow:auto;flex:1}
+.dest-row{display:flex;align-items:center;gap:10px;padding:9px 6px;border-bottom:1px solid var(--line);cursor:pointer}
+.dest-row:hover{background:var(--bg)}
+.dest-row .flag{font-size:18px}
+.dest-row .dname{flex:1;font-size:14px}
+.badge{font-size:11px;font-weight:700;padding:3px 8px;border-radius:999px;color:#fff;white-space:nowrap}
+
+/* footer */
+.foot{padding:10px 16px;font-size:11px;color:var(--muted);text-align:center;border-top:1px solid var(--line);background:var(--panel)}
+
+/* responsive */
+@media (max-width:920px){
+  .layout{grid-template-columns:1fr;grid-template-rows:minmax(320px,46vh) auto}
+  .panel{overflow:visible}
+  .legend{font-size:11px;padding:8px}
+}
+@media (max-width:520px){
+  .tagline{display:none}
+  .map-hint{display:none}
+}
