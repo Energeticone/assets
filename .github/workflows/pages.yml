@@ -2,7 +2,7 @@ name: Deploy TravelNow to GitHub Pages
 
 on:
   push:
-    branches: ["claude/app-website-replication-adZsJ"]
+    branches: ["master"]
     paths:
       - "travelnow/**"
       - ".github/workflows/pages.yml"
