@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#000000">
+  <title>iOS</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="icons/icon.svg">
+  <link rel="stylesheet" href="css/ios.css">
+</head>
+<body>
+<div id="app">
+
+  <!-- status bar -->
+  <div class="statusbar" id="statusbar">
+    <span class="clock">9:41</span>
+    <span class="right">•••• &nbsp; 􀙇 &nbsp; 100%</span>
+  </div>
+
+  <!-- HOME / springboard -->
+  <div class="home" id="home">
+    <div class="home-grid">
+      <div class="app-icon" data-app="messages">
+        <div class="glyph messages">💬<span class="badge" id="msg-badge" style="display:none">0</span></div>
+        <div class="label">Messages</div>
+      </div>
+      <div class="app-icon" data-app="photos"><div class="glyph photos">🌸</div><div class="label">Photos</div></div>
+      <div class="app-icon" data-app="camera"><div class="glyph camera">📷</div><div class="label">Camera</div></div>
+      <div class="app-icon" data-app="notes"><div class="glyph notes">📝</div><div class="label">Notes</div></div>
+      <div class="app-icon" data-app="clock"><div class="glyph clock">🕘</div><div class="label">Clock</div></div>
+      <div class="app-icon" data-app="safari"><div class="glyph safari">🧭</div><div class="label">Safari</div></div>
+      <div class="app-icon" data-app="settings"><div class="glyph settings">⚙️</div><div class="label">Settings</div></div>
+    </div>
+    <div class="dock">
+      <div class="app-icon" data-app="phone"><div class="glyph phone">📞</div></div>
+      <div class="app-icon" data-app="safari"><div class="glyph safari">🧭</div></div>
+      <div class="app-icon" data-app="photos"><div class="glyph photos">🌸</div></div>
+      <div class="app-icon" data-app="messages"><div class="glyph messages">💬</div></div>
+    </div>
+  </div>
+
+  <!-- MESSAGES (thread list) -->
+  <div class="screen" id="messages">
+    <div class="navbar big">
+      <div class="back" data-home>‹ Home</div>
+      <div class="big-title">Messages</div>
+      <div class="action" id="new-convo">✎</div>
+    </div>
+    <div class="thread-list" id="thread-list"></div>
+  </div>
+
+  <!-- CONVERSATION -->
+  <div class="screen" id="convo">
+    <div class="navbar">
+      <div class="back" data-screen="messages">‹</div>
+      <div class="title" id="convo-title">Chat</div>
+    </div>
+    <div class="bubbles" id="bubbles"></div>
+    <div class="typing" id="typing"></div>
+    <div class="composer">
+      <label class="plus">＋<input type="file" id="file-input" accept="image/*,*/*" hidden></label>
+      <div class="field">
+        <textarea id="composer-input" rows="1" placeholder="iMessage"></textarea>
+      </div>
+      <button class="send" id="send-btn" disabled>↑</button>
+    </div>
+  </div>
+
+  <!-- SETTINGS -->
+  <div class="screen" id="settings">
+    <div class="navbar big"><div class="back" data-home>‹ Home</div><div class="big-title">Settings</div></div>
+    <div class="settings">
+      <div class="group-title">Identity</div>
+      <div class="group">
+        <div class="cell">Your handle <span class="val" id="settings-handle">—</span></div>
+        <div class="cell btn" id="change-handle">Change handle</div>
+      </div>
+      <div class="group-title">Messages</div>
+      <div class="group">
+        <div class="cell btn" id="enable-push">Enable notifications</div>
+      </div>
+      <div class="group-title">About</div>
+      <div class="group">
+        <div class="cell">Service <span class="val" id="settings-service">app</span></div>
+        <div class="cell" style="display:block;color:#8e8e93;font-size:13px">
+          Real Apple iMessage needs a Mac relay box (BlueBubbles). Without it, this
+          app messages other people using this app. It cannot run native iOS apps.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PHOTOS / CAMERA / etc. placeholder -->
+  <div class="screen" id="placeholder">
+    <div class="navbar"><div class="back" data-home>‹ Home</div><div class="title" id="ph-title">App</div></div>
+    <div class="placeholder-app" id="ph-body">Not part of this demo.</div>
+  </div>
+
+  <!-- setup modal -->
+  <div class="modal" id="setup">
+    <div class="card">
+      <h2>Set up Messages</h2>
+      <p>Pick a handle — like your phone number or Apple ID. Others use it to reach you.</p>
+      <input id="setup-handle" placeholder="e.g. kerry or +15551234567" autocomplete="off">
+      <button id="setup-go">Continue</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- Realtime transport. If this fails to load (offline / blocked), app.js
+     automatically falls back to HTTP polling, so messaging still works. -->
+<script src="https://cdn.socket.io/4.7.5/socket.io.min.js" crossorigin="anonymous"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
