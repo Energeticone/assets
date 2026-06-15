@@ -1,0 +1,46 @@
+name: Deploy TravelNow to GitHub Pages
+
+on:
+  push:
+    branches: ["claude/app-website-replication-adZsJ"]
+    paths:
+      - "travelnow/**"
+      - ".github/workflows/pages.yml"
+  workflow_dispatch:
+
+# Allow this workflow to publish a GitHub Pages site
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Allow one concurrent deployment; don't cancel an in-progress one
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+        with:
+          # Enable Pages (with GitHub Actions as the source) if not already on
+          enablement: true
+
+      - name: Upload site artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          # Publish only the TravelNow app folder as the site root
+          path: ./travelnow
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
