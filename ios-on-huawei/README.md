@@ -21,11 +21,11 @@
 |---|---|
 | iOS-style home screen (springboard, dock, status bar, app icons) | ✅ Works now |
 | iMessage-style Messages app (blue/green bubbles, threads, typing) | ✅ Works now |
-| Send + receive text in real time | ✅ Works now (Socket.IO) |
+| Send + receive text in real time | ✅ Works now (Server-Sent Events, no JS deps) |
 | Message history (persists, searchable) | ✅ Works now (SQLite) |
 | Photos / files attachments | ✅ Works now (upload/download) |
-| Live notifications | ✅ In-app instantly; background via Web Push (optional VAPID) |
-| Installable, full-screen, offline shell | ✅ PWA + service worker |
+| Live notifications | ✅ In-app instantly; background via Web Push (keys auto-generated) |
+| Installable, full-screen, offline shell | ✅ PWA + service worker over auto HTTPS |
 | **Real Apple iMessage to iPhone contacts** | ⚠️ Only with a Mac/iOS **relay box** (adapter included, see `bridge/`) |
 | **Running real native iOS apps** | ❌ Impossible on Huawei hardware — see below |
 
@@ -49,12 +49,13 @@
 
 ```
    Huawei (HarmonyOS NEXT browser)              Your server (anywhere)
-  ┌─────────────────────────────┐            ┌──────────────────────────┐
-  │  PWA  (webapp/)             │  Socket.IO │  Flask server.py         │
+  ┌─────────────────────────────┐    HTTPS   ┌──────────────────────────┐
+  │  PWA  (webapp/)             │  SSE +REST │  Flask server.py         │
   │  • iOS springboard          │◄──────────►│  • REST  /api/*          │
-  │  • Messages app             │  + REST    │  • realtime events       │
+  │  • Messages app (EventSource)│           │  • /api/stream (SSE)     │
   │  • Web Push notifications   │            │  • SQLite store.py       │
-  └─────────────────────────────┘            │  • bridge/ (pluggable)   │
+  └─────────────────────────────┘            │  • security.py (TLS+VAPID)│
+                                             │  • bridge/ (pluggable)   │
                                              └────────────┬─────────────┘
                                                           │
                                    ┌──────────────────────┴───────────────┐
@@ -64,34 +65,46 @@
                                    └───────────────────────────────────────┘
 ```
 
+Realtime uses **Server-Sent Events** — the browser's built-in `EventSource`, so
+there are no JavaScript libraries to download and nothing breaks offline-from-CDN.
+If SSE is ever unavailable the client automatically falls back to HTTP polling.
+
 ## Quick start
 
 ```bash
 cd ios-on-huawei
 python -m venv .venv && source .venv/bin/activate
 pip install -r requirements.pip
-python server.py            # serves the app + API on http://0.0.0.0:8770
+python server.py            # https://0.0.0.0:8770
 ```
+
+On first run the server **auto-generates** a self-signed TLS certificate (`certs/`)
+and Web Push VAPID keys (`vapid.json`). No manual setup.
 
 Then on the Huawei:
 
-1. Open `http://<your-server-ip>:8770` in the browser.
-2. Pick a handle (your "phone number"/Apple-ID-style ID) when prompted.
-3. **Add to Home Screen** → it installs as a full-screen app with an iOS icon.
-4. Tap **Messages**, start a thread to another handle, chat in real time.
+1. Open `https://<your-server-ip>:8770` in the browser.
+2. It's a self-signed cert, so accept the one-time security warning
+   ("Advanced → proceed"). HTTPS is **required** — browsers only allow PWA
+   install / service workers / push on a secure origin.
+3. Pick a handle (your "phone number"/Apple-ID-style ID) when prompted.
+4. **Add to Home Screen** → it installs full-screen with an iOS icon.
+5. Tap **Messages**, start a thread to another handle, chat in real time.
+6. Settings → **Enable notifications** to get background Web Push.
 
 > Two phones/handles on the same server can message each other right away.
 
-### Optional: background push notifications
+### Notifications
 
-Generate VAPID keys once and put them in your environment (see `config.py`):
+VAPID keys are generated automatically, so background push works out of the box —
+just tap **Enable notifications** in Settings on each phone. To use your own keys
+instead, set `VAPID_PUBLIC_KEY` / `VAPID_PRIVATE_KEY` (see `config.py`).
 
-```bash
-python -c "from pywebpush import Vapid01; v=Vapid01(); v.generate_keys(); \
-print('PUBLIC', v.public_key_pem()); print('PRIVATE', v.private_key_pem())"
-```
+### Using a real certificate (optional)
 
-Without keys, notifications still work while the app is open (in-app + Notification API).
+For a trusted padlock instead of the self-signed warning, point the server at your
+own cert: `IOS_HUAWEI_CERT=/path/cert.pem IOS_HUAWEI_KEY=/path/key.pem`. To run
+plain HTTP behind your own reverse proxy, set `IOS_HUAWEI_TLS=0`.
 
 ### Optional: real iMessage via a Mac relay box
 
@@ -103,8 +116,9 @@ Without keys, notifications still work while the app is open (in-app + Notificat
 
 ```
 ios-on-huawei/
-├── server.py            Flask + Socket.IO app, REST API, static serving
+├── server.py            Flask app: REST + SSE realtime, static serving
 ├── store.py             SQLite persistence (users, threads, messages, media, push)
+├── security.py          Auto self-signed TLS cert + VAPID key provisioning
 ├── config.py            Env-driven config (matches repo convention)
 ├── requirements.pip     Dependencies
 ├── bridge/
@@ -116,7 +130,7 @@ ios-on-huawei/
     ├── manifest.webmanifest
     ├── sw.js            Service worker (offline + push)
     ├── css/ios.css      iOS look & feel
-    └── js/app.js        Springboard + Messages SPA
+    └── js/app.js        Springboard + Messages SPA (EventSource realtime)
 ```
 
 ## Legal / honest note
@@ -124,4 +138,3 @@ ios-on-huawei/
 This is for **your own messages on your own device** — the same interoperability use
 case as AirMessage/BlueBubbles. It does not crack, spoof, or impersonate Apple
 services. The relay path uses your own Apple device and Apple ID.
-</invoke>

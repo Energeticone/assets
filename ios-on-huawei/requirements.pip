@@ -1,8 +1,5 @@
 Flask>=3.0
-Flask-SocketIO>=5.3
 Flask-Cors>=4.0
-python-socketio>=5.11
 python-dotenv>=1.0
-eventlet>=0.35
-pywebpush>=1.14      # optional: only needed for background push notifications
-requests>=2.31       # optional: only needed by the iMessage relay bridge
+pywebpush>=1.14      # Web Push notifications + VAPID key generation
+requests>=2.31       # used by the iMessage relay bridge

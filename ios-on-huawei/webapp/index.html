@@ -112,9 +112,8 @@
 
 </div>
 
-<!-- Realtime transport. If this fails to load (offline / blocked), app.js
-     automatically falls back to HTTP polling, so messaging still works. -->
-<script src="https://cdn.socket.io/4.7.5/socket.io.min.js" crossorigin="anonymous"></script>
+<!-- Realtime uses the browser's built-in EventSource (SSE). No external
+     libraries; app.js falls back to HTTP polling if SSE is unavailable. -->
 <script src="js/app.js"></script>
 </body>
 </html>

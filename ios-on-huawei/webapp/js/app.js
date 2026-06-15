@@ -8,10 +8,11 @@ const esc = (s) => (s || "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&l
 
 const state = {
   me: localStorage.getItem("handle") || "",
-  socket: null,
+  es: null,               // EventSource
   thread: null,           // {id, participants}
   threads: [],
   vapidPublicKey: "",
+  seen: new Set(),        // message ids already rendered (dedupe)
 };
 
 /* ---------------- networking ---------------- */
@@ -21,20 +22,21 @@ async function api(path, opts) {
   return r.json();
 }
 
-function connectSocket() {
-  if (typeof io === "undefined") {     // realtime client unavailable -> poll
-    startPolling();
-    return;
-  }
-  state.socket = io();
-  state.socket.on("message", (m) => onIncoming(m));
-  state.socket.on("typing", (d) => {
+function connectStream() {
+  if (!state.me) return;
+  if (typeof EventSource === "undefined") { startPolling(); return; }
+  if (state.es) state.es.close();
+  const es = new EventSource(`/api/stream?handle=${encodeURIComponent(state.me)}`);
+  state.es = es;
+  es.addEventListener("message", (e) => { try { onIncoming(JSON.parse(e.data)); } catch (_) {} });
+  es.addEventListener("typing", (e) => {
+    let d; try { d = JSON.parse(e.data); } catch (_) { return; }
     if (state.thread && d.thread_id === state.thread.id && d.sender !== state.me) {
       const t = $("#typing"); if (t) { t.textContent = "…"; clearTimeout(t._h); t._h = setTimeout(() => (t.textContent = ""), 1500); }
     }
   });
-  // If the socket never connects, fall back to polling.
-  state.socket.on("connect_error", () => { if (!state._polling) startPolling(); });
+  // EventSource auto-reconnects; only fall back to polling if it can't open at all.
+  es.onerror = () => { if (es.readyState === EventSource.CLOSED && !state._polling) startPolling(); };
 }
 
 function startPolling() {
@@ -59,6 +61,7 @@ function startPolling() {
 }
 
 function onIncoming(m) {
+  if (m.id && state.seen.has(m.id)) return;   // dedupe (SSE + polling overlap)
   // refresh thread list previews
   loadThreads();
   if (state.thread && m.thread_id === state.thread.id) {
@@ -116,9 +119,8 @@ async function openThread(t) {
   $("#convo-title").textContent = t.participants.filter((p) => p !== state.me).join(", ") || "You";
   show("messages");
   show("convo");
-  state.socket && state.socket.emit("join", { thread_id: t.id });
   const msgs = await api(`/api/messages?thread_id=${t.id}`).catch(() => []);
-  const box = $("#bubbles"); box.innerHTML = "";
+  const box = $("#bubbles"); box.innerHTML = ""; state.seen.clear();
   let lastDay = "";
   for (const m of msgs) {
     const day = new Date(m.created_at * 1000).toDateString();
@@ -129,6 +131,7 @@ async function openThread(t) {
 }
 
 function appendBubble(m) {
+  if (m.id) state.seen.add(m.id);
   const box = $("#bubbles");
   const mine = m.sender === state.me;
   const row = el("div", "row " + (mine ? "me" : "them"));
@@ -146,6 +149,18 @@ function appendBubble(m) {
 }
 
 function scrollBubbles() { const b = $("#bubbles"); b.scrollTop = b.scrollHeight; }
+
+let _typingThrottle = 0;
+function sendTyping() {
+  if (!state.thread) return;
+  const now = Date.now();
+  if (now - _typingThrottle < 1500) return;
+  _typingThrottle = now;
+  api("/api/typing", {
+    method: "POST", headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ thread_id: state.thread.id, sender: state.me, participants: state.thread.participants }),
+  }).catch(() => {});
+}
 
 async function sendMessage() {
   const ta = $("#composer-input");
@@ -252,6 +267,7 @@ async function register(handle) {
   state.me = handle; localStorage.setItem("handle", handle);
   $("#setup").style.display = "none";
   $("#settings-handle").textContent = handle;
+  connectStream();
   await loadThreads();
 }
 
@@ -274,7 +290,7 @@ function wireUI() {
   const ta = $("#composer-input");
   ta.addEventListener("input", () => {
     ta.style.height = "auto"; ta.style.height = Math.min(ta.scrollHeight, 100) + "px"; updateSendBtn();
-    state.socket && state.thread && state.socket.emit("typing", { thread_id: state.thread.id, sender: state.me });
+    sendTyping();
   });
   $("#send-btn").onclick = sendMessage;
   $("#file-input").addEventListener("change", (e) => { if (e.target.files[0]) sendMedia(e.target.files[0]); e.target.value = ""; });
@@ -290,8 +306,11 @@ async function boot() {
   clock(); setInterval(clock, 10000);
   try { const c = await api("/api/config"); state.vapidPublicKey = c.vapidPublicKey; state.service = c.bridge === "imessage_relay" ? "iMessage" : "app"; } catch (_) {}
   if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(() => {});
-  connectSocket();
-  if (state.me) { $("#setup").style.display = "none"; $("#settings-handle").textContent = state.me; await loadThreads(); }
+  if (state.me) {
+    $("#setup").style.display = "none"; $("#settings-handle").textContent = state.me;
+    connectStream();
+    await loadThreads();
+  }
 }
 
 document.addEventListener("DOMContentLoaded", boot);
