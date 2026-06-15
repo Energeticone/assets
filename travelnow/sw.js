@@ -1,13 +1,20 @@
 /* TravelNow service worker — offline-first caching of the app shell + data. */
-const CACHE = 'travelnow-v1';
+const CACHE = 'travelnow-v2';
 const ASSETS = [
   './',
   './index.html',
+  './app.html',
   './styles.css',
+  './showcase.css',
   './app.js',
   './manifest.webmanifest',
   './data/world.json',
   './data/passports.json',
+  './assets/shots/hero.png',
+  './assets/shots/globe-usa.png',
+  './assets/shots/globe-deu.png',
+  './assets/shots/globe-bra.png',
+  './assets/shots/map.png',
   './icons/icon-192.png',
   './icons/icon-512.png',
   './icons/icon-maskable-512.png',

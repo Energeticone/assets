@@ -4,109 +4,143 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <title>TravelNow — Where can your passport take you?</title>
-<meta name="description" content="An interactive globe that shows where any passport can take you visa-free. Based on live visa-requirement data for 199 countries." />
-<meta name="theme-color" content="#2563eb" />
+<meta name="description" content="An interactive globe of visa-free travel for all 199 passports, built from 39,402 live visa rules. Installable, offline-capable, zero dependencies." />
+<meta name="theme-color" content="#0b1220" />
 <link rel="manifest" href="manifest.webmanifest" />
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
 <link rel="icon" type="image/png" href="icons/icon-192.png" />
-<link rel="stylesheet" href="styles.css" />
-<!-- Open Graph -->
+<link rel="stylesheet" href="showcase.css" />
 <meta property="og:title" content="TravelNow — Where can your passport take you?" />
 <meta property="og:description" content="Interactive globe of visa-free travel for 199 passports." />
+<meta property="og:image" content="assets/shots/hero.png" />
 <meta property="og:type" content="website" />
 </head>
 <body>
-<header class="topbar">
-  <div class="brand">
-    <span class="logo" aria-hidden="true">🌍</span>
-    <div>
-      <h1>TravelNow</h1>
-      <p class="tagline">See where your passport can take you</p>
-    </div>
+
+<!-- NAV -->
+<nav class="nav">
+  <a class="nav-brand" href="./"><span>🌍</span> TravelNow</a>
+  <div class="nav-links">
+    <a href="#features">Features</a>
+    <a href="#gallery">Gallery</a>
+    <a href="#tech">Under the hood</a>
+    <a class="nav-cta" href="app.html">Launch app →</a>
   </div>
-  <div class="topbar-actions">
-    <div class="view-toggle" role="tablist" aria-label="Map view">
-      <button id="view-globe" class="active" role="tab" aria-selected="true">Globe</button>
-      <button id="view-map" role="tab" aria-selected="false">Map</button>
+</nav>
+
+<!-- HERO -->
+<header class="hero">
+  <div class="hero-glow" aria-hidden="true"></div>
+  <div class="hero-inner">
+    <div class="hero-copy">
+      <span class="eyebrow">Interactive passport index</span>
+      <h1>See where your<br><span class="grad">passport can take you.</span></h1>
+      <p class="lede">A live, draggable globe that recolours the entire world the
+        instant you pick a passport — visa-free, visa-on-arrival, eTA, e-Visa or
+        visa-required, across all <strong>199 countries</strong>.</p>
+      <div class="hero-actions">
+        <a class="btn btn-primary" href="app.html">🚀 Launch the app</a>
+        <a class="btn btn-ghost" href="https://github.com/Energeticone/assets/tree/master/travelnow" target="_blank" rel="noopener">View source</a>
+      </div>
+      <div class="hero-stats">
+        <div><b>199</b><span>passports</span></div>
+        <div><b>39,402</b><span>visa rules</span></div>
+        <div><b>0</b><span>dependencies</span></div>
+        <div><b>100%</b><span>offline PWA</span></div>
+      </div>
     </div>
-    <button id="install-btn" class="install-btn" hidden>Install app</button>
+    <div class="hero-art">
+      <img src="assets/shots/hero.png" alt="Interactive globe coloured by visa access" width="520" height="520" />
+    </div>
   </div>
 </header>
 
-<main class="layout">
-  <section class="map-wrap" aria-label="Interactive world map">
-    <canvas id="globe"></canvas>
-    <div id="tooltip" class="tooltip" hidden></div>
-    <div class="map-hint">Drag to rotate · scroll to zoom · click a country</div>
-    <div id="loading" class="loading">Loading live visa data…</div>
+<!-- LEGEND STRIP -->
+<section class="strip">
+  <span>Every country is shaded by your access:</span>
+  <ul class="legend">
+    <li><i style="background:#22c55e"></i>Visa-free</li>
+    <li><i style="background:#14b8a6"></i>Visa on arrival</li>
+    <li><i style="background:#84cc16"></i>eTA</li>
+    <li><i style="background:#f59e0b"></i>e-Visa</li>
+    <li><i style="background:#ef4444"></i>Visa required</li>
+    <li><i style="background:#2563eb"></i>Your passport</li>
+  </ul>
+</section>
 
-    <div class="legend" aria-label="Legend">
-      <span class="legend-title">Access for selected passport</span>
-      <ul>
-        <li><i class="sw" style="background:#22c55e"></i>Visa-free</li>
-        <li><i class="sw" style="background:#14b8a6"></i>Visa on arrival</li>
-        <li><i class="sw" style="background:#84cc16"></i>eTA</li>
-        <li><i class="sw" style="background:#f59e0b"></i>e-Visa</li>
-        <li><i class="sw" style="background:#ef4444"></i>Visa required</li>
-        <li><i class="sw" style="background:#2563eb"></i>Your passport</li>
+<!-- HOW IT WORKS -->
+<section class="steps" id="how">
+  <h2>Three taps to your travel map</h2>
+  <div class="steps-grid">
+    <div class="step"><span class="step-n">1</span><h3>Pick your passport</h3><p>Search all 199 passports — flags and live ranking included.</p></div>
+    <div class="step"><span class="step-n">2</span><h3>Watch the world recolour</h3><p>The globe repaints instantly to show exactly where you can go.</p></div>
+    <div class="step"><span class="step-n">3</span><h3>Plan your trip</h3><p>Spin to any country, read its rule, and browse the full list.</p></div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="features" id="features">
+  <h2>Built to feel like magic</h2>
+  <div class="feat-grid">
+    <article class="feat"><div class="feat-ic">🌐</div><h3>Real 3D globe</h3><p>A hand-rolled orthographic projection on canvas — drag to rotate, scroll to zoom, click to fly to any country. No mapping library.</p></article>
+    <article class="feat"><div class="feat-ic">🗺️</div><h3>Globe or flat map</h3><p>One tap toggles between the spinning globe and a clean equirectangular world map.</p></article>
+    <article class="feat"><div class="feat-ic">🏅</div><h3>Passport power</h3><p>Instant "destinations without a prior visa" score and live world ranking for every passport.</p></article>
+    <article class="feat"><div class="feat-ic">🔎</div><h3>Searchable everything</h3><p>Filter destinations by access type and search 199 countries in milliseconds.</p></article>
+    <article class="feat"><div class="feat-ic">📲</div><h3>Installable PWA</h3><p>Add it to your home screen and it runs fully offline — the data ships with the app.</p></article>
+    <article class="feat"><div class="feat-ic">⚡</div><h3>Featherlight</h3><p>Pure vanilla JS, no frameworks, no trackers. The whole experience is under a megabyte.</p></article>
+  </div>
+</section>
+
+<!-- GALLERY -->
+<section class="gallery" id="gallery">
+  <h2>One world, every point of view</h2>
+  <p class="gallery-sub">The same globe, recoloured for different passports — rendered by the app's own engine.</p>
+  <div class="shots">
+    <figure><img src="assets/shots/globe-usa.png" alt="Globe for a United States passport" loading="lazy" /><figcaption>🇺🇸 United States</figcaption></figure>
+    <figure><img src="assets/shots/globe-deu.png" alt="Globe for a German passport" loading="lazy" /><figcaption>🇩🇪 Germany</figcaption></figure>
+    <figure><img src="assets/shots/globe-bra.png" alt="Globe for a Brazilian passport" loading="lazy" /><figcaption>🇧🇷 Brazil</figcaption></figure>
+  </div>
+  <figure class="shot-wide"><img src="assets/shots/map.png" alt="Flat world map coloured for a UK passport" loading="lazy" /><figcaption>🇬🇧 United Kingdom — flat-map view</figcaption></figure>
+</section>
+
+<!-- TECH / DATA -->
+<section class="tech" id="tech">
+  <div class="tech-inner">
+    <div>
+      <h2>Under the hood</h2>
+      <p class="tech-lede">No black boxes. The globe, the projection, the clipping and the
+        visa logic are all readable vanilla JavaScript.</p>
+      <ul class="tech-list">
+        <li><b>Orthographic projection</b> computed per-frame, with great-circle horizon clipping and limb arcs so polygons wrap the sphere cleanly.</li>
+        <li><b>39,402 visa rules</b> from the open passport-index dataset, bundled as compact JSON.</li>
+        <li><b>Natural Earth geometry</b> (ISO-A3), trimmed for a tiny payload.</li>
+        <li><b>Service worker</b> caches the shell and data for instant, offline loads.</li>
       </ul>
     </div>
-  </section>
-
-  <aside class="panel">
-    <div class="passport-picker">
-      <label for="passport-search">Your passport</label>
-      <div class="combo">
-        <button id="passport-button" class="passport-button" aria-haspopup="listbox" aria-expanded="false">
-          <span id="passport-flag" class="flag">🏳️</span>
-          <span id="passport-name">Select a country</span>
-          <span class="caret">▾</span>
-        </button>
-        <div id="passport-dropdown" class="dropdown" hidden>
-          <input id="passport-search" type="search" placeholder="Search 199 countries…" autocomplete="off" />
-          <ul id="passport-list" role="listbox" aria-label="Passports"></ul>
-        </div>
-      </div>
+    <div class="tech-stats">
+      <div class="ts"><b>168</b><span>top passport score<br>(🇦🇪 UAE)</span></div>
+      <div class="ts"><b>199²</b><span>passport × destination<br>combinations</span></div>
+      <div class="ts"><b>~850&nbsp;KB</b><span>total data bundle</span></div>
+      <div class="ts"><b>1</b><span>HTML file per page,<br>zero build step</span></div>
     </div>
+  </div>
+</section>
 
-    <div id="summary" class="summary" hidden>
-      <div class="score">
-        <div class="score-num"><span id="score-value">0</span></div>
-        <div class="score-label">destinations without a prior visa
-          <span class="rank">World rank <strong id="rank-value">–</strong></span>
-        </div>
-      </div>
-
-      <div class="breakdown">
-        <button class="brk" data-cat="visa-free"><i style="background:#22c55e"></i><b id="c-free">0</b><span>Visa-free</span></button>
-        <button class="brk" data-cat="voa"><i style="background:#14b8a6"></i><b id="c-voa">0</b><span>On arrival</span></button>
-        <button class="brk" data-cat="eta"><i style="background:#84cc16"></i><b id="c-eta">0</b><span>eTA</span></button>
-        <button class="brk" data-cat="evisa"><i style="background:#f59e0b"></i><b id="c-evisa">0</b><span>e-Visa</span></button>
-        <button class="brk" data-cat="required"><i style="background:#ef4444"></i><b id="c-req">0</b><span>Required</span></button>
-      </div>
-    </div>
-
-    <div class="dest">
-      <div class="dest-head">
-        <input id="dest-search" type="search" placeholder="Filter destinations…" autocomplete="off" />
-        <select id="dest-filter" aria-label="Filter by access">
-          <option value="all">All access</option>
-          <option value="visa-free">Visa-free</option>
-          <option value="voa">Visa on arrival</option>
-          <option value="eta">eTA</option>
-          <option value="evisa">e-Visa</option>
-          <option value="required">Visa required</option>
-        </select>
-      </div>
-      <ul id="dest-list" class="dest-list" aria-label="Destinations"></ul>
-    </div>
-  </aside>
-</main>
+<!-- CTA -->
+<section class="cta">
+  <h2>Where will your passport take you?</h2>
+  <a class="btn btn-primary btn-lg" href="app.html">🚀 Launch TravelNow</a>
+</section>
 
 <footer class="foot">
-  <span>Data: visa-requirement matrix for 199 passports · for guidance only — always confirm with official sources before travelling.</span>
+  <div class="foot-inner">
+    <span>🌍 <strong>TravelNow</strong> — for guidance only; always confirm visa rules with official sources before travelling.</span>
+    <span class="foot-credit">Data: passport-index-dataset · Geometry: Natural Earth · <a href="https://github.com/Energeticone/assets/tree/master/travelnow" target="_blank" rel="noopener">Source on GitHub</a></span>
+  </div>
 </footer>
 
-<script src="app.js"></script>
+<script>
+  if ('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(()=>{}));
+</script>
 </body>
 </html>

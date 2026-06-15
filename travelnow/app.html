@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>TravelNow — Where can your passport take you?</title>
+<meta name="description" content="An interactive globe that shows where any passport can take you visa-free. Based on live visa-requirement data for 199 countries." />
+<meta name="theme-color" content="#2563eb" />
+<link rel="manifest" href="manifest.webmanifest" />
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
+<link rel="icon" type="image/png" href="icons/icon-192.png" />
+<link rel="stylesheet" href="styles.css" />
+<!-- Open Graph -->
+<meta property="og:title" content="TravelNow — Where can your passport take you?" />
+<meta property="og:description" content="Interactive globe of visa-free travel for 199 passports." />
+<meta property="og:type" content="website" />
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="./" title="Back to TravelNow home">
+    <span class="logo" aria-hidden="true">🌍</span>
+    <div>
+      <h1>TravelNow</h1>
+      <p class="tagline">See where your passport can take you</p>
+    </div>
+  </a>
+  <div class="topbar-actions">
+    <div class="view-toggle" role="tablist" aria-label="Map view">
+      <button id="view-globe" class="active" role="tab" aria-selected="true">Globe</button>
+      <button id="view-map" role="tab" aria-selected="false">Map</button>
+    </div>
+    <button id="install-btn" class="install-btn" hidden>Install app</button>
+  </div>
+</header>
+
+<main class="layout">
+  <section class="map-wrap" aria-label="Interactive world map">
+    <canvas id="globe"></canvas>
+    <div id="tooltip" class="tooltip" hidden></div>
+    <div class="map-hint">Drag to rotate · scroll to zoom · click a country</div>
+    <div id="loading" class="loading">Loading live visa data…</div>
+
+    <div class="legend" aria-label="Legend">
+      <span class="legend-title">Access for selected passport</span>
+      <ul>
+        <li><i class="sw" style="background:#22c55e"></i>Visa-free</li>
+        <li><i class="sw" style="background:#14b8a6"></i>Visa on arrival</li>
+        <li><i class="sw" style="background:#84cc16"></i>eTA</li>
+        <li><i class="sw" style="background:#f59e0b"></i>e-Visa</li>
+        <li><i class="sw" style="background:#ef4444"></i>Visa required</li>
+        <li><i class="sw" style="background:#2563eb"></i>Your passport</li>
+      </ul>
+    </div>
+  </section>
+
+  <aside class="panel">
+    <div class="passport-picker">
+      <label for="passport-search">Your passport</label>
+      <div class="combo">
+        <button id="passport-button" class="passport-button" aria-haspopup="listbox" aria-expanded="false">
+          <span id="passport-flag" class="flag">🏳️</span>
+          <span id="passport-name">Select a country</span>
+          <span class="caret">▾</span>
+        </button>
+        <div id="passport-dropdown" class="dropdown" hidden>
+          <input id="passport-search" type="search" placeholder="Search 199 countries…" autocomplete="off" />
+          <ul id="passport-list" role="listbox" aria-label="Passports"></ul>
+        </div>
+      </div>
+    </div>
+
+    <div id="summary" class="summary" hidden>
+      <div class="score">
+        <div class="score-num"><span id="score-value">0</span></div>
+        <div class="score-label">destinations without a prior visa
+          <span class="rank">World rank <strong id="rank-value">–</strong></span>
+        </div>
+      </div>
+
+      <div class="breakdown">
+        <button class="brk" data-cat="visa-free"><i style="background:#22c55e"></i><b id="c-free">0</b><span>Visa-free</span></button>
+        <button class="brk" data-cat="voa"><i style="background:#14b8a6"></i><b id="c-voa">0</b><span>On arrival</span></button>
+        <button class="brk" data-cat="eta"><i style="background:#84cc16"></i><b id="c-eta">0</b><span>eTA</span></button>
+        <button class="brk" data-cat="evisa"><i style="background:#f59e0b"></i><b id="c-evisa">0</b><span>e-Visa</span></button>
+        <button class="brk" data-cat="required"><i style="background:#ef4444"></i><b id="c-req">0</b><span>Required</span></button>
+      </div>
+    </div>
+
+    <div class="dest">
+      <div class="dest-head">
+        <input id="dest-search" type="search" placeholder="Filter destinations…" autocomplete="off" />
+        <select id="dest-filter" aria-label="Filter by access">
+          <option value="all">All access</option>
+          <option value="visa-free">Visa-free</option>
+          <option value="voa">Visa on arrival</option>
+          <option value="eta">eTA</option>
+          <option value="evisa">e-Visa</option>
+          <option value="required">Visa required</option>
+        </select>
+      </div>
+      <ul id="dest-list" class="dest-list" aria-label="Destinations"></ul>
+    </div>
+  </aside>
+</main>
+
+<footer class="foot">
+  <span>Data: visa-requirement matrix for 199 passports · for guidance only — always confirm with official sources before travelling.</span>
+</footer>
+
+<script src="app.js"></script>
+</body>
+</html>

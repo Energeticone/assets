@@ -71,13 +71,19 @@ Requirement values are categorised as:
 
 ```
 travelnow/
-├── index.html              # app shell / markup
-├── styles.css              # styling (light theme, responsive)
+├── index.html              # showcase landing page (the "amazing work")
+├── showcase.css            # landing-page styling (dark theme)
+├── app.html                # the interactive globe app
+├── styles.css              # app styling (light theme, responsive)
 ├── app.js                  # globe projection, rendering, interaction, PWA
-├── manifest.webmanifest    # PWA manifest
+├── manifest.webmanifest    # PWA manifest (start_url = app.html)
 ├── sw.js                   # offline service worker
 ├── data/
 │   ├── world.json          # country geometry (ISO-A3)
 │   └── passports.json      # names + iso2 + 199×199 visa matrix
+├── assets/shots/           # rendered preview images for the landing page
 └── icons/                  # app icons (192/512/maskable/apple-touch)
 ```
+
+The landing page (`index.html`) showcases the project and links to the live
+tool at `app.html`. Both are served from the same GitHub Pages site.

@@ -2,7 +2,7 @@
   "name": "TravelNow — Passport Power",
   "short_name": "TravelNow",
   "description": "See where your passport can take you. An interactive globe of visa-free travel for 199 countries.",
-  "start_url": "./index.html",
+  "start_url": "./app.html",
   "scope": "./",
   "display": "standalone",
   "orientation": "any",

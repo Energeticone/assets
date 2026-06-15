@@ -19,7 +19,7 @@ h1{font-size:20px;margin:0;letter-spacing:-.02em}
   padding:10px 16px;background:var(--panel);border-bottom:1px solid var(--line);
   position:sticky;top:0;z-index:20;
 }
-.brand{display:flex;align-items:center;gap:10px}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:inherit}
 .logo{font-size:26px}
 .topbar-actions{display:flex;align-items:center;gap:10px}
 .view-toggle{display:flex;background:var(--bg);border:1px solid var(--line);border-radius:999px;padding:3px}
