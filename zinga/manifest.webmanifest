@@ -1,0 +1,14 @@
+{
+  "name": "Zinga — Watch Companion",
+  "short_name": "Zinga",
+  "description": "A floating, always-on-top companion that rides over anything you're streaming: chat about the scene, read live captions, and pin timestamped notes.",
+  "start_url": "app.html",
+  "scope": ".",
+  "display": "standalone",
+  "orientation": "landscape",
+  "background_color": "#000000",
+  "theme_color": "#000000",
+  "icons": [
+    { "src": "icons/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}

@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1">
+  <meta name="theme-color" content="#000000">
+  <title>Zinga — Watch Companion</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon.svg">
+  <link rel="stylesheet" href="player.css">
+</head>
+<body>
+  <div class="player">
+    <!-- synthetic cinematic "video" -->
+    <div class="stage" style="--bright:1">
+      <div class="scene"></div>
+      <div class="subtitle-burn"></div>
+    </div>
+
+    <!-- player controls -->
+    <div class="controls">
+      <div class="scrim-top"></div>
+      <div class="scrim-bottom"></div>
+
+      <!-- top bar -->
+      <div class="topbar">
+        <div class="brand">
+          <div class="logo">REELIX</div>
+          <div class="epinfo">
+            <div class="t">S1:E7 “Witness”</div>
+            <div class="s">Downloading · 66%</div>
+          </div>
+        </div>
+        <div class="spacer"></div>
+        <div class="topright">
+          <div class="vol">
+            <input type="range" min="0" max="100" value="80" aria-label="Volume">
+            <button class="iconbtn" aria-label="Mute">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 10v4h4l5 5V5L7 10H3zm13.5 2a4.5 4.5 0 0 0-2.5-4v8a4.5 4.5 0 0 0 2.5-4z"/></svg>
+            </button>
+          </div>
+          <button class="iconbtn" aria-label="Cast">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M2 16a5 5 0 0 1 5 5M2 12a9 9 0 0 1 9 9M2 20h.01"/><rect x="2" y="4" width="20" height="14" rx="2"/></svg>
+          </button>
+          <button class="iconbtn" aria-label="Lock">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+          </button>
+          <button class="iconbtn" id="closeBtn" aria-label="Close">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- brightness -->
+      <div class="brightness">
+        <span class="sun"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg></span>
+        <input type="range" class="vslider" id="bright" min="0" max="100" value="72" aria-label="Brightness">
+      </div>
+
+      <!-- center transport -->
+      <div class="center">
+        <button class="tbtn seek" id="back10" aria-label="Back 10 seconds">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M11 4 4 9l7 5V4z" fill="currentColor" stroke="none"/><path d="M4 9a9 9 0 1 1-2 6"/></svg>
+          <span>10</span>
+        </button>
+        <button class="tbtn play" id="playBtn" aria-label="Play/Pause">
+          <span id="playIcon"><svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg></span>
+        </button>
+        <button class="tbtn seek" id="fwd10" aria-label="Forward 10 seconds">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M13 4l7 5-7 5V4z" fill="currentColor" stroke="none"/><path d="M20 9a9 9 0 1 0 2 6"/></svg>
+          <span>10</span>
+        </button>
+      </div>
+
+      <!-- bottom -->
+      <div class="bottom">
+        <div class="seekbar">
+          <div class="track" id="track">
+            <div class="buf"></div>
+            <div class="fill"></div>
+            <div class="knob"></div>
+          </div>
+          <div class="remain">43:32</div>
+        </div>
+        <div class="bottombar">
+          <button class="txtbtn" id="speedBtn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="13" r="8"/><path d="M12 13l3-3M12 4h0"/></svg>
+            <span id="speedLabel">Speed (1x)</span>
+          </button>
+          <button class="txtbtn" id="ccBtn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M7 10h2M7 14h4M13 10h4M15 14h2" stroke-linecap="round"/></svg>
+            <span>Audio &amp; Subtitles</span>
+          </button>
+          <button class="txtbtn" id="fsBtn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M8 3H5a2 2 0 0 0-2 2v3M16 3h3a2 2 0 0 1 2 2v3M8 21H5a2 2 0 0 1-2-2v-3M16 21h3a2 2 0 0 0 2-2v-3"/></svg>
+            <span>Full Screen</span>
+          </button>
+
+          <div class="menu" id="speedMenu">
+            <button data-speed="0.5">0.5x</button>
+            <button data-speed="1" class="sel">1x</button>
+            <button data-speed="1.25">1.25x</button>
+            <button data-speed="1.5">1.5x</button>
+            <button data-speed="2">2x</button>
+          </div>
+        </div>
+
+        <button class="skip" id="skip">Skip Intro</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- first-run hint pointing at the floating bubble -->
+  <div class="hint" id="hint">Tap the floating <b>Zinga</b> bubble to chat about this scene, read live captions, or pin a note — without leaving the show.</div>
+
+  <script src="player.js"></script>
+  <script src="zinga.js"></script>
+  <script>
+    // Mount the Zinga overlay on top of the demo player.
+    window.addEventListener('load', function () {
+      Zinga.mount({
+        player: window.DemoPlayer,
+        title: 'S1:E7 “Witness”',
+        subtitle: 'Zinga · watch companion',
+        storageKey: 'reelix-witness-s1e7'
+        // responder: myClaudeBackedResponder   // ← plug a real LLM here (see README)
+      });
+    });
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function () { navigator.serviceWorker.register('sw.js').catch(function () {}); });
+    }
+  </script>
+</body>
+</html>

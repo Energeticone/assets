@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Zinga — Your floating watch companion</title>
+<meta name="description" content="Zinga is an always-on-top companion bubble that rides over anything you're streaming. Chat about the scene, read live captions, and pin timestamped notes — without ever leaving the show." />
+<meta name="theme-color" content="#0a0a0e" />
+<link rel="manifest" href="manifest.webmanifest" />
+<link rel="icon" href="icons/icon.svg" />
+<link rel="stylesheet" href="showcase.css" />
+<meta property="og:title" content="Zinga — Your floating watch companion" />
+<meta property="og:description" content="An always-on-top companion overlay for everything you stream." />
+<meta property="og:type" content="website" />
+</head>
+<body>
+
+<nav class="nav">
+  <a class="nav-brand" href="./"><span class="mark"></span> Zinga</a>
+  <div class="nav-links">
+    <a href="#how">How it works</a>
+    <a href="#features">Features</a>
+    <a href="#embed">Embed it</a>
+    <a class="nav-cta" href="app.html">Launch demo →</a>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="hero-glow" aria-hidden="true"></div>
+  <div class="hero-inner">
+    <div class="hero-copy">
+      <span class="eyebrow">Floating watch-companion overlay</span>
+      <h1>Never pause to<br><span class="grad">figure out what just happened.</span></h1>
+      <p class="lede">Zinga is a tiny bubble that floats on top of whatever you're
+        streaming. Tap it and it blooms into a companion: <strong>ask about the
+        scene</strong>, read <strong>live captions</strong>, and <strong>pin notes</strong>
+        to the exact second — all without leaving the show.</p>
+      <div class="hero-actions">
+        <a class="btn btn-primary" href="app.html">▶ Launch the live demo</a>
+        <a class="btn btn-ghost" href="https://github.com/Energeticone/assets/tree/master/zinga" target="_blank" rel="noopener">View source</a>
+      </div>
+      <div class="hero-stats">
+        <div><b>1</b><span>script tag</span></div>
+        <div><b>0</b><span>dependencies</span></div>
+        <div><b>∞</b><span>players it rides on</span></div>
+        <div><b>100%</b><span>offline PWA</span></div>
+      </div>
+    </div>
+
+    <!-- live mini-mock of the overlay -->
+    <div class="hero-art" aria-hidden="true">
+      <div class="mock">
+        <div class="mock-scene">
+          <div class="mock-cap">“There's a witness. Right now it's just you and me who know that.”</div>
+        </div>
+        <div class="mock-bubble"><span class="mb-icon"></span></div>
+        <div class="mock-panel">
+          <div class="mp-hd"><span class="mp-dot"></span> Zinga · watch companion</div>
+          <div class="mp-msg ai">Want a quick recap of the last five minutes?</div>
+          <div class="mp-msg me">Who's the guy on the phone?</div>
+          <div class="mp-msg ai typing"><i></i><i></i><i></i></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<section class="strip">
+  <span>It rides over the player you already use —</span>
+  <b>drag it anywhere</b><i>·</i><b>snaps to the edge</b><i>·</i><b>always on top</b><i>·</i><b>remembers where you left it</b>
+</section>
+
+<section id="how" class="section">
+  <h2>How it works</h2>
+  <div class="steps">
+    <div class="step"><span class="num">1</span><h3>It floats</h3><p>A translucent bubble sits on the edge of your screen, over the video. Drag it wherever you like — it snaps to the nearest edge and stays out of the frame.</p></div>
+    <div class="step"><span class="num">2</span><h3>It watches with you</h3><p>Zinga reads the live caption stream from the player, so it always knows what's on screen right now — and never spoils what's ahead.</p></div>
+    <div class="step"><span class="num">3</span><h3>It answers</h3><p>Tap to expand. Ask for a recap, "who is that?", or a no-spoiler theory. Pin a note to the exact timestamp and jump back to it anytime.</p></div>
+  </div>
+</section>
+
+<section id="features" class="section alt">
+  <h2>What's in the bubble</h2>
+  <div class="cards">
+    <div class="card"><div class="ci">💬</div><h3>Companion chat</h3><p>A context-aware assistant that knows the scene you're on. Recaps, character notes, spoiler-safe theories — it works fully offline, or plug in your own LLM backend.</p></div>
+    <div class="card"><div class="ci">📝</div><h3>Live captions</h3><p>Every line streams in, timestamped. Scroll back through dialogue you missed without scrubbing the video.</p></div>
+    <div class="card"><div class="ci">📌</div><h3>Timestamped notes</h3><p>Pin a thought to the exact second. One tap jumps the player right back to that moment.</p></div>
+    <div class="card"><div class="ci">🔒</div><h3>Spoiler-safe</h3><p>Zinga only ever knows up to where you are. It literally can't jump ahead of your playhead.</p></div>
+    <div class="card"><div class="ci">🧲</div><h3>Drag &amp; dock</h3><p>Grab it, fling it, it snaps to an edge and remembers the spot next time — on desktop and touch.</p></div>
+    <div class="card"><div class="ci">📲</div><h3>Installable PWA</h3><p>Add to home screen, works offline, zero build step. The overlay is one self-contained script.</p></div>
+  </div>
+</section>
+
+<section id="embed" class="section">
+  <h2>Drop it on any player</h2>
+  <p class="embed-lede">Zinga isolates itself in a Shadow DOM, so it won't touch your page's styles.
+    Give it an adapter for your player and you're done.</p>
+  <pre class="code"><span class="c">&lt;!-- 1. include the overlay --&gt;</span>
+<span class="t">&lt;script</span> <span class="a">src</span>=<span class="s">"zinga.js"</span><span class="t">&gt;&lt;/script&gt;</span>
+
+<span class="c">&lt;!-- 2. mount it over your player --&gt;</span>
+<span class="t">&lt;script&gt;</span>
+  Zinga.<span class="f">mount</span>({
+    title: <span class="s">'S1:E7 "Witness"'</span>,
+    player: {
+      currentTime: () =&gt; video.currentTime,
+      seek:        (t) =&gt; { video.currentTime = t },
+      onCaption:   (cb) =&gt; track.addEventListener(<span class="s">'cuechange'</span>, ...),
+    },
+    <span class="c">// optional: route chat to your own model</span>
+    responder: <span class="k">async</span> (msg, ctx) =&gt; callYourLLM(msg, ctx)
+  })
+<span class="t">&lt;/script&gt;</span></pre>
+  <div class="embed-actions">
+    <a class="btn btn-primary" href="app.html">▶ Try the live demo</a>
+    <a class="btn btn-ghost" href="README.md">Read the docs</a>
+  </div>
+</section>
+
+<footer class="foot">
+  <div class="mark big"></div>
+  <p><strong>Project Zinga</strong> — a floating watch-companion overlay. Vanilla JS, no dependencies, MIT-style demo.</p>
+  <p class="fine">Demo content ("REELIX", <em>S1:E7 "Witness"</em>) is fictional and generated for this showcase.</p>
+</footer>
+
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function () { navigator.serviceWorker.register('sw.js').catch(function(){}); });
+  }
+</script>
+</body>
+</html>
