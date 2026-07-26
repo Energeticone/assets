@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>The Second Brain Playbook — Claude × Obsidian</title>
+<meta name="description" content="A brain that files itself. You talk in plain language; it reads, links, and files into plain Markdown you own. This is the field playbook — what to type in each situation." />
+<meta name="theme-color" content="#0e0b16" />
+<meta property="og:title" content="The Second Brain Playbook — Claude × Obsidian" />
+<meta property="og:description" content="A brain that files itself. What to type in each situation — not documentation, a playbook." />
+<meta property="og:type" content="website" />
+<style>
+:root{
+  --bg:#0e0b16; --bg2:#151020; --card:#1a1327; --card2:#20182f;
+  --line:rgba(255,255,255,.09); --line2:rgba(255,255,255,.14);
+  --ink:#f3eefb; --muted:#b1a6c9; --faint:#7d7396;
+  --violet:#a855f7; --violet2:#c084fc; --warm:#e8956b; --warm2:#f0a878;
+  --green:#4ade80;
+  --grad:linear-gradient(90deg,#c084fc,#e8956b);
+  --shadow:0 24px 60px rgba(0,0,0,.5);
+  --mono:ui-monospace,"SF Mono",SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0; background:var(--bg); color:var(--ink);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+  line-height:1.6; -webkit-font-smoothing:antialiased;
+}
+h1,h2,h3,h4{letter-spacing:-.02em;line-height:1.12;margin:0}
+a{color:inherit}
+.wrap{max-width:960px;margin:0 auto;padding:0 22px}
+.eyebrow{display:inline-block;font-size:12px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--violet2);background:rgba(168,85,247,.10);border:1px solid rgba(168,85,247,.28);
+  padding:6px 13px;border-radius:999px}
+.grad{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+
+/* ---------- hero ---------- */
+.hero{position:relative;overflow:hidden;padding:76px 22px 60px;text-align:center;background:
+  radial-gradient(1000px 520px at 78% -8%, rgba(232,149,107,.14), transparent 60%),
+  radial-gradient(880px 520px at 12% 4%, rgba(168,85,247,.22), transparent 58%),
+  linear-gradient(180deg,var(--bg),var(--bg2));border-bottom:1px solid var(--line)}
+.hero-inner{position:relative;max-width:760px;margin:0 auto}
+.hero h1{font-size:clamp(38px,6.6vw,66px);font-weight:850;margin:20px 0 0}
+.hero .lede{color:var(--muted);font-size:clamp(16px,2vw,20px);max-width:600px;margin:22px auto 0}
+.hero .lede strong{color:var(--ink)}
+
+/* ---------- the one habit ---------- */
+.habit{padding:26px 22px 0}
+.habit-card{max-width:720px;margin:0 auto;position:relative;background:
+  radial-gradient(600px 200px at 50% -40%,rgba(168,85,247,.20),transparent 70%),var(--card);
+  border:1px solid rgba(168,85,247,.30);border-radius:22px;padding:30px 28px;text-align:center;
+  box-shadow:var(--shadow)}
+.habit-card .tag{font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--warm2)}
+.habit-card h2{font-size:clamp(22px,3vw,30px);margin:10px 0 16px}
+.habit-card p{color:var(--muted);margin:16px auto 0;max-width:520px;font-size:15px}
+
+/* ---------- command chip ---------- */
+.cmd{display:flex;align-items:center;gap:12px;justify-content:space-between;
+  background:#0b0812;border:1px solid var(--line2);border-radius:13px;
+  padding:13px 13px 13px 18px;font-family:var(--mono);font-size:15px;color:#f6f2ff}
+.cmd.center{max-width:420px;margin:0 auto}
+.cmd .txt{overflow-x:auto;white-space:nowrap;scrollbar-width:none}
+.cmd .txt::-webkit-scrollbar{display:none}
+.cmd .txt .ph{color:var(--violet2)}
+.copy{flex:none;display:inline-flex;align-items:center;gap:6px;cursor:pointer;border:1px solid var(--line2);
+  background:rgba(255,255,255,.04);color:var(--muted);font:inherit;font-size:11px;font-weight:700;
+  letter-spacing:.08em;text-transform:uppercase;padding:7px 11px;border-radius:9px;
+  transition:all .15s ease;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+.copy:hover{color:var(--ink);border-color:var(--violet);background:rgba(168,85,247,.12)}
+.copy.done{color:#06120a;background:var(--green);border-color:var(--green)}
+
+/* ---------- section headers ---------- */
+.sec{padding:60px 0 0}
+.sec-head{text-align:center;max-width:640px;margin:0 auto 34px}
+.sec-head .eyebrow{margin-bottom:16px}
+.sec-head h2{font-size:clamp(26px,3.6vw,38px)}
+.sec-head p{color:var(--muted);margin:14px 0 0}
+
+/* ---------- situation cards ---------- */
+.cards{display:grid;gap:16px}
+.play{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:24px;
+  transition:border-color .2s ease,transform .2s ease}
+.play:hover{border-color:rgba(168,85,247,.42);transform:translateY(-2px)}
+.play .when{font-size:12px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--warm2)}
+.play .quote{font-size:clamp(18px,2.4vw,22px);font-weight:700;margin:8px 0 16px;line-height:1.3}
+.play .quote::before{content:"\201C"}
+.play .quote::after{content:"\201D"}
+.play .desc{color:var(--muted);margin:16px 0 0;font-size:15px}
+.play .note{margin:14px 0 0;padding:12px 14px;background:var(--card2);border:1px solid var(--line);
+  border-left:3px solid var(--violet);border-radius:0 10px 10px 0;color:var(--faint);font-size:13.5px}
+.play .note b{color:var(--muted)}
+
+/* ---------- rhythm ---------- */
+.rhythm{background:var(--bg2);border-block:1px solid var(--line);margin-top:64px;padding:60px 22px}
+.rhythm .wrap{max-width:820px}
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:34px}
+.step{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:22px}
+.step .n{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:9px;
+  background:var(--grad);color:#160a04;font-weight:850;margin-bottom:12px}
+.step code{font-family:var(--mono);color:var(--violet2);font-size:14px}
+.step p{color:var(--muted);margin:8px 0 0;font-size:14.5px}
+@media(max-width:720px){.steps{grid-template-columns:1fr}}
+
+/* ---------- memory ---------- */
+.mem{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:34px}
+.mcard{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:24px}
+.mcard .ic{font-size:26px;margin-bottom:12px}
+.mcard h3{font-size:17px;margin-bottom:8px}
+.mcard p{color:var(--muted);margin:0;font-size:14.5px}
+@media(max-width:820px){.mem{grid-template-columns:1fr}}
+
+/* ---------- why ---------- */
+.why{text-align:center;padding:70px 22px 40px;background:
+  radial-gradient(700px 300px at 50% 0%,rgba(232,149,107,.12),transparent 60%),var(--bg)}
+.why .wrap{max-width:680px}
+.why p{color:var(--muted);font-size:clamp(16px,1.9vw,18px);margin:18px 0 0}
+.why p strong{color:var(--ink)}
+
+/* ---------- footer ---------- */
+.foot{background:#080510;border-top:1px solid var(--line);padding:34px 22px;text-align:center}
+.foot p{color:var(--faint);font-size:13.5px;margin:0}
+.foot p + p{margin-top:8px}
+.foot .kbd{font-family:var(--mono);color:var(--muted)}
+
+/* toast */
+.toast{position:fixed;left:50%;bottom:28px;transform:translate(-50%,140%);background:var(--green);color:#06120a;
+  font-weight:700;font-size:14px;padding:11px 20px;border-radius:999px;box-shadow:0 12px 30px rgba(0,0,0,.4);
+  transition:transform .28s cubic-bezier(.2,.9,.3,1.2);z-index:100;pointer-events:none}
+.toast.show{transform:translate(-50%,0)}
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<header class="hero">
+  <div class="hero-inner">
+    <span class="eyebrow">Claude × Obsidian · Field Playbook</span>
+    <h1>The <span class="grad">Second Brain</span> Playbook</h1>
+    <p class="lede">A brain that files itself. You talk in plain language; it reads, links,
+      and files into plain Markdown <strong>you own</strong>. This is what to type in each
+      situation — not documentation, a playbook.</p>
+  </div>
+</header>
+
+<!-- THE ONE HABIT -->
+<section class="habit">
+  <div class="habit-card">
+    <span class="tag">The only habit that matters</span>
+    <h2>End every session with <span class="grad">/save</span></h2>
+    <div class="cmd center">
+      <span class="txt" data-cmd="/save">/save</span>
+      <button class="copy" type="button">Copy</button>
+    </div>
+    <p>That's it. Everything else is optional sugar — this one keeps tomorrow's
+      session from starting blind.</p>
+  </div>
+</section>
+
+<!-- SITUATION CARDS -->
+<section class="sec">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">The plays</span>
+      <h2>What to type, when</h2>
+      <p>Each card is a situation you'll actually be in. Match the moment, copy the line, get back to work.</p>
+    </div>
+
+    <div class="cards">
+
+      <!-- read something good -->
+      <article class="play">
+        <div class="when">When you read something good</div>
+        <p class="quote">I want to keep this article / paper / thread.</p>
+        <div class="cmd">
+          <span class="txt" data-cmd="ingest <url or file>">ingest <span class="ph">&lt;url or file&gt;</span></span>
+          <button class="copy" type="button">Copy</button>
+        </div>
+        <p class="desc">It pulls out the people, the ideas, and the claims — makes a page for each,
+          cross-links them, and files them. One source becomes a dozen connected notes instead of a
+          dead PDF in Downloads.</p>
+        <p class="note"><b>Why the inbox?</b> New pages land in your inbox folder on purpose — the
+          system won't guess whether a name is a work contact or a friend. You sort it when you triage.</p>
+      </article>
+
+      <!-- hoarded a pile -->
+      <article class="play">
+        <div class="when">When you've hoarded a pile</div>
+        <p class="quote">I saved ten things this week and read none of them.</p>
+        <div class="cmd">
+          <span class="txt" data-cmd="ingest all of these">ingest all of these</span>
+          <button class="copy" type="button">Copy</button>
+        </div>
+        <p class="desc">Parallel readers digest the whole batch, then cross-reference them against
+          each other so the connections show up. Don't feed them one at a time — this is the
+          weekend move.</p>
+      </article>
+
+      <!-- trying to remember -->
+      <article class="play">
+        <div class="when">When you're trying to remember</div>
+        <p class="quote">Wait — what do I actually know about this?</p>
+        <div class="cmd">
+          <span class="txt" data-cmd="what do you know about <anything>?">what do you know about <span class="ph">&lt;anything&gt;</span>?</span>
+          <button class="copy" type="button">Copy</button>
+        </div>
+        <p class="desc">It checks the recent cache, scans the index, drills into the right pages, and
+          answers with links to the exact notes. Ask your own brain before you ask a search engine.
+          If the answer is good, say <b>"save that"</b> and it becomes a note too.</p>
+      </article>
+
+      <!-- session went well -->
+      <article class="play">
+        <div class="when">When a session went well</div>
+        <p class="quote">That was a good conversation. Don't lose it.</p>
+        <div class="cmd">
+          <span class="txt" data-cmd="/save">/save</span>
+          <button class="copy" type="button">Copy</button>
+        </div>
+        <p class="desc">Turns the conversation into a clean, filed, linked note before you close the
+          laptop. Yes — this is the habit from the top of the page. It's here again because it's the
+          whole game.</p>
+      </article>
+
+      <!-- it actually matters -->
+      <article class="play">
+        <div class="when">When it actually matters</div>
+        <p class="quote">I need to think this through, not blurt an answer.</p>
+        <div class="cmd">
+          <span class="txt" data-cmd="/think <your hard question>">/think <span class="ph">&lt;your hard question&gt;</span></span>
+          <button class="copy" type="button">Copy</button>
+        </div>
+        <p class="desc">Runs a multi-stage reasoning loop over the problem instead of taking the first
+          plausible route. Save it for the decisions you'll still care about next month.</p>
+      </article>
+
+      <!-- researched -->
+      <article class="play">
+        <div class="when">When you want it researched</div>
+        <p class="quote">Go find out about this and don't make me watch.</p>
+        <div class="cmd">
+          <span class="txt" data-cmd="/autoresearch <topic>">/autoresearch <span class="ph">&lt;topic&gt;</span></span>
+          <button class="copy" type="button">Copy</button>
+        </div>
+        <p class="desc">Autonomous rounds of search → fetch → synthesize → file. Come back to a set of
+          fresh, sourced pages already sitting in the vault.</p>
+      </article>
+
+      <!-- graph messy -->
+      <article class="play">
+        <div class="when">When the graph feels messy</div>
+        <p class="quote">Something's tangled in here.</p>
+        <div class="cmd">
+          <span class="txt" data-cmd="lint the wiki">lint the wiki</span>
+          <button class="copy" type="button">Copy</button>
+        </div>
+        <p class="desc">Finds orphan pages and dead links — and the good part, <b>contradictions</b>:
+          when two notes disagree, it flags both, so your brain tells you when it disagrees with itself.</p>
+      </article>
+
+    </div>
+  </div>
+</section>
+
+<!-- WEEKLY RHYTHM -->
+<section class="rhythm">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">The weekly rhythm</span>
+      <h2>Ten minutes, once a week</h2>
+    </div>
+    <div class="steps">
+      <div class="step">
+        <span class="n">1</span>
+        <p><code>ingest all of these</code> — clear the week's saved pile out of your inbox.</p>
+      </div>
+      <div class="step">
+        <span class="n">2</span>
+        <p>Drag the new notes out of the inbox into wherever they belong.</p>
+      </div>
+      <div class="step">
+        <span class="n">3</span>
+        <p><code>lint the wiki</code> — catch orphans, dead links, and contradictions.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW MEMORY WORKS -->
+<section class="sec">
+  <div class="wrap">
+    <div class="sec-head">
+      <span class="eyebrow">How the memory works</span>
+      <h2>So you trust it</h2>
+    </div>
+    <div class="mem">
+      <div class="mcard">
+        <div class="ic">🌅</div>
+        <h3>Session start</h3>
+        <p>It reads a recent-context cache first, so it opens already knowing what you're working on.
+          No re-explaining.</p>
+      </div>
+      <div class="mcard">
+        <div class="ic">🌙</div>
+        <h3>Session end</h3>
+        <p>The cache's date and "recently touched" list refresh on their own; the story part updates
+          when you <code>/save</code>.</p>
+      </div>
+      <div class="mcard">
+        <div class="ic">📄</div>
+        <h3>Plain Markdown</h3>
+        <p>All of it is plain Markdown on your disk. No database, no rented lock-in. If the tools
+          vanished tomorrow, you'd still own every byte.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- WHY BOTHER -->
+<section class="why">
+  <div class="wrap">
+    <span class="eyebrow">Why bother</span>
+    <p>Most note apps are graveyards — you dump things in and never find them again. This one does
+      the linking and the finding <strong>for you</strong>, so the pile stops being dead weight and
+      starts compounding like interest.</p>
+    <p>Day one it's a handful of pages. Month two, you ask your own vault first.</p>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="foot">
+  <p>Built on the <strong style="color:var(--muted)">LLM-wiki pattern</strong> · plain Markdown · yours forever.</p>
+  <p>Point every project at one vault, and read it once to use it everywhere.</p>
+</footer>
+
+<div class="toast" id="toast">Copied to clipboard</div>
+
+<script>
+(function(){
+  var toast = document.getElementById('toast');
+  var toastTimer;
+  function showToast(){
+    toast.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function(){ toast.classList.remove('show'); }, 1600);
+  }
+  function fallbackCopy(text){
+    var ta = document.createElement('textarea');
+    ta.value = text; ta.setAttribute('readonly','');
+    ta.style.position='absolute'; ta.style.left='-9999px';
+    document.body.appendChild(ta); ta.select();
+    try{ document.execCommand('copy'); }catch(e){}
+    document.body.removeChild(ta);
+  }
+  document.querySelectorAll('.copy').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var chip = btn.closest('.cmd');
+      var text = chip.querySelector('.txt').getAttribute('data-cmd');
+      if (navigator.clipboard && navigator.clipboard.writeText){
+        navigator.clipboard.writeText(text).catch(function(){ fallbackCopy(text); });
+      } else { fallbackCopy(text); }
+      var original = btn.textContent;
+      btn.textContent = 'Copied';
+      btn.classList.add('done');
+      showToast();
+      setTimeout(function(){ btn.textContent = original; btn.classList.remove('done'); }, 1400);
+    });
+  });
+})();
+</script>
+</body>
+</html>
