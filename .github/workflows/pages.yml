@@ -1,10 +1,11 @@
-name: Deploy TravelNow to GitHub Pages
+name: Deploy apps to GitHub Pages
 
 on:
   push:
     branches: ["master"]
     paths:
       - "travelnow/**"
+      - "titans/**"
       - ".github/workflows/pages.yml"
   workflow_dispatch:
 
@@ -35,11 +36,18 @@ jobs:
           # Enable Pages (with GitHub Actions as the source) if not already on
           enablement: true
 
+      - name: Assemble site
+        # TravelNow keeps the site root (existing URLs unchanged);
+        # The Titans is served under /titans/
+        run: |
+          mkdir -p _site
+          cp -r travelnow/. _site/
+          cp -r titans _site/titans
+
       - name: Upload site artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          # Publish only the TravelNow app folder as the site root
-          path: ./travelnow
+          path: ./_site
 
       - name: Deploy to GitHub Pages
         id: deployment
