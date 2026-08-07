@@ -58,12 +58,36 @@
     return String(s || 'default').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
   }
 
+  // Read the device safe-area insets (notch / home indicator) so the bubble
+  // never docks under them. Probes env() via a hidden element.
+  var _probe;
+  function safeInsets() {
+    if (!_probe) {
+      _probe = document.createElement('div');
+      _probe.style.cssText = 'position:fixed;top:0;left:0;width:0;height:0;visibility:hidden;pointer-events:none;' +
+        'padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);';
+      document.body.appendChild(_probe);
+    }
+    var s = getComputedStyle(_probe);
+    return {
+      top: parseInt(s.paddingTop, 10) || 0,
+      right: parseInt(s.paddingRight, 10) || 0,
+      bottom: parseInt(s.paddingBottom, 10) || 0,
+      left: parseInt(s.paddingLeft, 10) || 0
+    };
+  }
+
   /* -------------------------------------------------------------- styles */
 
   var CSS = [
     ':host{all:initial}',
-    '*{box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased}',
+    '*{box-sizing:border-box;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased;',
+    '-webkit-tap-highlight-color:transparent;-webkit-touch-callout:none}',
     '.root{position:fixed;inset:0;pointer-events:none;z-index:2147483000}',
+
+    /* dimmed backdrop behind the iOS bottom-sheet */
+    '.scrim{position:absolute;inset:0;background:rgba(0,0,0,.4);opacity:0;pointer-events:none;transition:opacity .32s ease}',
+    '.scrim.on{opacity:1;pointer-events:auto}',
 
     /* floating bubble */
     '.bubble{position:absolute;width:56px;height:56px;border-radius:50%;',
@@ -89,20 +113,25 @@
     '.panel.open{display:flex}',
     '.panel.shown{opacity:1;transform:translateY(0) scale(1)}',
 
+    /* grabber handle (visible in sheet mode) */
+    '.grab{display:none;justify-content:center;padding:8px 0 2px;flex:none;cursor:grab;touch-action:none}',
+    '.grab::before{content:"";width:38px;height:5px;border-radius:3px;background:rgba(255,255,255,.28)}',
+
     '.hd{display:flex;align-items:center;gap:10px;padding:13px 14px;border-bottom:1px solid rgba(255,255,255,.08);flex:none}',
     '.hd .dot{width:9px;height:9px;border-radius:50%;background:#3ddc84;box-shadow:0 0 8px #3ddc84;flex:none}',
-    '.hd .tt{font-size:13px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;min-width:0}',
-    '.hd .tt small{display:block;font-weight:400;font-size:11px;color:#9a9aa2}',
-    '.hd .x{width:30px;height:30px;border-radius:8px;border:0;background:rgba(255,255,255,.06);color:#cfcfd6;cursor:pointer;font-size:16px;flex:none;line-height:1}',
-    '.hd .x:hover{background:rgba(255,255,255,.13)}',
+    '.hd .tt{font-size:14px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;min-width:0}',
+    '.hd .tt small{display:block;font-weight:400;font-size:11.5px;color:#9a9aa2}',
+    '.hd .x{width:34px;height:34px;border-radius:50%;border:0;background:rgba(255,255,255,.08);color:#cfcfd6;cursor:pointer;font-size:16px;flex:none;line-height:1}',
+    '.hd .x:hover{background:rgba(255,255,255,.15)}.hd .x:active{transform:scale(.9)}',
 
-    '.tabs{display:flex;gap:4px;padding:8px 10px;flex:none}',
-    '.tab{flex:1;border:0;background:transparent;color:#9a9aa2;font-size:12px;font-weight:600;padding:8px 6px;border-radius:9px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px}',
-    '.tab:hover{color:#dcdce2;background:rgba(255,255,255,.05)}',
-    '.tab.active{color:#fff;background:rgba(229,9,20,.22)}',
-    '.tab .c{font-size:10px;background:rgba(255,255,255,.14);border-radius:8px;padding:0 5px;min-width:16px}',
+    /* iOS-style segmented control */
+    '.tabs{display:flex;gap:2px;margin:10px 12px 4px;padding:3px;flex:none;background:rgba(255,255,255,.07);border-radius:11px}',
+    '.tab{flex:1;border:0;background:transparent;color:#b6b6be;font-size:12.5px;font-weight:600;padding:8px 6px;min-height:34px;border-radius:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px;transition:background .18s,color .18s}',
+    '.tab:active{transform:scale(.97)}',
+    '.tab.active{color:#fff;background:rgba(120,120,128,.5);box-shadow:0 1px 3px rgba(0,0,0,.28)}',
+    '.tab .c{font-size:10px;background:rgba(229,9,20,.9);color:#fff;border-radius:8px;padding:0 5px;min-width:16px;line-height:15px}',
 
-    '.body{flex:1;overflow-y:auto;overflow-x:hidden;padding:6px 14px 14px}',
+    '.body{flex:1;overflow-y:auto;overflow-x:hidden;padding:6px 14px 14px;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}',
     '.body::-webkit-scrollbar{width:7px}.body::-webkit-scrollbar-thumb{background:rgba(255,255,255,.16);border-radius:4px}',
     '.view{display:none;flex-direction:column;gap:10px}.view.active{display:flex}',
 
@@ -134,15 +163,29 @@
     '.note .del:hover{color:#ff5661}',
     '.empty{color:#7a7a82;font-size:12.5px;text-align:center;padding:26px 10px;line-height:1.5}',
 
-    /* composer */
+    /* composer — note: 16px font-size stops iOS Safari from auto-zooming on focus */
     '.foot{flex:none;padding:10px 12px;border-top:1px solid rgba(255,255,255,.08);display:flex;gap:8px;align-items:flex-end}',
     '.foot textarea{flex:1;resize:none;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.06);color:#fff;',
-    'border-radius:13px;padding:9px 12px;font-size:13.5px;line-height:1.35;max-height:96px;outline:none;font-family:inherit}',
+    'border-radius:19px;padding:10px 14px;font-size:16px;line-height:1.3;max-height:104px;min-height:40px;outline:none;font-family:inherit}',
     '.foot textarea:focus{border-color:rgba(229,9,20,.6)}',
     '.foot textarea::placeholder{color:#7a7a82}',
-    '.foot .send{width:38px;height:38px;flex:none;border:0;border-radius:50%;background:#e50914;color:#fff;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center}',
-    '.foot .send:hover{background:#f6121d}.foot .send:disabled{opacity:.4;cursor:default}',
-    '.stamp{align-self:flex-start;font-size:11px;color:#8a8a92;padding:2px 2px 8px;font-variant-numeric:tabular-nums}'
+    '.foot .send{width:40px;height:40px;flex:none;border:0;border-radius:50%;background:#e50914;color:#fff;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;transition:transform .12s,background .2s}',
+    '.foot .send:hover{background:#f6121d}.foot .send:active{transform:scale(.88)}.foot .send:disabled{opacity:.4;cursor:default}',
+    '.stamp{align-self:flex-start;font-size:11px;color:#8a8a92;padding:2px 2px 8px;font-variant-numeric:tabular-nums}',
+
+    /* ---- iOS bottom-sheet mode (phones / coarse pointers) ---- */
+    '@media (max-width:560px){',
+    '.panel.open{display:flex}',
+    '.panel{left:0 !important;right:0 !important;top:auto !important;bottom:0 !important;',
+    'width:100% !important;max-width:100% !important;height:min(84vh,660px) !important;max-height:88vh !important;',
+    'border-radius:22px 22px 0 0;border-bottom:0;',
+    'transform:translateY(100%);transition:transform .34s cubic-bezier(.32,.72,0,1),opacity .2s}',
+    '.panel.shown{transform:translateY(0)}',
+    '.grab{display:flex}',
+    '.hd{padding-top:6px}',
+    '.foot{padding-bottom:calc(10px + env(safe-area-inset-bottom))}',
+    '.body{padding-bottom:18px}',
+    '}'
   ].join('');
 
   var ICON_BUBBLE =
@@ -235,6 +278,12 @@
     var root = el('div', 'root'); shadow.appendChild(root);
     this.rootEl = root;
 
+    /* dimmed backdrop for iOS sheet mode */
+    var scrim = el('div', 'scrim');
+    scrim.addEventListener('click', function () { self.toggle(false); });
+    root.appendChild(scrim);
+    this.scrimEl = scrim;
+
     /* bubble */
     var bubble = el('div', 'bubble pulse');
     bubble.innerHTML = ICON_BUBBLE + '<span class="badge"></span>';
@@ -247,6 +296,7 @@
     /* panel */
     var panel = el('div', 'panel');
     panel.innerHTML =
+      '<div class="grab" aria-hidden="true"></div>' +
       '<div class="hd"><span class="dot"></span><div class="tt">' + escapeHtml(this.title) +
       '<small>' + escapeHtml(this.subtitle) + '</small></div>' +
       '<button class="x" aria-label="Close">✕</button></div>' +
@@ -270,6 +320,7 @@
     this.inputEl = panel.querySelector('textarea');
     this.sendEl = panel.querySelector('.send');
     this.noteCountEl = panel.querySelector('[data-notecount]');
+    this.grabEl = panel.querySelector('.grab');
 
     /* events */
     bubble.addEventListener('click', function (e) { if (!self._dragged) self.toggle(); });
@@ -287,6 +338,7 @@
     });
 
     this._enableDrag();
+    this._enableSheetDismiss();
     this._renderChat();
     this._renderNotes();
     this._renderCaptions();
@@ -314,9 +366,9 @@
       var p = point(e);
       var dx = p.x - startX, dy = p.y - startY;
       if (Math.abs(dx) + Math.abs(dy) > 4) { moved = true; self._dragged = true; }
-      var w = window.innerWidth, h = window.innerHeight, s = b.offsetWidth;
-      b.style.left = clamp(ox + dx, SNAP_MARGIN, w - s - SNAP_MARGIN) + 'px';
-      b.style.top = clamp(oy + dy, SNAP_MARGIN, h - s - SNAP_MARGIN) + 'px';
+      var w = window.innerWidth, h = window.innerHeight, s = b.offsetWidth, si = safeInsets();
+      b.style.left = clamp(ox + dx, SNAP_MARGIN + si.left, w - s - SNAP_MARGIN - si.right) + 'px';
+      b.style.top = clamp(oy + dy, SNAP_MARGIN + si.top, h - s - SNAP_MARGIN - si.bottom) + 'px';
       b.style.right = 'auto'; b.style.bottom = 'auto';
       if (e.cancelable) e.preventDefault();
     }
@@ -332,17 +384,17 @@
   };
 
   Zinga.prototype._snap = function () {
-    // snap bubble to nearest horizontal edge, remember dock
+    // snap bubble to nearest horizontal edge (clear of safe-area insets), remember dock
     var b = this.bubbleEl, r = b.getBoundingClientRect();
-    var w = window.innerWidth, s = b.offsetWidth;
+    var w = window.innerWidth, s = b.offsetWidth, si = safeInsets();
     var toRight = (r.left + s / 2) > w / 2;
-    var top = clamp(r.top, SNAP_MARGIN, window.innerHeight - s - SNAP_MARGIN);
-    b.style.transition = 'left .22s cubic-bezier(.2,.8,.2,1), top .22s';
+    var top = clamp(r.top, SNAP_MARGIN + si.top, window.innerHeight - s - SNAP_MARGIN - si.bottom);
+    b.style.transition = 'left .24s cubic-bezier(.32,.72,0,1), right .24s cubic-bezier(.32,.72,0,1), top .24s';
     b.style.top = top + 'px';
-    if (toRight) { b.style.left = 'auto'; b.style.right = SNAP_MARGIN + 'px'; }
-    else { b.style.right = 'auto'; b.style.left = SNAP_MARGIN + 'px'; }
+    if (toRight) { b.style.left = 'auto'; b.style.right = (SNAP_MARGIN + si.right) + 'px'; }
+    else { b.style.right = 'auto'; b.style.left = (SNAP_MARGIN + si.left) + 'px'; }
     var self = this;
-    setTimeout(function () { b.style.transition = ''; }, 240);
+    setTimeout(function () { b.style.transition = ''; }, 260);
     this.dock = { side: toRight ? 'right' : 'left', top: top };
     save('dock:' + this.key, this.dock);
     if (this.open) this._reposition();
@@ -350,21 +402,29 @@
 
   Zinga.prototype._restoreDock = function () {
     var d = load('dock:' + this.key, null);
-    var b = this.bubbleEl, s = 56;
+    var b = this.bubbleEl, s = 56, si = safeInsets();
     if (d) {
       this.dock = d;
-      b.style.top = clamp(d.top, SNAP_MARGIN, window.innerHeight - s - SNAP_MARGIN) + 'px';
-      if (d.side === 'left') { b.style.left = SNAP_MARGIN + 'px'; b.style.right = 'auto'; }
-      else { b.style.right = SNAP_MARGIN + 'px'; b.style.left = 'auto'; }
+      b.style.top = clamp(d.top, SNAP_MARGIN + si.top, window.innerHeight - s - SNAP_MARGIN - si.bottom) + 'px';
+      if (d.side === 'left') { b.style.left = (SNAP_MARGIN + si.left) + 'px'; b.style.right = 'auto'; }
+      else { b.style.right = (SNAP_MARGIN + si.right) + 'px'; b.style.left = 'auto'; }
     } else {
       this.dock = { side: 'right', top: Math.round(window.innerHeight * 0.32) };
-      b.style.right = SNAP_MARGIN + 'px';
+      b.style.right = (SNAP_MARGIN + si.right) + 'px';
       b.style.top = this.dock.top + 'px';
     }
   };
 
+  Zinga.prototype._isSheet = function () {
+    return typeof window.matchMedia === 'function' && window.matchMedia('(max-width:560px)').matches;
+  };
+
   Zinga.prototype._reposition = function () {
     if (!this.open) return;
+    if (this._isSheet()) {   // CSS pins the sheet to the bottom; nothing to compute
+      this.panelEl.style.left = this.panelEl.style.top = this.panelEl.style.right = '';
+      return;
+    }
     var b = this.bubbleEl.getBoundingClientRect();
     var p = this.panelEl, pw = p.offsetWidth, ph = p.offsetHeight;
     var w = window.innerWidth, h = window.innerHeight, gap = 12;
@@ -381,17 +441,64 @@
   Zinga.prototype.toggle = function (force) {
     var self = this;
     this.open = (force == null) ? !this.open : force;
+    var sheet = this._isSheet();
     if (this.open) {
       this.panelEl.classList.add('open');
       this._reposition();
-      requestAnimationFrame(function () { self.panelEl.classList.add('shown'); });
+      if (sheet) this.scrimEl.classList.add('on');
+      requestAnimationFrame(function () {
+        // double rAF so the initial off-screen transform paints before the slide-up
+        requestAnimationFrame(function () { self.panelEl.classList.add('shown'); });
+      });
       this.bubbleEl.classList.remove('pulse');
       this.unread = 0; this._updateBadge();
-      setTimeout(function () { self.inputEl.focus(); self._scrollChat(); }, 60);
+      // On a phone sheet, don't yank up the keyboard immediately — let the user read first.
+      if (!sheet) setTimeout(function () { self.inputEl.focus(); }, 60);
+      setTimeout(function () { self._scrollChat(); }, 60);
     } else {
       this.panelEl.classList.remove('shown');
-      setTimeout(function () { self.panelEl.classList.remove('open'); }, 200);
+      this.scrimEl.classList.remove('on');
+      if (this.inputEl) this.inputEl.blur();
+      setTimeout(function () { self.panelEl.classList.remove('open'); }, sheet ? 340 : 200);
     }
+  };
+
+  // Swipe the grabber / header down to dismiss the sheet — the iOS gesture.
+  Zinga.prototype._enableSheetDismiss = function () {
+    var self = this, startY = null, dy = 0, active = false;
+    function handles(target) {
+      return target === self.grabEl || (self.grabEl && self.grabEl.contains(target)) ||
+             target.closest && target.closest('.hd') && !target.closest('.x');
+    }
+    function down(e) {
+      if (!self._isSheet() || !self.open) return;
+      var t = e.target;
+      if (!handles(t)) return;
+      startY = point(e).y; dy = 0; active = true;
+      self.panelEl.style.transition = 'none';
+    }
+    function move(e) {
+      if (!active) return;
+      dy = Math.max(0, point(e).y - startY);
+      self.panelEl.style.transform = 'translateY(' + dy + 'px)';
+      self.scrimEl.style.opacity = String(Math.max(0, 1 - dy / 320));
+      if (e.cancelable) e.preventDefault();
+    }
+    function up() {
+      if (!active) return;
+      active = false;
+      self.panelEl.style.transition = '';
+      self.panelEl.style.transform = '';
+      self.scrimEl.style.opacity = '';
+      if (dy > 110) self.toggle(false);
+    }
+    var opts = { passive: false };
+    this.panelEl.addEventListener('touchstart', down, opts);
+    document.addEventListener('touchmove', move, opts);
+    document.addEventListener('touchend', up);
+    this.panelEl.addEventListener('mousedown', down);
+    document.addEventListener('mousemove', move);
+    document.addEventListener('mouseup', up);
   };
 
   Zinga.prototype._setTab = function (name) {

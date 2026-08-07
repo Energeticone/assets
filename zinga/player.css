@@ -105,7 +105,7 @@ html, body {
 .topbar {
   position: absolute; top: 0; left: 0; right: 0;
   display: flex; align-items: center; gap: 14px;
-  padding: 16px 20px;
+  padding: max(16px, env(safe-area-inset-top)) max(20px, env(safe-area-inset-right)) 16px max(20px, env(safe-area-inset-left));
 }
 .brand { display: flex; align-items: center; gap: 12px; min-width: 0; }
 .logo {
@@ -130,7 +130,7 @@ html, body {
 
 /* brightness (left vertical) */
 .brightness {
-  position: absolute; left: 22px; top: 50%; transform: translateY(-50%);
+  position: absolute; left: max(22px, env(safe-area-inset-left)); top: 50%; transform: translateY(-50%);
   display: flex; flex-direction: column; align-items: center; gap: 12px;
   height: 40%;
 }
@@ -160,7 +160,7 @@ html, body {
 /* bottom */
 .bottom {
   position: absolute; left: 0; right: 0; bottom: 0;
-  padding: 0 20px 16px;
+  padding: 0 max(20px, env(safe-area-inset-right)) max(16px, env(safe-area-inset-bottom)) max(20px, env(safe-area-inset-left));
 }
 .seekbar {
   display: flex; align-items: center; gap: 12px; margin-bottom: 14px;

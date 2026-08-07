@@ -8,6 +8,7 @@ var ASSETS = [
   'zinga.js',
   'showcase.css',
   'icons/icon.svg',
+  'icons/apple-touch-icon.png',
   'manifest.webmanifest'
 ];
 
