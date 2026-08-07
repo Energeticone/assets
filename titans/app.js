@@ -236,6 +236,18 @@
       st.appendChild(b);
     });
 
+    var doc = t.doctrine || [];
+    $("profileDoctrineWrap").hidden = doc.length === 0;
+    var dw = $("profileDoctrine");
+    dw.innerHTML = "";
+    doc.forEach(function (d) {
+      var item = el("div", "doctrine-item");
+      item.appendChild(el("b", null, d.name));
+      item.appendChild(el("p", null, d.reasoning));
+      item.appendChild(el("div", "imp", d.imperative));
+      dw.appendChild(item);
+    });
+
     var custom = isCustom(t.id);
     $("profileEditBtn").hidden = !custom;
     $("profileDeleteBtn").hidden = !custom;
@@ -522,6 +534,390 @@
     });
   }
 
+  /* ── Council: one question, up to ten minds ────────────────── */
+
+  var COUNCIL_MAX = 10;
+  var councilSel = [];        // selected titan ids, in pick order
+  var councilBusy = false;
+
+  function usingClaude() { return settings.engine === "claude" && !!settings.apiKey; }
+
+  function openCouncil(preselectId) {
+    if (preselectId && councilSel.indexOf(preselectId) === -1 && councilSel.length < COUNCIL_MAX) {
+      councilSel.push(preselectId);
+    }
+    $("councilView").hidden = false;
+    $("councilSetup").hidden = false;
+    $("councilReport").hidden = true;
+    $("councilEnginePill").textContent = usingClaude() ? "Claude AI" : "Wisdom engine";
+    $("councilEnginePill").classList.toggle("ai", usingClaude());
+    $("councilResearchRow").style.display = usingClaude() ? "" : "none";
+    $("councilEngineNote").textContent = usingClaude()
+      ? "Each mind deliberates through Claude (" + (settings.model || "claude-opus-5") + ")."
+      : "Offline mode: answers are composed from each mind's curated teachings. Add a Claude API key in Settings for deep AI deliberation.";
+    renderCouncilPicker();
+    $("councilQuestion").focus();
+  }
+  function closeCouncil() {
+    if (councilBusy && !confirm("The council is still deliberating. Leave anyway?")) return;
+    councilBusy = false;
+    $("councilView").hidden = true;
+  }
+
+  function renderCouncilPicker() {
+    var wrap = $("councilPicker");
+    var filter = $("councilFilter").value.trim().toLowerCase();
+    wrap.innerHTML = "";
+    allTitans().forEach(function (t) {
+      if (filter && !matchesSearch(t, filter)) return;
+      var b = el("button", "pick" + (councilSel.indexOf(t.id) !== -1 ? " selected" : ""));
+      b.type = "button";
+      var med = el("div");
+      paintMedallion(med, t, "medallion-sm");
+      b.appendChild(med);
+      var box = el("div");
+      box.appendChild(el("div", "pick-name", t.name));
+      box.appendChild(el("div", "pick-sub", t.epithet || categoryLabel(t.category)));
+      b.appendChild(box);
+      b.appendChild(el("span", "pick-check", "✓"));
+      b.addEventListener("click", function () {
+        var i = councilSel.indexOf(t.id);
+        if (i !== -1) councilSel.splice(i, 1);
+        else if (councilSel.length < COUNCIL_MAX) councilSel.push(t.id);
+        else { toast("The council seats " + COUNCIL_MAX + " at most — remove someone first."); return; }
+        renderCouncilPicker();
+      });
+      wrap.appendChild(b);
+    });
+    $("councilCount").textContent = councilSel.length + " / " + COUNCIL_MAX;
+  }
+
+  function conveneCouncil() {
+    if (councilBusy) return;
+    var q = $("councilQuestion").value.trim();
+    if (!q) { toast("Write the question first."); $("councilQuestion").focus(); return; }
+    var members = councilSel.map(findTitan).filter(Boolean);
+    if (!members.length) { toast("Choose at least one mind for the council."); return; }
+
+    councilBusy = true;
+    $("councilSetup").hidden = true;
+    $("councilReport").hidden = false;
+    $("councilReportQ").textContent = q;
+    $("councilConsolidated").hidden = true;
+    $("councilCopy").hidden = true;
+    $("councilAnswers").innerHTML = "";
+    $("councilScroll").scrollTop = 0;
+
+    var cards = {};
+    members.forEach(function (t) {
+      var card = el("div", "voice-card");
+      var med = el("div");
+      paintMedallion(med, t, "medallion-md");
+      card.appendChild(med);
+      var body = el("div", "voice-body");
+      body.appendChild(el("div", "voice-name", t.name));
+      body.appendChild(el("div", "voice-epithet", t.epithet || ""));
+      var text = el("div", "voice-text pending", "Deliberating…");
+      body.appendChild(text);
+      card.appendChild(body);
+      $("councilAnswers").appendChild(card);
+      cards[t.id] = text;
+    });
+
+    var report = { question: q, when: new Date().toISOString(), engine: usingClaude() ? "claude" : "wisdom", answers: [], summary: "", recommendations: [] };
+
+    var finishAll = function () {
+      councilBusy = false;
+      $("councilStatus").textContent = report.engine === "claude"
+        ? "Deliberation complete."
+        : "Composed offline from the council's curated teachings — add a Claude API key in Settings for deep AI deliberation.";
+      $("councilCopy").hidden = false;
+      save("titans.council.last", report);
+    };
+    var showConsolidated = function (summary, recs) {
+      report.summary = summary;
+      report.recommendations = recs;
+      $("councilSummary").textContent = summary;
+      var ol = $("councilRecs");
+      ol.innerHTML = "";
+      recs.slice(0, 3).forEach(function (r) {
+        var li = el("li");
+        var box = el("div");
+        box.appendChild(el("b", null, r.imperative));
+        box.appendChild(el("span", null, r.reasoning));
+        if (r.drawnFrom) box.appendChild(el("i", "rec-from", "Drawn from " + r.drawnFrom));
+        li.appendChild(box);
+        ol.appendChild(li);
+      });
+      $("councilProvenance").textContent = report.engine === "claude"
+        ? "Synthesized by " + (settings.model || "claude-opus-5") + " from the " + members.length + " answers above."
+        : "Selected from the most question-relevant teachings across the council.";
+      $("councilConsolidated").hidden = false;
+    };
+
+    if (usingClaude()) {
+      runClaudeCouncil(q, members, cards, report, showConsolidated, finishAll);
+    } else {
+      // Offline: stagger the reveals slightly so the council feels alive.
+      members.forEach(function (t, i) {
+        setTimeout(function () {
+          var a = offlineCouncilAnswer(t, q);
+          cards[t.id].classList.remove("pending");
+          cards[t.id].textContent = a;
+          report.answers.push({ id: t.id, name: t.name, text: a });
+          if (report.answers.length === members.length) {
+            var syn = offlineSynthesis(q, members);
+            showConsolidated(syn.summary, syn.recs);
+            finishAll();
+          }
+        }, 350 * (i + 1));
+      });
+      $("councilStatus").textContent = "The council considers your question…";
+    }
+  }
+
+  /* Offline council: per-expert answer + mechanical synthesis. */
+
+  function offlineCouncilAnswer(t, q) {
+    var topicKey = detectTopic(q);
+    var parts = [];
+    if (topicKey && t.wisdom && t.wisdom[topicKey]) parts.push(t.wisdom[topicKey]);
+    var ps = t.principles || [];
+    if (ps.length) {
+      var p = ps[hashCode(t.id + q) % ps.length];
+      parts.push("Hold my teaching of " + p.title.toLowerCase() + " against your question: " + p.text);
+    }
+    if (!parts.length) parts.push((t.greeting || "") + " Bring me the particulars, and I will reason with you from what my life taught me.");
+    return parts.join("\n\n");
+  }
+
+  function offlineSynthesis(q, members) {
+    var qWords = q.toLowerCase().split(/\W+/).filter(function (w) { return w.length > 3; });
+    var scored = [];
+    members.forEach(function (t) {
+      (t.principles || []).forEach(function (p) {
+        var hay = (p.title + " " + p.text).toLowerCase();
+        var score = 0;
+        qWords.forEach(function (w) { if (hay.indexOf(w) !== -1) score += 2; });
+        scored.push({ t: t, p: p, score: score + (hashCode(t.id + p.title) % 3) });
+      });
+    });
+    scored.sort(function (a, b) { return b.score - a.score; });
+    var recs = [], usedTitans = {}, usedTitles = {};
+    for (var i = 0; i < scored.length && recs.length < 3; i++) {
+      var s = scored[i];
+      if (usedTitans[s.t.id] || usedTitles[s.p.title]) continue;
+      usedTitans[s.t.id] = usedTitles[s.p.title] = true;
+      recs.push({ imperative: s.p.title + ".", reasoning: s.p.text, drawnFrom: s.t.name });
+    }
+    var names = members.map(function (t) { return t.name; });
+    var nameStr = names.length > 1 ? names.slice(0, -1).join(", ") + " and " + names[names.length - 1] : names[0];
+    var topicKey = detectTopic(q);
+    var summary = "On this question, " + nameStr + " speak from very different lives yet converge on a common ground: " +
+      (topicKey ? "each treats " + topicKey + " not as a verdict on you but as material to work with. " : "each begins from what is within your power and builds outward. ") +
+      "Where they differ is emphasis — read each voice above for the tension worth keeping. The three imperatives below are the teachings from this council that bear most directly on your question.";
+    return { summary: summary, recs: recs };
+  }
+
+  /* Claude council: optional research pass → parallel expert calls → structured synthesis. */
+
+  function apiCall(body) {
+    return fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        "x-api-key": settings.apiKey,
+        "anthropic-version": "2023-06-01",
+        "anthropic-dangerous-direct-browser-access": "true",
+      },
+      body: JSON.stringify(body),
+    }).then(function (res) {
+      if (!res.ok) {
+        return res.text().then(function (t) {
+          var msg = "API error " + res.status;
+          try { var p = JSON.parse(t); if (p.error && p.error.message) msg += ": " + p.error.message; } catch (e) { /* ignore */ }
+          throw new Error(msg);
+        });
+      }
+      return res.json();
+    });
+  }
+
+  function textOf(response) {
+    return (response.content || [])
+      .filter(function (b) { return b.type === "text"; })
+      .map(function (b) { return b.text; })
+      .join("");
+  }
+
+  function runClaudeCouncil(q, members, cards, report, showConsolidated, finishAll) {
+    var model = settings.model || "claude-opus-5";
+    var doResearch = $("councilResearch").checked;
+    var brief = "";
+
+    var setStatus = function (s) { $("councilStatus").textContent = s; };
+
+    var research = function () {
+      if (!doResearch) return Promise.resolve();
+      setStatus("Researching the question…");
+      var messages = [{ role: "user", content: "Research this question thoroughly for a panel of advisors about to deliberate on it. Gather current facts, relevant data, and context. Then produce a neutral research brief (300-500 words) they can rely on:\n\n" + q }];
+      var step = function (msgs, depth) {
+        return apiCall({
+          model: model, max_tokens: 3000, messages: msgs,
+          tools: [{ type: "web_search_20260209", name: "web_search", max_uses: 4 }],
+        }).then(function (r) {
+          if (r.stop_reason === "pause_turn" && depth < 3) {
+            return step(msgs.concat([{ role: "assistant", content: r.content }]), depth + 1);
+          }
+          brief = textOf(r);
+        });
+      };
+      return step(messages, 0).catch(function (e) {
+        brief = "";
+        toast("Research pass failed (" + e.message + ") — proceeding without it.");
+      });
+    };
+
+    var askExpert = function (t) {
+      var sys = personaSystemPrompt(t) + "\n\nCouncil mode: you are one voice on a council convened for a single question. Imagine you are alive today, with your full life, works, and principles behind you and a clear view of the modern world. Think deeply about how *you specifically* would weigh this question — reason from your first principles and your lived experience, not from generic advice. Give your considered counsel in two to four short paragraphs: your reading of the situation, the principle you would apply, and what you would do in the asker's place. Speak only for yourself; do not address the other council members.";
+      var content = brief
+        ? "The question before the council:\n\n" + q + "\n\nA neutral research brief prepared for the council:\n\n" + brief
+        : "The question before the council:\n\n" + q;
+      return apiCall({
+        model: model, max_tokens: 1500, system: sys,
+        messages: [{ role: "user", content: content }],
+      }).then(function (r) {
+        if (r.stop_reason === "refusal") throw new Error("declined to answer this question");
+        var text = textOf(r);
+        if (!text) throw new Error("empty reply");
+        return text;
+      });
+    };
+
+    // Small promise pool: 3 experts deliberate at a time.
+    var queue = members.slice();
+    var done = 0;
+    var runNext = function () {
+      var t = queue.shift();
+      if (!t) return Promise.resolve();
+      return askExpert(t).then(function (text) {
+        cards[t.id].classList.remove("pending");
+        cards[t.id].textContent = text;
+        report.answers.push({ id: t.id, name: t.name, text: text });
+      }).catch(function (e) {
+        cards[t.id].classList.remove("pending");
+        cards[t.id].classList.add("errored");
+        cards[t.id].textContent = t.name + " could not be reached: " + e.message;
+      }).then(function () {
+        done++;
+        setStatus("Hearing the council… " + done + " / " + members.length);
+        return runNext();
+      });
+    };
+
+    var synthesize = function () {
+      if (!report.answers.length) {
+        setStatus("No answers could be gathered — check your API key or try the offline engine.");
+        councilBusy = false;
+        return;
+      }
+      setStatus("Consolidating the council's counsel…");
+      var schema = {
+        type: "object", additionalProperties: false,
+        required: ["consolidated", "recommendations"],
+        properties: {
+          consolidated: { type: "string", description: "Consolidated view: where the council converges, where it split, and the overall reading. 150-250 words." },
+          recommendations: {
+            type: "array",
+            items: {
+              type: "object", additionalProperties: false,
+              required: ["imperative", "reasoning", "drawnFrom"],
+              properties: {
+                imperative: { type: "string", description: "Short bold command, e.g. 'Decide by irreversibility.'" },
+                reasoning: { type: "string", description: "2-3 sentences: the observation and its consequence for the asker." },
+                drawnFrom: { type: "string", description: "Which council voices this draws on, e.g. 'Marcus Aurelius and Charlie Munger'" },
+              },
+            },
+            description: "Exactly 3 recommendations, in priority order.",
+          },
+        },
+      };
+      var transcript = report.answers.map(function (a) { return "── " + a.name + " ──\n" + a.text; }).join("\n\n");
+      return apiCall({
+        model: model, max_tokens: 2500,
+        system: "You are the recorder of a council of great minds. Consolidate their individual answers faithfully — first principles method: for each recommendation state one imperative, then the observation and consequence that justify it, crediting the voices it draws from. Do not invent positions no member expressed.",
+        messages: [{ role: "user", content: "The question:\n\n" + q + (brief ? "\n\nResearch brief the council received:\n\n" + brief : "") + "\n\nThe council's answers:\n\n" + transcript + "\n\nProduce the consolidated view and exactly three recommendations." }],
+        output_config: { format: { type: "json_schema", schema: schema } },
+      }).then(function (r) {
+        var parsed;
+        try { parsed = JSON.parse(textOf(r)); } catch (e) { throw new Error("could not parse synthesis"); }
+        showConsolidated(parsed.consolidated, (parsed.recommendations || []).slice(0, 3));
+      }).catch(function (e) {
+        // Fall back to the mechanical synthesis rather than losing the session.
+        var syn = offlineSynthesis(q, members);
+        showConsolidated(syn.summary, syn.recs);
+        toast("AI synthesis failed (" + e.message + ") — showing teaching-based synthesis.");
+      });
+    };
+
+    research()
+      .then(function () {
+        setStatus("Hearing the council… 0 / " + members.length);
+        return Promise.all([runNext(), runNext(), runNext()]);
+      })
+      .then(synthesize)
+      .then(finishAll)
+      .catch(function (e) {
+        setStatus("Council failed: " + e.message);
+        councilBusy = false;
+      });
+  }
+
+  function copyCouncilReport() {
+    var r = load("titans.council.last", null);
+    if (!r) return;
+    var md = "# Council report — RAWFOTRA x1\n\n**Question:** " + r.question + "\n\n" +
+      r.answers.map(function (a) { return "## " + a.name + "\n\n" + a.text; }).join("\n\n") +
+      "\n\n## Consolidated counsel\n\n" + r.summary + "\n\n### Three recommendations\n\n" +
+      r.recommendations.map(function (rec, i) {
+        return (i + 1) + ". **" + rec.imperative + "** " + rec.reasoning + (rec.drawnFrom ? " _(drawn from " + rec.drawnFrom + ")_" : "");
+      }).join("\n");
+    (navigator.clipboard ? navigator.clipboard.writeText(md) : Promise.reject())
+      .then(function () { toast("Report copied as Markdown."); })
+      .catch(function () { toast("Could not copy — clipboard unavailable."); });
+  }
+
+  /* ── Codex & doctrine ──────────────────────────────────────── */
+
+  function renderCodex() {
+    var codex = base.codex || [];
+    $("codexBtn").hidden = codex.length === 0;
+    if (!codex.length) return;
+    var wrap = $("codexList");
+    wrap.innerHTML = "";
+    codex.forEach(function (c) {
+      var item = el("div", "codex-item");
+      item.appendChild(el("div", "codex-name", c.name));
+      item.appendChild(el("p", "codex-reason", c.reasoning));
+      item.appendChild(el("div", "codex-imp", c.imperative));
+      if (c.exemplars && c.exemplars.length) {
+        var ex = el("div", "codex-ex");
+        c.exemplars.forEach(function (id) {
+          var t = findTitan(id);
+          if (!t) return;
+          var b = el("button", null, t.name);
+          b.addEventListener("click", function () {
+            closeOverlays();
+            openProfile(id);
+          });
+          ex.appendChild(b);
+        });
+        item.appendChild(ex);
+      }
+      wrap.appendChild(item);
+    });
+  }
+
   /* ── Settings ──────────────────────────────────────────────── */
 
   function openSettings() {
@@ -736,7 +1132,7 @@
   /* ── Overlay & routing plumbing ────────────────────────────── */
 
   function closeOverlays() {
-    ["profileOverlay", "settingsOverlay", "expertOverlay"].forEach(function (id) { $(id).hidden = true; });
+    ["profileOverlay", "settingsOverlay", "expertOverlay", "codexOverlay"].forEach(function (id) { $(id).hidden = true; });
   }
 
   function autoGrow(ta) {
@@ -769,6 +1165,26 @@
     $("settingsBtn").addEventListener("click", openSettings);
     $("addExpertBtn").addEventListener("click", function () { openExpertForm(null); });
     $("heroAddExpert").addEventListener("click", function () { openExpertForm(null); });
+    $("councilBtn").addEventListener("click", function () { openCouncil(); });
+    $("heroCouncil").addEventListener("click", function () { openCouncil(); });
+    $("codexBtn").addEventListener("click", function () { $("codexOverlay").hidden = false; });
+    $("councilBack").addEventListener("click", closeCouncil);
+    $("councilFilter").addEventListener("input", renderCouncilPicker);
+    $("councilConvene").addEventListener("click", conveneCouncil);
+    $("councilCopy").addEventListener("click", copyCouncilReport);
+    $("councilAgain").addEventListener("click", function () {
+      if (councilBusy) { toast("The council is still deliberating."); return; }
+      $("councilReport").hidden = true;
+      $("councilSetup").hidden = false;
+      $("councilScroll").scrollTop = 0;
+    });
+    $("profileCouncilBtn").addEventListener("click", function () {
+      if (!currentTitan) return;
+      var id = currentTitan.id;
+      closeOverlays();
+      openCouncil(id);
+      toast(findTitan(id).name + " takes a council seat.");
+    });
     document.querySelectorAll("[data-open=add]").forEach(function (b) {
       b.addEventListener("click", function () { openExpertForm(null); });
     });
@@ -782,9 +1198,10 @@
     });
     document.addEventListener("keydown", function (e) {
       if (e.key === "Escape") {
-        var anyOverlay = ["profileOverlay", "settingsOverlay", "expertOverlay"].some(function (id) { return !$(id).hidden; });
+        var anyOverlay = ["profileOverlay", "settingsOverlay", "expertOverlay", "codexOverlay"].some(function (id) { return !$(id).hidden; });
         if (anyOverlay) closeOverlays();
         else if (!$("chatView").hidden) closeChat();
+        else if (!$("councilView").hidden) closeCouncil();
       }
     });
 
@@ -845,6 +1262,7 @@
   renderChips();
   renderGrid();
   renderDaily();
+  renderCodex();
   wire();
   handleHash();
 })();

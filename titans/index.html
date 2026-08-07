@@ -3,13 +3,13 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<title>The Titans — Talk with History's Greatest Minds</title>
-<meta name="description" content="Explore 50+ legendary mentors — philosophers, strategists, scientists, artists — and have 1-on-1 mentoring conversations with each of them. Add your own modern-day experts." />
+<title>RAWFOTRA x1 — Counsel from History's Greatest Minds</title>
+<meta name="description" content="Explore 50+ legendary minds, chat 1-on-1 with each, or convene a council: ask one question, pick up to ten experts, and receive their individual answers plus a consolidated view with three recommendations. Expandable with your own modern-day experts." />
 <meta name="theme-color" content="#0f0d0a" />
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%8F%9B%EF%B8%8F%3C/text%3E%3C/svg%3E" />
 <link rel="stylesheet" href="styles.css" />
-<meta property="og:title" content="The Titans — Talk with History's Greatest Minds" />
-<meta property="og:description" content="1-on-1 mentoring conversations with 50+ legendary figures, from Marcus Aurelius to Marie Curie. Expandable with your own modern experts." />
+<meta property="og:title" content="RAWFOTRA x1 — Counsel from History's Greatest Minds" />
+<meta property="og:description" content="Chat 1-on-1 with 50+ legendary figures, or convene a council of up to ten minds on one question — individual answers, a consolidated view, three recommendations." />
 <meta property="og:type" content="website" />
 </head>
 <body>
@@ -18,13 +18,15 @@
 <header class="nav">
   <a class="brand" href="#" id="brandHome">
     <span class="brand-mark">🏛️</span>
-    <span class="brand-word">THE <b>TITANS</b></span>
+    <span class="brand-word">RAWFOTRA <b>x1</b></span>
   </a>
   <div class="nav-search">
-    <input id="searchInput" type="search" placeholder="Search titans, ideas, eras…" autocomplete="off" aria-label="Search titans" />
+    <input id="searchInput" type="search" placeholder="Search minds, ideas, eras…" autocomplete="off" aria-label="Search minds" />
   </div>
   <nav class="nav-actions">
-    <button class="btn btn-ghost" id="surpriseBtn" title="Open a random titan">✦ Surprise me</button>
+    <button class="btn btn-gold-outline" id="councilBtn" title="Ask one question to up to ten minds">⚖ Council</button>
+    <button class="btn btn-ghost" id="codexBtn" title="First principles of the pantheon" hidden>Codex</button>
+    <button class="btn btn-ghost" id="surpriseBtn" title="Open a random mind">✦ Surprise</button>
     <button class="btn btn-ghost" id="settingsBtn" title="Chat engine settings">⚙ Settings</button>
     <button class="btn btn-gold" id="addExpertBtn">+ Add expert</button>
   </nav>
@@ -34,8 +36,9 @@
 <section class="hero">
   <div class="hero-copy">
     <h1>Counsel from the greatest minds<br /><em>who ever lived</em></h1>
-    <p class="hero-sub">Choose a mentor. Ask anything. Philosophers, strategists, scientists, artists —
-      each one answers in their own voice, drawing on their life and teachings.
+    <p class="hero-sub">Choose a mentor and ask anything — or put one question to a
+      <button class="linklike" id="heroCouncil">council of up to ten minds</button> and receive each expert's
+      considered answer plus a consolidated view with three recommendations.
       And when you're ready, <button class="linklike" id="heroAddExpert">add your own modern-day experts</button>.</p>
   </div>
   <aside class="daily card" id="dailyWisdom" aria-label="Daily wisdom">
@@ -56,8 +59,82 @@
 </main>
 
 <footer class="foot">
-  <p>A self-contained replica of the “explore the Titans” experience — every mentor is data, so the roster is yours to grow.</p>
+  <p>RAWFOTRA x1 — every mentor is data, so the roster is yours to grow.</p>
+  <p class="foot-fine">Doctrine &amp; codex derivation method adapted from
+    <a href="https://aifirstprinciples.org" target="_blank" rel="noopener">AI First Principles</a> (CC BY 4.0);
+    all principle content here is original writing distilled from each figure's documented life and work.</p>
 </footer>
+
+<!-- ══════════════ COUNCIL ══════════════ -->
+<div class="chatwrap" id="councilView" hidden>
+  <header class="chat-head">
+    <button class="btn btn-ghost" id="councilBack">← Explore</button>
+    <div class="chat-id">
+      <div>
+        <div class="chat-name">The Council</div>
+        <div class="chat-epithet">one question · many minds · three recommendations</div>
+      </div>
+    </div>
+    <div class="chat-tools">
+      <span class="engine-pill" id="councilEnginePill"></span>
+    </div>
+  </header>
+
+  <div class="chat-scroll" id="councilScroll">
+    <!-- Stage 1: setup -->
+    <section class="council-setup" id="councilSetup">
+      <label class="field council-q">The question before the council *
+        <textarea id="councilQuestion" rows="3" placeholder="e.g. Should I leave my stable job to start a company in a downturn?"></textarea>
+      </label>
+      <div class="council-pickhead">
+        <h3>Choose your council <span id="councilCount" class="council-count">0 / 10</span></h3>
+        <input id="councilFilter" type="search" placeholder="Filter minds…" aria-label="Filter minds" />
+      </div>
+      <div class="council-picker" id="councilPicker"></div>
+      <label class="council-research" id="councilResearchRow">
+        <input type="checkbox" id="councilResearch" />
+        <span><b>Deep research pass</b> — before the council deliberates, run live web research on the question and brief every member (Claude engine only; uses your API key).</span>
+      </label>
+      <div class="council-actions">
+        <span class="fine" id="councilEngineNote"></span>
+        <button class="btn btn-gold btn-big" id="councilConvene">Convene the council →</button>
+      </div>
+    </section>
+
+    <!-- Stage 2: report -->
+    <section class="council-report" id="councilReport" hidden>
+      <div class="council-qhead">
+        <div class="daily-label">The question</div>
+        <h2 id="councilReportQ"></h2>
+        <div class="fine" id="councilStatus"></div>
+      </div>
+      <div id="councilAnswers"></div>
+      <div class="council-consolidated card" id="councilConsolidated" hidden>
+        <h3>Consolidated counsel</h3>
+        <p id="councilSummary"></p>
+        <h3>Three recommendations</h3>
+        <ol class="recs" id="councilRecs"></ol>
+        <div class="fine" id="councilProvenance"></div>
+      </div>
+      <div class="council-actions">
+        <button class="btn btn-ghost" id="councilCopy" hidden>Copy report</button>
+        <button class="btn btn-ghost" id="councilAgain">New question</button>
+      </div>
+    </section>
+  </div>
+</div>
+
+<!-- ══════════════ CODEX MODAL ══════════════ -->
+<div class="overlay" id="codexOverlay" hidden>
+  <section class="modal codex" role="dialog" aria-modal="true" aria-labelledby="codexTitle">
+    <button class="modal-x" data-close aria-label="Close">✕</button>
+    <h2 id="codexTitle">The Codex</h2>
+    <p class="fine">First principles of the pantheon — distilled from across the fifty-one minds, each stated as
+      an observation, its consequence, and one imperative. Derived with the method of
+      <a href="https://aifirstprinciples.org" target="_blank" rel="noopener">AI First Principles</a>.</p>
+    <div id="codexList"></div>
+  </section>
+</div>
 
 <!-- ══════════════ PROFILE MODAL ══════════════ -->
 <div class="overlay" id="profileOverlay" hidden>
@@ -78,6 +155,10 @@
       <div>
         <h3>Core teachings</h3>
         <ol class="principles" id="profilePrinciples"></ol>
+        <div id="profileDoctrineWrap" hidden>
+          <h3>First principles</h3>
+          <div class="doctrine" id="profileDoctrine"></div>
+        </div>
       </div>
       <div>
         <h3>Known for</h3>
@@ -89,6 +170,7 @@
     <div class="profile-foot">
       <button class="btn btn-ghost" id="profileEditBtn" hidden>Edit</button>
       <button class="btn btn-ghost" id="profileDeleteBtn" hidden>Remove</button>
+      <button class="btn btn-ghost" id="profileCouncilBtn">Add to council</button>
       <button class="btn btn-gold btn-big" id="profileChatBtn">Begin conversation →</button>
     </div>
   </section>

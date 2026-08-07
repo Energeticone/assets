@@ -68,7 +68,10 @@ a { color: var(--gold); }
 .btn-ghost:hover { color: var(--ink); border-color: var(--gold-soft); }
 .btn-gold { background: linear-gradient(160deg, #e0bd52, #b48c28); color: #241b06; font-weight: 600; }
 .btn-gold:hover { filter: brightness(1.08); }
+.btn-gold-outline { border: 1px solid var(--gold-soft); color: var(--gold); }
+.btn-gold-outline:hover { background: var(--gold-dim); }
 .btn-big { padding: 12px 26px; font-size: 17px; }
+.btn[disabled] { opacity: 0.5; cursor: not-allowed; }
 
 /* ── Hero ── */
 .hero {
@@ -258,6 +261,84 @@ a { color: var(--gold); }
 .wisdom-details { border: 1px solid var(--line); border-radius: 10px; padding: 12px 16px; }
 .wisdom-details summary { cursor: pointer; color: var(--ink-dim); }
 #wisdomFields { display: flex; flex-direction: column; gap: 10px; margin-top: 12px; }
+
+/* ── Council ── */
+.council-setup, .council-report { max-width: 860px; margin: 0 auto; padding: 30px 22px 50px; }
+.council-q textarea { font-size: 16.5px; }
+.council-pickhead { display: flex; align-items: center; justify-content: space-between; gap: 14px; margin: 22px 0 12px; flex-wrap: wrap; }
+.council-pickhead h3 { font-family: var(--sans); font-size: 13px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--gold-soft); }
+.council-count { color: var(--ink-dim); margin-left: 8px; letter-spacing: normal; }
+.council-pickhead input {
+  background: var(--bg-card); border: 1px solid var(--line); border-radius: 999px;
+  padding: 7px 14px; outline: none; min-width: 200px;
+}
+.council-picker {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(205px, 1fr)); gap: 8px;
+  max-height: 40vh; overflow-y: auto; padding: 4px;
+  border: 1px solid var(--line-soft); border-radius: 12px;
+}
+.pick {
+  display: flex; align-items: center; gap: 10px; text-align: left;
+  padding: 8px 10px; border-radius: 10px; border: 1px solid transparent; transition: all 0.12s;
+}
+.pick:hover { background: var(--bg-card-hover); }
+.pick.selected { border-color: var(--gold-soft); background: var(--gold-dim); }
+.pick .medallion { width: 30px; height: 30px; font-size: 12px; }
+.pick-name { font-size: 13.5px; line-height: 1.2; }
+.pick-sub { font-size: 11px; color: var(--ink-faint); }
+.pick-check { margin-left: auto; color: var(--gold); opacity: 0; font-size: 15px; }
+.pick.selected .pick-check { opacity: 1; }
+.council-research { display: flex; gap: 10px; align-items: flex-start; margin-top: 18px; color: var(--ink-dim); font-size: 13.5px; cursor: pointer; max-width: 62ch; }
+.council-research input { accent-color: var(--gold); margin-top: 3px; }
+.council-actions { display: flex; align-items: center; justify-content: flex-end; gap: 16px; margin-top: 22px; flex-wrap: wrap; }
+
+.council-qhead { margin-bottom: 26px; }
+.council-qhead h2 { font-size: 27px; font-weight: 500; line-height: 1.25; }
+.voice-card { display: flex; gap: 16px; margin-bottom: 18px; }
+.voice-body {
+  flex: 1; background: linear-gradient(180deg, var(--bg-card), var(--bg-raise));
+  border: 1px solid var(--line); border-radius: var(--radius); padding: 16px 20px;
+}
+.voice-name { font-family: var(--serif); font-size: 19px; }
+.voice-epithet { font-size: 12px; color: var(--gold-soft); font-style: italic; margin-bottom: 8px; }
+.voice-text { font-family: var(--serif); font-size: 16.5px; line-height: 1.55; white-space: pre-wrap; color: var(--ink); }
+.voice-text.pending { color: var(--ink-faint); font-style: italic; }
+.voice-text.errored { color: var(--danger); font-family: var(--sans); font-size: 13.5px; }
+.council-consolidated { padding: 22px 26px; margin-top: 26px; border-color: var(--gold-soft); }
+.council-consolidated h3 {
+  font-family: var(--sans); font-size: 13px; letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--gold-soft); margin: 0 0 10px;
+}
+.council-consolidated h3 + p { margin-bottom: 18px; color: var(--ink); white-space: pre-wrap; }
+.recs { list-style: none; counter-reset: r; display: flex; flex-direction: column; gap: 14px; margin-bottom: 12px; }
+.recs li { display: flex; gap: 14px; counter-increment: r; }
+.recs li::before {
+  content: counter(r);
+  font-family: var(--serif); font-size: 22px; color: var(--gold);
+  min-width: 30px; height: 30px; text-align: center; line-height: 30px;
+  border: 1px solid var(--gold-soft); border-radius: 50%;
+}
+.recs b { display: block; font-size: 16px; }
+.recs span { color: var(--ink-dim); font-size: 14px; }
+.recs .rec-from { display: block; margin-top: 3px; font-size: 12px; color: var(--ink-faint); font-style: italic; }
+
+/* ── Codex & doctrine ── */
+.codex-item { border-top: 1px solid var(--line-soft); padding: 16px 0; }
+.codex-item:first-child { border-top: none; }
+.codex-name { font-family: var(--serif); font-size: 21px; color: var(--ink); }
+.codex-reason { color: var(--ink-dim); font-size: 14.5px; margin: 6px 0 8px; }
+.codex-imp { font-weight: 700; color: var(--gold); }
+.codex-ex { margin-top: 8px; display: flex; flex-wrap: wrap; gap: 6px; }
+.codex-ex button {
+  font-size: 12px; color: var(--ink-dim); border: 1px solid var(--line);
+  border-radius: 999px; padding: 2px 10px;
+}
+.codex-ex button:hover { color: var(--gold); border-color: var(--gold-soft); }
+.doctrine { display: flex; flex-direction: column; gap: 12px; }
+.doctrine-item b { display: block; font-size: 15px; }
+.doctrine-item p { color: var(--ink-dim); font-size: 13.5px; }
+.doctrine-item .imp { color: var(--gold); font-weight: 700; font-size: 13.5px; }
+.foot-fine { margin-top: 8px; font-size: 11.5px; color: var(--ink-faint); }
 
 /* toast */
 .toast {
