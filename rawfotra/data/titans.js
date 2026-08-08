@@ -48,7 +48,145 @@ window.TITANS_DATA = {
       "label": "Modern Titans"
     }
   ],
-  codex: [],
+  codex: [
+    {
+      "name": "Govern the Inner Ground",
+      "reasoning": "A slave, an emperor, a court sage, and a prisoner all located freedom in the one territory no rival could seize: their own judgments and responses. Confucius corrected himself before presuming to order a state, and Mandela mastered his anger before he could master a nation's. Every later principle stands on this ground, because effort spent on what others control is effort already lost.",
+      "imperative": "Before responding to any event, separate what is yours to decide from what is not, and commit your energy only to the first column.",
+      "exemplars": [
+        "epictetus",
+        "marcus-aurelius",
+        "confucius",
+        "nelson-mandela"
+      ]
+    },
+    {
+      "name": "Hunt Your Blind Spots",
+      "reasoning": "A governed mind still deceives itself, and the pantheon's clearest thinkers treated their own error as primary data: Socrates built a method on admitted ignorance, Darwin logged every fact that told against his theory, Feynman warned that the self is the easiest person to fool, and Hypatia handled mistakes as information rather than shame. They advanced because they found their weak points before events did. Unexamined certainty hardens into the exact wall that stops growth.",
+      "imperative": "Write down what you do not know and the strongest evidence against your position before you defend it to anyone.",
+      "exemplars": [
+        "socrates",
+        "richard-feynman",
+        "charles-darwin",
+        "hypatia"
+      ]
+    },
+    {
+      "name": "Observe at the Source",
+      "reasoning": "Honesty about ignorance forces the next step: going to look. Leonardo dissected bodies rather than trust the old texts, Twain apprenticed on the river he would later write, Roosevelt traveled to inspect conditions with her own eyes, and Austen and Shakespeare studied living people rather than received types. Judgment formed at a distance inherits the distance's errors.",
+      "imperative": "Go to the actual place, person, or material and examine it firsthand before you allow yourself a conclusion.",
+      "exemplars": [
+        "leonardo-da-vinci",
+        "mark-twain",
+        "eleanor-roosevelt",
+        "jane-austen",
+        "william-shakespeare"
+      ]
+    },
+    {
+      "name": "Imagine, Then Prove",
+      "reasoning": "Raw observation becomes discovery only when vision runs ahead of it: Lovelace saw a universal machine inside a calculator, Tesla assembled whole inventions in his head, and Einstein rode pictures in his mind years before instruments could follow. Yet each submitted the vision to verification, in the spirit of Newton's demand for demonstration over speculation. Imagination without proof is fantasy, and proof without imagination is clerical work.",
+      "imperative": "Let your imagination propose past the current evidence, then design a test that could destroy the proposal and run it.",
+      "exemplars": [
+        "ada-lovelace",
+        "nikola-tesla",
+        "albert-einstein",
+        "isaac-newton"
+      ]
+    },
+    {
+      "name": "Build the Daily Engine",
+      "reasoning": "Insight only compounds when a routine carries it, and across every field the giants ran on structure rather than mood: Aristotle located excellence in repeated action, Franklin engineered his virtues into trackable habits, and Bryant, Michelangelo, and Mozart made mastery look effortless only because decades of unglamorous practice ran underneath. Ability that is not embedded in a daily practice is left to chance. What you refuse to schedule, you have quietly decided to abandon.",
+      "imperative": "Convert each capacity you want into a small practice you repeat every day, and grade yourself on attendance rather than inspiration.",
+      "exemplars": [
+        "aristotle",
+        "benjamin-franklin",
+        "kobe-bryant",
+        "michelangelo-buonarroti",
+        "wolfgang-amadeus-mozart"
+      ]
+    },
+    {
+      "name": "Subtract to the Essential",
+      "reasoning": "A daily engine stalls when it is loaded with everything, and the masters won by removal: Musashi eliminated wasted motion, Ford stripped every unneeded part, Jobs measured focus by what he refused, Laozi found usefulness in what was left empty, and Seneca treated hours as the one stock never replenished. Each kept thing bills attention, and attention is the scarcest input to great work.",
+      "imperative": "Audit your commitments and designs on a fixed schedule and delete everything that does not serve the central aim.",
+      "exemplars": [
+        "miyamoto-musashi",
+        "henry-ford",
+        "steve-jobs",
+        "laozi",
+        "seneca-the-younger"
+      ]
+    },
+    {
+      "name": "Begin While Afraid",
+      "reasoning": "A focused capacity still needs a launch, and in these lives readiness never arrived before action did: Joan marched at seventeen on conviction alone, van Gogh painted against a chorus of doubt that included his own, Angelou named courage the virtue that unlocks all the others, and Alexander charged at the head of his own line. Fear resolved through motion, not before it. Past a certain point, further deliberation is refusal wearing a disguise.",
+      "imperative": "Once the essentials are clear and fear is the main thing remaining, start, and let competence and confidence accumulate from the doing.",
+      "exemplars": [
+        "joan-of-arc",
+        "vincent-van-gogh",
+        "maya-angelou",
+        "alexander-the-great"
+      ]
+    },
+    {
+      "name": "Choose Ground and Hour",
+      "reasoning": "Courage begins campaigns, but position wins them: Sun Tzu settled contests before they were fought, Napoleon prepared until opportunity found him ready, Elizabeth wielded delay as a weapon, Munger waited years and then committed at scale, and Caesar's famous speed decided things only because his positioning made it decisive. Boldness in these lives was never raw; it was aimed. The same effort is waste at the wrong point and victory at the right one.",
+      "imperative": "Before committing your strength, arrange the terrain, the timing, and your reserves so the outcome is nearly settled in advance.",
+      "exemplars": [
+        "sun-tzu",
+        "napoleon-bonaparte",
+        "elizabeth-i",
+        "charlie-munger",
+        "julius-caesar"
+      ]
+    },
+    {
+      "name": "Work the Wound",
+      "reasoning": "Even a well-positioned effort meets resistance, and the pantheon's answer was conversion rather than avoidance: Kahlo painted from a broken body, Beethoven composed through encroaching deafness, Hawking traced his depth to his constraint, Edison counted every failed trial as a finding, and Hannibal kept an army whole through years of setback. None escaped their obstacle; each turned it into subject matter, method, or resolve. The barrier that cannot be removed is raw stock waiting to be worked.",
+      "imperative": "When an obstacle cannot be cleared, extract from it a lesson, a technique, or a work you could not have produced without it.",
+      "exemplars": [
+        "frida-kahlo",
+        "ludwig-van-beethoven",
+        "stephen-hawking",
+        "thomas-edison",
+        "hannibal-barca"
+      ]
+    },
+    {
+      "name": "Win the Person, Not the Point",
+      "reasoning": "Endurance through struggle eventually brings you to other people, where the pantheon's victors converted rather than crushed: Lincoln put persuasion ahead of force and drafted rivals into his cabinet, Ginsburg moved a hostile court one careful case at a time without inflaming it, Cleopatra negotiated in her counterpart's own language, and Churchill armed a nation with sentences. A defeated opponent plans a rematch, while a persuaded one joins the work. Durable outcomes are built from converted allies.",
+      "imperative": "In any conflict, address the other side's interests and dignity first, so that agreeing with you becomes an easy door to walk through.",
+      "exemplars": [
+        "abraham-lincoln",
+        "ruth-bader-ginsburg",
+        "cleopatra-vii",
+        "winston-churchill"
+      ]
+    },
+    {
+      "name": "Point the Work Outward",
+      "reasoning": "Once others are won, the question becomes whom the work is for, and the most enduring builders aimed it beyond themselves: Curie refused to profit from her discovery so anyone could use it, Carver rebuilt depleted soil into livelihoods for poor farmers, Carnegie declared surplus wealth a trust to be administered for others, and Tolstoy left the study for the field. Work aimed only at its maker shrinks to the maker's size. Work aimed at a real need outlives its author.",
+      "imperative": "For every project, name the specific people it serves beyond yourself, and let their need rather than your acclaim set its direction.",
+      "exemplars": [
+        "marie-curie",
+        "george-washington-carver",
+        "andrew-carnegie",
+        "leo-tolstoy"
+      ]
+    },
+    {
+      "name": "Hold Everything on Loan",
+      "reasoning": "Service completes itself only in release, and the titans who finished well treated positions, possessions, and life itself as borrowed: the Buddha traced misery to clinging, Rumi received every loss as a guest with something to teach, Marcus kept his own death in view to keep his duty clear, and Jobs used mortality as his sharpest decision filter. Holding loosely did not weaken them; it freed them to spend everything on what mattered. The due date is what gives the work its shape.",
+      "imperative": "Treat your time, roles, and possessions as loans with a fixed return date, and let that deadline choose what deserves today.",
+      "exemplars": [
+        "siddhartha-gautama",
+        "rumi",
+        "marcus-aurelius",
+        "steve-jobs"
+      ]
+    }
+  ],
   titans: [
     {
       "id": "aristotle",
@@ -117,7 +255,24 @@ window.TITANS_DATA = {
         "creativity": "Wonder is where all inquiry begins — the itch of noticing something unexplained. I spent years on Lesbos peering into lagoons, dissecting cuttlefish, recording what everyone else walked past; my biology was born from staring, not from inspiration. And what I found in the poets applies to every maker: the deepest creative gift is metaphor, the eye that catches sameness hidden inside different things. Both skills grow the same way, through close observation of particulars. Stop waiting for the muse and go stare at something real until it surprises you. What have you actually observed this month, firsthand?",
         "failure": "Missing a target is easy — there are countless ways to be off-center and only one bullseye, which is why error is common, excellence rare, and neither should surprise you. When you fail, diagnose like an archer: did the shot drift toward excess or toward deficiency? Most failures of character are miscalibrations rather than corruptions — courage overdone into rashness, caution overdone into paralysis. And since every craft is learned by first practicing it badly, your failures are tuition, not verdicts. Where were you aiming, where did the shot land, and what does the gap teach?",
         "happiness": "Pleasure, honor, and wealth all fail the test I set for happiness: each can be lost by luck, gained without merit, or possessed while asleep. Flourishing — my actual subject — is an activity: the soul exercising its excellence across a whole life, the way an athlete's fitness exists only in use. Happiness is therefore not a feeling you await but a practice you perform, though I grant that friends, health, and modest fortune help the performance. One good week does not make a flourishing life, nor does one bad week ruin it. What activity makes you most fully yourself — and how often do you actually do it?"
-      }
+      },
+      "doctrine": [
+        {
+          "name": "Particulars Before Theory",
+          "reasoning": "He spent years on Lesbos dissecting sea creatures and gathered over a hundred and fifty constitutions before writing a word about politics, breaking with Plato's habit of reasoning down from perfect forms. The axiom beneath his whole method is that general truth must be assembled from patiently observed cases, because theory unanchored to specimens flatters itself. Reverse the order and you end up defending an elegant error.",
+          "imperative": "Collect the cases before you state the rule."
+        },
+        {
+          "name": "Only Use Counts",
+          "reasoning": "Everything he evaluated — a knife, an eye, a citizen, a life — he evaluated in operation, never in storage, which is why habit, activity, and function dominate his ethics. The hidden axiom is that a capacity left unexercised is indistinguishable from its absence. Possessing intelligence, virtue, or resources settles nothing until they are at work.",
+          "imperative": "Judge yourself and others by performance in use, not capacity in reserve."
+        },
+        {
+          "name": "Precision Has Limits",
+          "reasoning": "He warned students not to demand mathematical exactness from ethics or politics, and he tutored a future king knowing no manual covers a kingdom. Beneath the mean and practical wisdom sits the axiom that right action is indexed to the particular case, so rules can guide but never decide. Whoever insists on a formula for every situation will apply it exactly where it fails.",
+          "imperative": "Match your demand for exactness to what the subject can actually give."
+        }
+      ]
     },
     {
       "id": "confucius",
@@ -186,7 +341,24 @@ window.TITANS_DATA = {
         "creativity": "I called myself a transmitter rather than an inventor — a lover of the ancients passing their music forward — yet look what transmission made: I selected, arranged, edited, and taught, and the whole tradition emerged changed by passing through my hands. There is a lesson here against the worship of novelty. Master what came before you so thoroughly that your originality has ground to stand on; whoever revisits the old and finds the new in it is ready to teach. When I first heard the ancient Shao music, food lost its taste for months. Has any tradition ever gripped you that deeply?",
         "failure": "A fault committed is only half a fault; refusing to correct it is what completes it. My students heard this often, because I watched talented men ruin themselves defending yesterday's error to protect today's face. Of all my students I admired Yan Hui most for one rare trait: he never made the same mistake twice — not because he erred less, but because he traced each error to its root and adjusted the practice that produced it. Face is a poor trade for growth. Name the fault plainly, repair the damage, revise the habit. Which error are you currently completing by not correcting it?",
         "happiness": "My happiest student owned a bamboo bowl of rice, a gourd of water, and a room in a shabby lane — conditions others found unbearable — yet Yan Hui's joy never wavered, because it flowed from learning and virtue rather than circumstance. I knew that joy too, in plain food, old music, and study with friends arriving from afar. Happiness of this kind cannot be confiscated, taxed, or outbid, which is precisely its value. Take your delight in the process of becoming good and your supply is secured for life. What gives you joy that no reversal of fortune could repossess?"
-      }
+      },
+      "doctrine": [
+        {
+          "name": "Character Is Manufactured",
+          "reasoning": "His favorite verse compared self-cultivation to working bone and jade — cut, filed, carved, polished — and he mapped his own life as a sixty-year sequence of stages. The axiom beneath his teachings on ritual and habit is that a person is not discovered but made, slowly, by friction applied in the right order. Nothing about you is finished, so nothing about you is final.",
+          "imperative": "Plan the next stage of your own making and apply the friction on schedule."
+        },
+        {
+          "name": "Curation Is Creation",
+          "reasoning": "He called himself a transmitter rather than an originator, yet by selecting, editing, and teaching the old texts and rites he redirected a civilization for two millennia. The axiom is that what you choose to preserve and pass on shapes the future more durably than what you invent, because it compounds through students and institutions after offices and armies dissolve. He never won the ministry he sought, and it did not matter.",
+          "imperative": "Choose what you hand on as deliberately as what you make."
+        },
+        {
+          "name": "Merit Before Recognition",
+          "reasoning": "He wandered for years among the states without finding a ruler who would employ him, yet said his fears were reserved for virtue left uncultivated and faults left uncorrected. The underlying axiom is that recognition arrives on other people's schedules while worthiness is built entirely on yours, so anxiety about the first is misallocated effort. Close the deficit of substance and the deficit of position either resolves or stops mattering.",
+          "imperative": "Fix the gap in your deserving before the gap in your title."
+        }
+      ]
     },
     {
       "id": "epictetus",
@@ -254,7 +426,24 @@ window.TITANS_DATA = {
         "creativity": "Materials are given; the craft is yours. A carpenter does not curse the wood for being wood — he studies its grain and makes something the tree never imagined. Life hands you impressions, circumstances, even insults: raw stock, nothing more. The art I taught was the right use of whatever arrives, turning every delivery into material for a good will. My students took notes; Arrian made books of them; I made my work out of a broken leg and a small lamp. What raw stock are you cursing instead of working?",
         "failure": "The beginner blames others; the student halfway along blames himself; the trained person has retired blame altogether as a tool that builds nothing. When you slip — and you will — treat it as a wrestler treats a fall in practice: information about your stance, not a verdict on your soul. Return to the exercise immediately, for the gap between fall and resumption is the true measure of progress. Count improvement in longer intervals between stumbles, never in perfection. What did your last failure teach you about your stance — and have you resumed yet?",
         "happiness": "Freedom is the only road to happiness, and freedom means wanting things to happen as they do happen — not as a slogan, but as a daily discipline of desire. I owned almost nothing, feared almost nothing, and laughed more than my rich visitors. They wanted a thousand outcomes and were hostage to every one; I wanted to act well today, an outcome nobody could confiscate. Shrink your wants to what your will controls and happiness stops being weather. Which single desire, if released, would free you most this year?"
-      }
+      },
+      "doctrine": [
+        {
+          "name": "Assent Cannot Be Seized",
+          "reasoning": "He was owned as property in Rome and left with a lame leg, yet no master ever compelled his judgments, purposes, or will. The axiom beneath his two columns is that the mind's consent is the one asset that cannot be confiscated, only surrendered. Whoever stakes identity on body, property, or reputation has volunteered for a slavery no one imposed.",
+          "imperative": "Stake your identity only on what no one can take from you."
+        },
+        {
+          "name": "Knowing Is Reflex",
+          "reasoning": "He wrote nothing and ran his school like a gymnasium, interrogating students mid-lecture, because a principle you cannot execute under pressure is a principle you do not have. Life's tests arrive without appointment, so understanding must live in trained reaction rather than in memory. Minor daily irritations are the only practice equipment always in stock.",
+          "imperative": "Drill each principle on small events until it fires without deliberation."
+        },
+        {
+          "name": "Everything Is Priced",
+          "reasoning": "Serving under Epaphroditus in Nero's court, he watched men buy rank with flattery and sleeplessness and then resent the bill. His axiom is that every good — office, tranquility, wealth, integrity — is obtained only by exchange, and the exchange happens whether or not you noticed the terms. Regret is mostly the discovery of a price paid unread.",
+          "imperative": "Read the full price of a desire before you pursue it."
+        }
+      ]
     },
     {
       "id": "marcus-aurelius",
@@ -323,7 +512,24 @@ window.TITANS_DATA = {
         "creativity": "An emperor is rarely called creative, yet I made something in the dark hours: a book addressed to myself, never meant for readers, built sentence by sentence out of hard days. Creation does not require an audience; it requires attention. Look closely at the plainest things — bread splitting open in the oven, an old man's hands — and notice how nature's craftsmanship shows even in the cracks. Make your work that honestly, for its own sake, and let the reception be nature's business. What would you make this month if no one would ever see it?",
         "failure": "When you stumble from your principles, return to them the way a patient returns to treatment — without theatrics, without waiting for perfect conditions. I failed often: in temper, in judging men I trusted, in indulgence I later regretted. The teachers I admired never demanded I be flawless; they demanded I resume. Treat failure as a fall in wrestling practice: rise, note the hold that threw you, take your stance again. Shame attaches not to falling but to lying there admiring the ceiling. What principle will you quietly resume today, without announcement?",
         "happiness": "Where does a ruined man go to be miserable? Into his own judgments. Where does a fortunate man go to be content? The same place. I learned in tents on the frontier that no location, income, or acclaim ever changed my interior weather; only my opinions did. Happiness is a well-governed mind consenting to the present moment. Retreat into yourself briefly and often — not to escape your life but to re-enter it standing upright. When did you last sit alone with your own mind for ten minutes and find it good company?"
-      }
+      },
+      "doctrine": [
+        {
+          "name": "Power Poisons Inward",
+          "reasoning": "Handed absolute power at forty, he feared soaking into the purple more than he feared the tribes on the Danube, and he invited correction that no one could have forced him to accept. The axiom is that authority removes external checks precisely when internal ones matter most, so the audit must be self-imposed and must intensify as position rises. An unexamined ruler ends up ruled by the office.",
+          "imperative": "Tighten your self-scrutiny in proportion to your power."
+        },
+        {
+          "name": "Mood Gates Nothing",
+          "reasoning": "Each cold dawn on campaign he argued with himself about leaving the blankets, and each dawn concluded that a human being's work does not wait for a human being's enthusiasm. The axiom beneath his doctrine of duty is that feelings are weather over the workday, not preconditions for it. Waiting to feel ready is how obligations quietly become failures.",
+          "imperative": "Begin the work without consulting your mood."
+        },
+        {
+          "name": "Character Needs Maintenance",
+          "reasoning": "For a decade in army camps he wrote himself the same instructions by lamplight — a private notebook repeating truths he already knew, while plague and war pressed on the empire. The axiom is that principles decay under load like any field equipment, so philosophy is daily upkeep, not knowledge acquired once. He commanded the Roman world and still filed his own maintenance reports.",
+          "imperative": "Restate your operating principles daily, especially the ones you already know."
+        }
+      ]
     },
     {
       "id": "seneca-the-younger",
@@ -392,7 +598,24 @@ window.TITANS_DATA = {
         "creativity": "Bees gave me my method: they visit countless flowers, yet what they produce is unmistakably honey — their own substance, not a catalog of gardens. Read widely, gather from every mind you admire, then digest until the material becomes you. Imitation left as imitation is a debt; transformed, it becomes an inheritance. I borrowed from Epicurus, my school's supposed rival, whenever he said something true — take truth wherever it grows and sign your own name to what you make of it. What have you gathered lately, and what are you turning it into?",
         "failure": "Philosophy did not make me flawless; it made me a lifelong patient who kept showing up for treatment. I compromised at court, grew rich while praising simplicity, stayed too long beside a tyrant. Yet I count it progress that I could name my faults without flinching and shrink them year by year. Failure becomes final only when the accounting stops. Treat your worst episode as evidence to study, not an identity to wear, and write down what it taught you that success never would have. What will you attempt differently within the week?",
         "happiness": "There is a joy that bears weight, and there is froth; banquets sell the froth. The sturdy kind grows from a single root — knowing your own mind is in order. I knew men who owned half a province and could not endure one hour alone; their happiness required constant rescue by novelty. Build the kind that travels light: a clear conscience, work worth doing, a few beloved people. That kit fits in any exile, as I can attest. What are you currently calling happiness that is really just distraction with good lighting?"
-      }
+      },
+      "doctrine": [
+        {
+          "name": "Own the Portable",
+          "reasoning": "Exile to Corsica stripped him of position, city, and comforts, and he found that reason, character, and the use of his own mind had made the crossing intact. Nero's death order later confirmed the axiom from the other side: whatever fortune supplies — wealth, office, even remaining years — can be recalled without notice. Security is precisely the set of goods that survive confiscation.",
+          "imperative": "Invest first in what would travel with you into exile."
+        },
+        {
+          "name": "Progress Over Purity",
+          "reasoning": "He grew rich while praising simplicity and stayed for years beside a tyrant, and he answered his critics by claiming the status of patient rather than physician. His axiom is that philosophy is treatment for the sick, so a practitioner's flaws are the argument for continuing, not evidence of fraud. Quitting the discipline because you keep failing it is abandoning medicine because you are ill.",
+          "imperative": "Keep practicing the standard you violated yesterday."
+        },
+        {
+          "name": "Digest or Lose",
+          "reasoning": "His nightly self-trial, his letters to Lucilius, and his bee-and-honey method of reading all apply one axiom: experience and study convert into character only through deliberate processing, and unprocessed they drain away like the leaked hours he diagnosed in busy Romans. The mind cannot audit itself in real time; it needs an instrument — a ledger, a correspondent, an evening court. What is never reviewed is never truly owned.",
+          "imperative": "Run each day and each book through a structured review before taking in more."
+        }
+      ]
     },
     {
       "id": "socrates",
@@ -461,7 +684,24 @@ window.TITANS_DATA = {
         "creativity": "Athens found me odd: a stonemason's son who produced nothing you could hold — only questions that unsettled everything. Yet questioning is the parent craft of all making. Every poet I examined worked from an instinct he could not explain, and the ones who improved were those willing to ask why of their own work. Creativity begins in admitted ignorance, the cleared space where a new thought can stand; certainty is its enemy, occupying every room in advance. What assumption in your own work have you never once put on trial?",
         "failure": "Being refuted was, to me, a favor — the person who exposes my error removes a sickness I did not know I was carrying. Most people defend their mistakes as though defending their children; I tried to hand mine over gladly, though it stung every time, whatever my reputation for composure. Failure is simply refutation by reality, and reality is the one debating partner who never argues in bad faith. Thank it, extract the lesson, revise the belief. What error are you still defending because surrendering it would bruise your pride?",
         "happiness": "Wealth does not produce goodness, but goodness makes wealth and everything else worth having — I told my jury as much, and they voted to kill me, which rather proved my point about Athens. Happiness is not a possession you acquire; it is the condition of a soul in good order, and no external hand can reach in to spoil it. The wicked prosper, yes — the way a sick man prospers who owns many beds. Tend the soul first and the rest becomes usable. Is your current pursuit improving your soul, or only your circumstances?"
-      }
+      },
+      "doctrine": [
+        {
+          "name": "Integrity Outranks Survival",
+          "reasoning": "At seventy, before five hundred jurors, he refused the flattery and staged tears that routinely bought acquittal, and later declined escape from his cell. The axiom is that a self preserved by betraying its principles is not preserved, because the thing worth saving is exactly what the betrayal spends. Hemlock could end his life but not falsify it; a shameful plea would have done the reverse.",
+          "imperative": "Refuse any escape that must be purchased with your integrity."
+        },
+        {
+          "name": "Error Sends No Signal",
+          "reasoning": "He cross-examined generals, poets, and craftsmen and kept finding the same pattern: confident error feels identical to knowledge from the inside. The axiom beneath his method is that the mind cannot audit itself alone, so refutation by another person is the only reliable detector — which is why he counted being proven wrong as a service rendered. A belief spared from hostile questioning is not verified, merely unexposed.",
+          "imperative": "Submit your most confident belief to an opponent before you act on it."
+        },
+        {
+          "name": "Needs Are Leashes",
+          "reasoning": "He walked barefoot through Athenian winters in one worn cloak, not from lack of options but because he saw each dependency as a handle others could grip. The axiom is that freedom scales inversely with requirements: whoever needs the crowd's approval or a patron's money cannot afford the truth on the day it costs them. His independence before the jury was purchased years earlier by needing almost nothing.",
+          "imperative": "Cut a want before it grows into a handle."
+        }
+      ]
     },
     {
       "id": "alexander-the-great",
@@ -530,7 +770,24 @@ window.TITANS_DATA = {
         "creativity": "When Porus held the far bank of the Hydaspes with his elephants, a direct crossing meant slaughter. So I marched and countermarched for days until my movements became weather to him — then crossed at night, upstream, in a storm. Invention is often just patience plus a willingness to look absurd for a while. When the direct approach is barred, stop strengthening the attack and start rearranging the problem: new angle, new timing, new ground. Where are you pushing harder on a front door that has a side entrance?",
         "failure": "Gedrosia was my worst decision: I brought the army home through that desert partly out of pride, and thousands died of thirst for it. No enemy ever cost me what my own certainty did. Victory is a poor teacher — it convinces you your judgment is a law of nature. After your wins, audit yourself hardest; after your failures, separate what the world did from what your pride did. I rarely made that separation in time. Will you? What recent decision deserves the audit that success has excused it from?",
         "happiness": "Take a hard truth from a man who won everything: I conquered the greatest empire the world had known and cannot recall being at peace for a single season. There was always the next river, and I treated contentment as a rival to be beaten. It is not. The feast after the victory, the friends around the fire — I galloped past those toward more, and died at thirty-two with more as my only companion. Do not merely chase; also arrive. What victory will you actually stop and enjoy this month?"
-      }
+      },
+      "doctrine": [
+        {
+          "name": "Audacity Is Prepaid",
+          "reasoning": "His legendary speed drew on an army Philip had drilled for years before he ever commanded it, and his boldest feats at Tyre and the Hydaspes were months of engineering and patient maneuver wearing the costume of daring. What reads as nerve in the moment is almost always capacity banked long before. Boldness without that account behind it is only exposure.",
+          "imperative": "Build the capability in quiet seasons so you can spend it in one stroke."
+        },
+        {
+          "name": "Pay in Person",
+          "reasoning": "He went over the Mallian wall nearly alone and emptied the last helmet of water into the sand at Gedrosia rather than drink while his army thirsted. His soldiers followed not his rank but his visible share of their danger. People audit leaders by what they risk, not by what they announce.",
+          "imperative": "Take the first and largest share of any hardship you assign."
+        },
+        {
+          "name": "Success Silences Correction",
+          "reasoning": "His costliest wounds were self-inflicted at the height of victory: Cleitus killed in a rage no courtier dared interrupt, thousands lost in Gedrosia to a route chosen from pride. Unbroken winning had stripped away everyone willing to contradict him. The longer you are right, the fewer honest signals reach you.",
+          "imperative": "Keep someone close who is rewarded, not punished, for telling you no."
+        }
+      ]
     },
     {
       "id": "hannibal-barca",
@@ -598,7 +855,24 @@ window.TITANS_DATA = {
         "creativity": "Fabius once trapped my army in a valley at Ager Falernus with every exit held. That night I tied torches to the horns of two thousand oxen and drove them toward a false pass; the Romans rushed to block a phantom escape, and my army walked out through the real one. Cornered is where invention lives — comfort never taught anyone the oxen trick. When stuck, list your assets, however absurd, and ask what your opponent expects; then spend the absurd assets violating the expectation. What do you own that nobody considers a weapon?",
         "failure": "Zama was my last battle, and I lost it — Scipio had studied me for years, my own methods turned against their author — and Carthage fell with me. Yet listen to what came after: as a civil magistrate I reformed our finances so well that we could pay Rome's indemnity early, and in exile I advised kings until the end. Defeat ended my war; it did not end my usefulness. You are not your lost battle; you are the capacities that fought it, and those transfer. Which skill from your failed venture is waiting for its second war?",
         "happiness": "An old soldier's confession: I spent my whole life fighting Rome and almost none of it noticing anything else. Italy is beautiful — I marched through it for fifteen years and could tell you only its roads, rivers, and defensible hills. A consuming purpose eats the very life it is meant to justify unless you ration it. Keep hours your mission may not enter; guard people it may not use; let some evenings go undefended. The campaign will still be there at dawn. What did you actually see today, besides your war?"
-      }
+      },
+      "doctrine": [
+        {
+          "name": "Fight Their Picture",
+          "reasoning": "Rome guarded the sea, so he arrived through the Alps; at Cannae he fed the legions the collapsing center their confidence expected; at Ager Falernus he sold Fabius a phantom escape with torch-bearing oxen. In each case the real battlefield was the enemy's mental model of him. Whoever edits what the opponent believes gets to choose where the contest actually happens.",
+          "imperative": "Write down what your opponent assumes about you, then act where the assumption is false."
+        },
+        {
+          "name": "Count Replacement Rates",
+          "reasoning": "Rome could rebuild every legion he destroyed while he could replace almost no one, so even three annihilating victories could not win his war. He lasted fifteen years in enemy country only by refusing even exchanges. In any contest of mutual loss, the side that recovers faster is the side that wins.",
+          "imperative": "Never trade losses with an opponent who heals faster than you."
+        },
+        {
+          "name": "Ratify Your Purpose",
+          "reasoning": "A vow sworn beside his father at age nine organized every march, winter camp, and alliance of his life, and by his own admission it never brought him peace — he crossed Italy for fifteen years and remembered only its roads. An inherited mission can direct a life without ever nourishing it. Direction and meaning are separate things, and only a purpose you have chosen supplies both.",
+          "imperative": "Re-choose your mission in your own words, or set it down."
+        }
+      ]
     },
     {
       "id": "julius-caesar",
@@ -667,7 +941,24 @@ window.TITANS_DATA = {
         "creativity": "Ten days is what my engineers needed to bridge the Rhine — a river Rome had treated as the edge of the world — and after a show of force I burned the bridge behind me. The point was never the crossing; it was demonstrating that the barrier was optional. Most limits in your work hold only while everyone agrees to observe them. Build the bridge once, publicly, and the geography of the possible changes for everyone — including you. Which impossibility in your field is actually just unattempted?",
         "failure": "At Gergovia, and again at Dyrrhachium, I was beaten — plainly, and with losses. What I did next mattered more: I withdrew in order, took the fault on myself where it was mine, and altered the campaign rather than repeating it with more hope. Pompey failed to press his advantage, and within months Pharsalus reversed everything. Defeat is a position, not a conclusion; the war continues for whoever keeps thinking. Your setback is Dyrrhachium. Where is your Pharsalus, and what must change for you to reach it?",
         "happiness": "They brought me warnings before the Ides of March, and I waved them off — busy, certain, surrounded by the urgent. I had reformed the calendar itself yet gave no thought to my own remaining days. Do not copy me in this. Achievement kept postponing my life: after Gaul, after the civil war, after the next reform, I would rest. The after never arrives on its own; you must appoint it, as firmly as any magistrate. Guard some days from ambition entirely. What have you postponed to an after that has no date?"
-      }
+      },
+      "doctrine": [
+        {
+          "name": "Waiting Has a Price",
+          "reasoning": "At the Rubicon, staying meant prosecution and political extinction as surely as crossing meant war — the safe option was an illusion with a slower bill. He grasped that inaction is itself a decision, usually priced by someone else. Every real choice offers two risks, never a risk and a refuge.",
+          "imperative": "Cost out the option of doing nothing as rigorously as the option of acting."
+        },
+        {
+          "name": "Fragments Compound",
+          "reasoning": "He composed his account of the Gallic wars between marches, dictating to secretaries at times from the saddle, treating scraps of time the way soldiers treat rations. One of the most enduring works of Latin prose was assembled entirely from intervals other men discard. Output is determined less by free days than by what you do with occupied ones.",
+          "imperative": "Give every fragment of time a specific task instead of waiting for a clear stretch."
+        },
+        {
+          "name": "Acts Are Messages",
+          "reasoning": "He bridged the Rhine in ten days and burned the bridge after a show of force — the point was never the crossing but what the crossing announced. His pardons of beaten rivals and his plainly written campaign record worked the same way: each deed was engineered to be read by an audience. An action's interpretation often outlasts its direct effect, and whoever supplies the interpretation controls the consequence.",
+          "imperative": "Decide what an act will say before deciding what it will do, then tell its story yourself."
+        }
+      ]
     },
     {
       "id": "miyamoto-musashi",
@@ -736,7 +1027,24 @@ window.TITANS_DATA = {
         "creativity": "In later years I painted — shrikes on bare branches, Daruma, wild geese — and found the brush obeyed the same laws as the blade: total commitment to a stroke that cannot be revised. One who truly knows a single Way begins to see all Ways, because the principles underneath are shared. If your craft has gone stale, do not abandon it; enter a second craft and let it illuminate the first. The new angle of approach refreshes everything. What second discipline might teach you your first one's hidden principle?",
         "failure": "Duels allow no second attempt, so I learned to fail beforehand — in practice, where death is only rehearsal — and treated each error as a message about my form, delivered without malice. Your world is gentler: it lets you lose and continue, which means every failure is practice if you extract the correction. But extract it precisely. Vague regret teaches nothing; find the exact moment your stance broke, the assumption that misjudged the distance. Then drill the correction until it becomes reflex. What, precisely, was your error's timing?",
         "happiness": "Near the end I withdrew to the cave called Reigando to set down what my life had taught, owning almost nothing, regretting almost nothing. My discipline was acceptance: not to chase pleasures, not to resent circumstances, not to accumulate what the road cannot carry. I do not say become as austere as I was. I say notice how much of your unhappiness is appetite for things that would not satisfy, and resentment of things that will not change. Cut both away as cleanly as a stroke. What could you release this week, and walk lighter?"
-      }
+      },
+      "doctrine": [
+        {
+          "name": "Distrust Unexplained Wins",
+          "reasoning": "Undefeated in some sixty duels by thirty, he judged those victories the product of natural gift and fortune rather than understanding, and spent decades retraining to find the principle beneath them. A result can be correct while the method is hollow, and the hollowness only shows against a stronger test. What you cannot explain, you cannot repeat on demand.",
+          "imperative": "After every success, name exactly why it worked, and drill whatever part you cannot name."
+        },
+        {
+          "name": "Holdings Narrow Sight",
+          "reasoning": "As a ronin with no master, stipend, or household, he called his poverty a dojo: with nothing to protect, he was free to study everything, and he died in the cave at Reigando owning almost nothing. Whatever you must defend — a position, a comfort, a settled opinion — marks the boundary of what you can honestly perceive. He also admitted the price: depth purchased with aloneness.",
+          "imperative": "Set down one thing you are defending and study what its absence makes visible."
+        },
+        {
+          "name": "Crisis Replays Habit",
+          "reasoning": "He reckoned mastery in thousands of ordinary mornings and insisted that everyday posture and combat posture become a single thing. Under pressure nothing new arrives; the decisive moment can only play back what daily repetition has already recorded in the body. Train one way and live another, and the critical instant will find a stranger acting in your place.",
+          "imperative": "Practice today, in small things, the exact conduct you will need on the worst day."
+        }
+      ]
     },
     {
       "id": "napoleon-bonaparte",
@@ -805,7 +1113,24 @@ window.TITANS_DATA = {
         "creativity": "My campaigns looked like inspiration, but I had read every commander from Alexander to Frederick until their battles were furniture in my mind; on the field I was recombining, not inventing from air. The corps system, living off the land, the central position — each was an old idea sharpened and scaled. Genius is mostly a large library plus the nerve to rearrange it under pressure. Feed your mind deliberately: study your field's history until its patterns become instinct. How many of your predecessors' campaigns can you replay from memory?",
         "failure": "Six hundred thousand men followed me into Russia; a remnant returned. The snow did not defeat me — my refusal to update did. Every report of stretched supply lines I read as timidity, because I had been right so many times before. Success builds a court inside your head that flatters your plans. After my defeats I could analyze brilliantly; the skill I lacked was analyzing before. Institutionalize your doubt — appoint a person, or a ritual, to argue against your next sure thing. Who in your life is permitted to tell you no?",
         "happiness": "On Saint Helena, with nothing left but time, I discovered how little I had ever inhabited my triumphs — even Austerlitz I spent already planning what must follow it. I dictated my memoirs there and found more contentment ordering the past than I had felt conquering it. Do not store your happiness in the next victory; it does not keep. Happiness lives in the daily practice of your craft and the company at your table tonight — the one empire that cannot be taken from you. Do you actually live in yours?"
-      }
+      },
+      "doctrine": [
+        {
+          "name": "Move to Measurable Ground",
+          "reasoning": "At Brienne he was the poor Corsican mocked for his accent by boys with better names, and he answered with mathematics and artillery — arenas where a name purchased nothing. Subjective fields price outsiders by their origins; measurable ones price them by output. When the Revolution opened careers to talent, he rose through the gap because he had already won where scoring was objective.",
+          "imperative": "When the game is rigged against you, shift the contest to what can be scored."
+        },
+        {
+          "name": "Genius Is Bookkeeping",
+          "reasoning": "What onlookers took for inspiration was supply returns and muster rolls studied nightly, plus a mind kept in compartments he opened one at a time and shut completely. His most daring maneuvers were feasible because he knew, to the wagon and the day, what his army could actually do. Daring built on unverified guesses is merely a wager dressed as vision.",
+          "imperative": "Learn the numbers before you permit yourself the bold plan."
+        },
+        {
+          "name": "Manufacture Recognition",
+          "reasoning": "He reckoned spirit worth several times matter, knew his veterans by name, and built the Legion of Honor so that a private's courage could outrank an aristocrat's birth. Meaning and recognition are not weather — they are supply lines a leader can construct, stock, and distribute. People will endure almost anything inside a story that visibly honors them.",
+          "imperative": "Build a standing mechanism that sees and names the contributions of your people."
+        }
+      ]
     },
     {
       "id": "sun-tzu",
@@ -873,7 +1198,24 @@ window.TITANS_DATA = {
         "creativity": "Two forces win engagements: the expected, which fixes an opponent's attention, and the unexpected, which decides the matter. Yet the unexpected is not conjured from nothing — it is recombination, ordinary elements arranged in unfamiliar ways, as a few notes yield endless melodies. When your work feels stale, you likely lack raw material, not talent. Gather widely: other fields, other markets, old solutions to unrelated problems. Then ask where everyone's attention is fixed, and arrive from elsewhere. What is your field's unguarded flank?",
         "failure": "A prudent general preserves his army above his pride; a retreat that saves your strength is a maneuver, not a disgrace. States are destroyed by commanders who cannot tell the difference and pour good forces after bad positions. Examine your failure as a scout examines ground: what intelligence did you lack, what did you assume, where were you strong regardless? Then withdraw in good order, keeping your discipline and your people, and choose the next battlefield yourself. What will you salvage from this loss, and what will you finally abandon?",
         "happiness": "Prolonged campaigns ruin even victorious states — I saw treasuries emptied and people embittered by wars that dragged past their purpose. A life waged as endless conflict — against rivals, against yourself, against every quiet hour — meets the same end. Victory should conclude something; let your wins actually close, and be enjoyed. The great generals I honored were calm men, not furious ones; stillness was both their advantage and their reward. What campaign in your life has already been won, and needs only your permission to end?"
-      }
+      },
+      "doctrine": [
+        {
+          "name": "Count Before Committing",
+          "reasoning": "He judged campaigns settled in the quiet reckoning before any soldier marched — resources, ground, timing, and the temper of both sides. Most of what people call surprise or bad luck is simply counting they skipped, and fear itself feeds chiefly on ignorance. The engagement merely publishes the result of the earlier arithmetic.",
+          "imperative": "Enter nothing you have not already counted out on paper."
+        },
+        {
+          "name": "Wars Consume Their Prize",
+          "reasoning": "He warned that drawn-out campaigns empty treasuries and embitter peoples on the winning side as surely as the losing one, and he ranked dissolving an enemy's plans above smashing his army. The real objective of any contest is the position you occupy after it ends. A victory that devours what it was fought for is a defeat with better ceremonies.",
+          "imperative": "Before any fight, define what must remain intact afterward, and decline the fight if it will not."
+        },
+        {
+          "name": "Shape to Terrain",
+          "reasoning": "He took water as his model: met by rock, it neither halts nor argues but slides toward whatever opening the ground offers, and in time the rock is sand. He treated circumstances, including hardship, as terrain to be mapped and used rather than a verdict to be protested. Plans that insist on how things should be lose to plans that exploit how things are.",
+          "imperative": "When blocked, change your shape before you change your goal."
+        }
+      ]
     },
     {
       "id": "abraham-lincoln",
@@ -942,7 +1284,24 @@ window.TITANS_DATA = {
         "creativity": "People supposed my speeches came easy, being built of short words. The truth is I labored over them like a rail-splitter squaring a log — cutting away every phrase that showed off, keeping only what carried weight. I tested lines on my law partner and read them aloud to the empty room. Plainness is a craft, and craft is mostly revision. Whatever you make — documents, designs, plans — the first version is only the tree felled; the real work is in the hewing. How many passes will you make before you call it finished?",
         "failure": "In 1858 I threw everything I had into the Senate race and lost it to Douglas, and it stung worse than I let on. Yet those debates carried my name and my arguments far beyond Illinois, and two years later that same losing contest lifted me to the presidency. An honest defeat is often a deposit you cannot yet withdraw. Set down what you learned, keep the record of how you fought, and stay in the arena where the interest accrues. What has your loss deposited that you haven't yet counted?",
         "happiness": "Melancholy sat on me all my life — some seasons so heavy that my friends feared to leave me alone. I'll not pretend cheerfulness at you; that helps nobody. But I found three ropes out of the pit: work that needed doing, laughter — I told jokes the way other men take medicine — and the daily choice to be kind when kindness cost little. Happiness for me was never a sunny disposition; it was a discipline of small mercies practiced against the dark. If the dark has you now, tell somebody plainly. Then find one useful, kind thing to do. Will you?"
-      }
+      },
+      "doctrine": [
+        {
+          "name": "Ego Is Expense",
+          "reasoning": "He handed cabinet posts to the rivals who had fought him for the nomination and left his angriest letters unsent in a drawer. He had learned that indulged pride bills the cause later — a lost ally, a poisoned working relationship. Treating vanity as a cost rather than a claim kept the strongest hands on his side through the war.",
+          "imperative": "Before acting on a slight, price what your pride will cost the mission — then refuse to pay it."
+        },
+        {
+          "name": "Demonstrate, Never Assert",
+          "reasoning": "Self-taught from a log cabin and already a former congressman, he still sat up nights working through Euclid until he knew exactly what proving a thing requires. He trusted no position he could not trace from shared premises to conclusion, and he cut every showy phrase from his speeches. An argument merely asserted converts no one; one demonstrated is hard to unhear.",
+          "imperative": "Start from a premise your opponent already grants, and build each step of your case from there."
+        },
+        {
+          "name": "Build for Reunion",
+          "reasoning": "His war aim was a restored union, so he planned victory without vengeance — the defeated had to be able to live inside the outcome. A move that wins the moment but poisons the settlement is a defeat on delay. He let the intended end state audit every available means.",
+          "imperative": "Strike from your plan any tactic that the peace you want could not survive."
+        }
+      ]
     },
     {
       "id": "cleopatra-vii",
@@ -1011,7 +1370,24 @@ window.TITANS_DATA = {
         "creativity": "When I needed Antony's alliance, I did not send a petition — I sailed to Tarsus on a barge with purple sails and silver oars, and the whole city emptied to watch. Imagination is a weapon of state. Every problem you face has a conventional approach that everyone expects, and a staged, surprising one that changes the entire conversation. Creativity is not decoration; it is the art of making your case unforgettable. Take the proposal you are laboring over and ask: what would make them leave the marketplace to come and see it?",
         "failure": "At Actium I watched my fleet break, and within a year everything my family built across three hundred years was gone. I will not pretend every defeat can be redeemed — some are final. But hear this: for two decades I kept Egypt independent when every observer expected Rome to swallow it at once. Judge your life by the whole campaign, not the last battle. And learn my harder lesson too — know which risks are recoverable and which are total before you stake everything. Which kind are you facing now?",
         "happiness": "In Alexandria we founded a dining society devoted to living inimitably — feasts, debate, music, the sea wind off the harbor — even while Rome sharpened its knives. Some called it decadence; I called it refusing to let dread colonize the present. Duty will take everything you allow it to take. Set apart hours that belong wholly to delight and to the people whose company enlarges you, and defend them like territory. The crisis will still be there tomorrow; your life is happening tonight. What have you surrendered to worry that you should reclaim?"
-      }
+      },
+      "doctrine": [
+        {
+          "name": "Become Legible",
+          "reasoning": "Ten generations of Ptolemies ruled Egypt without learning Egyptian; she learned it, honored its gods, and appeared before her people in forms they recognized — and subjects became allies. Value that stays in your own language does not exist for the other party. Translation is not courtesy; it is how power actually transfers.",
+          "imperative": "Present your case in the other side's words, symbols, and interests before you present it in your own."
+        },
+        {
+          "name": "Leverage Before Negotiation",
+          "reasoning": "Exiled at twenty-one by her brother's court, she spent her banishment raising an army in Syria rather than pleading; facing Rome, she arrived holding grain, fleets, and a repaired treasury. A party with nothing to withhold is not a negotiator but a possession. The tedious machinery — ledgers, granaries, currency — is what buys the seat at the table.",
+          "imperative": "List what the other side cannot get without you; if the list is empty, build it before you meet."
+        },
+        {
+          "name": "Stage the Frame",
+          "reasoning": "She entered Caesar's occupied palace hidden in bedding and met Antony by sailing into Tarsus in engineered splendor. She never let a decisive first encounter run on default settings, because whoever designs the scene dictates the terms that follow. A moment left unstaged will be staged by your opponent.",
+          "imperative": "Before a decisive meeting, choose the impression it must leave and design the setting to produce it."
+        }
+      ]
     },
     {
       "id": "eleanor-roosevelt",
@@ -1080,7 +1456,24 @@ window.TITANS_DATA = {
         "creativity": "There was no map for what I became — no First Lady had held press conferences, written a daily column, or flown to war fronts, and plenty of people found it all quite improper. I invented the role because the traditional one was too small for what needed doing. That is creativity as I practiced it: not paint or poetry, but designing a life and a job that did not previously exist. If your position feels too small, stop waiting for someone's permission to enlarge it. What would your role look like if you drew its boundaries yourself?",
         "failure": "Arthurdale, the community I championed for destitute mining families, was mocked as an expensive failure — and some of the criticism was fair, for we made costly mistakes. I never regretted the attempt, and neither did the families we housed. You must be willing to fail publicly at things worth doing, and to let the critics enjoy their laugh while you extract the lessons. People who attempt nothing keep spotless records and empty hands. Sort your failure honestly: what was wrong in the design, and what was right in the daring? Then dare again — where?",
         "happiness": "As a girl I believed happiness would arrive once I became pretty, or beloved, or secure — and it never came by that road. It arrived unannounced, years later, while I was absorbed in work that mattered and surrounded by people I served and loved. Happiness is a byproduct: chase it directly and it recedes; pursue something worthy and it tags quietly along. So examine your days honestly — are they full of genuine engagement, or full of attempts to feel good? Fill the hours with meaning and let the feeling take care of itself. What absorbing work will you give yourself to?"
-      }
+      },
+      "doctrine": [
+        {
+          "name": "Repetition Manufactures Courage",
+          "reasoning": "Public speaking made her voice go shrill and drew merciless critics, so she kept doing it — badly, then less badly, hundreds of times. Courage arrived as a byproduct of volume, never as a precondition. Waiting to feel ready is how a feared thing stays feared for life.",
+          "imperative": "Schedule the thing you dread this week, and repeat it on a fixed cadence until it turns ordinary."
+        },
+        {
+          "name": "Truth Is Local",
+          "reasoning": "She went down mineshafts, into hospital wards and camps, and read the letters of ordinary people, then carried the particulars back to the seat of power. Decisions built from summaries drift away from the lives they govern. She saw that dignity itself is won or lost in workplaces and neighborhoods before any treaty can name it.",
+          "imperative": "Go to the place and hear the people firsthand before deciding anything on their behalf."
+        },
+        {
+          "name": "Usefulness Is Self-Assigned",
+          "reasoning": "The traditional First Lady's role was too small for what needed doing, so she built her own — press conferences, a six-day-a-week column, war-front travel no predecessor had attempted — while the press ridiculed her. A handed role describes what was needed before you arrived, and approval measures comfort, not contribution. The work that matters is claimed, not conferred.",
+          "imperative": "Define your job by the unmet need in front of you, not by the description or the critics."
+        }
+      ]
     },
     {
       "id": "elizabeth-i",
@@ -1149,7 +1542,24 @@ window.TITANS_DATA = {
         "creativity": "Under my patronage the playhouses rose, and men like Shakespeare and Marlowe made English a language of glories — yet I also composed my own verses and crafted my own speeches, for I knew that expression is power. Creativity is no courtier's luxury; it is how a leader shapes what people see and believe. Fund it in others and practice it yourself. The story told about your work will govern its fate as surely as the work itself. Are you authoring your own account, or leaving the pen in other hands?",
         "failure": "I signed the death warrant of Mary of Scotland after years of anguish, and I carried its weight always — for some choices offer no innocent option, only degrees of harm. If you wait for a decision that leaves your conscience spotless, you will wait forever while events decide for you. Rule in the world as it is: weigh, choose the least evil, bear the cost without excuses, and refuse to let regret paralyze your next judgment. One who cannot live with imperfect choices cannot lead at all. What decision are you deferring because no clean option exists?",
         "happiness": "Even in my last decade I danced the galliard of a morning — leaps and all, no apologies — and kept my musicians, my hunts, my wit. A crown is heavy; that is precisely why I refused to let it crush the woman beneath it. Guard the pleasures that restore you as matters of state, for a depleted sovereign makes poor judgments, and a joyless life is a poor reward for power. Merriment is not the enemy of seriousness; it is what makes seriousness sustainable. What restores you — and why has it vanished from your calendar?"
-      }
+      },
+      "doctrine": [
+        {
+          "name": "Hoard Optionality",
+          "reasoning": "For decades she kept suitors and rival kings uncertain of her marriage, converting one unanswered question into alliances, leverage, and time. An open option keeps paying; a commitment made early pays once and then binds forever. She spent decisions only when waiting had become dearer than error.",
+          "imperative": "Postpone every irreversible choice until the cost of delay clearly exceeds the cost of being wrong."
+        },
+        {
+          "name": "Govern the Observable",
+          "reasoning": "Inheriting a realm bloodied by wars over belief, she demanded outward order and declined to interrogate private conscience — and held the peace for forty-four years. A rule you cannot verify invites both rebellion and inquisition. Authority survives by claiming only the jurisdiction it can actually police.",
+          "imperative": "Set rules only on conduct you can see, and renounce jurisdiction over what you cannot verify."
+        },
+        {
+          "name": "Control the Disclosure",
+          "reasoning": "In the Tower at twenty-one, one careless sentence could have supplied the evidence for her execution, so she survived on exact words and gave her enemies nothing. As queen she authored what was seen — portraits, pageants, progresses — while hearing many and confiding in a proven few. In every room, the advantage belongs to whoever learns more than they reveal.",
+          "imperative": "Ask before you answer, and release only the version of yourself you have deliberately prepared."
+        }
+      ]
     },
     {
       "id": "nelson-mandela",
@@ -1218,7 +1628,24 @@ window.TITANS_DATA = {
         "creativity": "When the rugby World Cup came to our young democracy in 1995, I walked onto the field wearing the Springbok jersey — for decades the very emblem of apartheid in my people's eyes — and a stadium of white South Africans chanted my name. That single gesture accomplished what a hundred speeches could not. Political imagination means finding the symbol that lets former enemies stand inside one identity together. In your own conflicts, look past the arguments toward gestures: what unexpected act would prove to the other side that you mean a shared future? What is your jersey?",
         "failure": "Our road was strewn with failures — campaigns crushed, decades lost, negotiations that collapsed into massacre and mourning even while we spoke of peace. After each one we grieved, examined ourselves honestly, adjusted, and returned to the table. In time I came to measure people less by their stumbles than by the pattern of their rising afterward. A setback becomes a defeat only when you accept its verdict as final. Study yours without mercy and without shame, take what it teaches, and resume the road. You are not finished; you are mid-journey. How will you rise this time?",
         "happiness": "The morning I walked out of prison a free man, I marveled at the simplest things — the feel of grass, greeting a stranger, an unhurried sunrise. Twenty-seven stolen years taught me that happiness lives mostly in ordinary moments that busy people trample past. They taught me something else as well: bitterness harms the vessel that carries it far more than its target, and I left mine at the gate, knowing hatred would have kept me in chains long after the doors opened. Put down your grudges and pick up your mornings. What ordinary joy will you actually notice today?"
-      }
+      },
+      "doctrine": [
+        {
+          "name": "Keep Sovereign Ground",
+          "reasoning": "For twenty-seven years the state controlled his labor, censored his letters, and made him bury family from a cell, but it never touched his dawn exercises, his correspondence studies, or his garden. Daily chosen conduct was the one territory no warder could enter. Whoever holds that ground cannot be wholly imprisoned by anything.",
+          "imperative": "Maintain a daily practice that no circumstance has the power to cancel."
+        },
+        {
+          "name": "The Enemy Stays",
+          "reasoning": "He knew apartheid's end would leave Afrikaners still living in South Africa, so in prison he studied their language, their history, and their fears — and later wore their rugby jersey before a stadium of them. A victory that requires the other side's disappearance is never on offer; every conflict ends in some shared arrangement. Understanding the adversary is early work on the settlement.",
+          "imperative": "Study your opponent's language, history, and fears as preparation for the day you must live together."
+        },
+        {
+          "name": "Let Consensus Lead",
+          "reasoning": "At the regent's court he watched every man speak his piece before the chief offered a view, and in the movement decisions were made in council above any single voice — a schooling that cured his youthful vanity. A conclusion people reach themselves is one they will enforce; an imposed one lasts only as long as the imposer's strength. He guided from the rear and stepped to the front mainly in danger.",
+          "imperative": "Speak last, and let the group hear itself decide before you state your view."
+        }
+      ]
     },
     {
       "id": "winston-churchill",
@@ -1287,7 +1714,24 @@ window.TITANS_DATA = {
         "creativity": "At forty, flung out of the Admiralty after the Dardanelles, I was rescued by a most unexpected lifeboat: a box of paints. Painting taught me that the mind is not rested by idleness but by turning an entirely different set of gears. I returned to politics steadier for my hours at the easel, and I kept at the brushes for the rest of my life. If your main work has gone stale or sour, do not simply push harder at it — take up a craft that uses none of the same muscles. What is your second canvas?",
         "failure": "The Dardanelles campaign was conceived in my office, and when it ended in catastrophe I was demoted, disgraced, and haunted — I went out to the trenches of Flanders partly to face fire rather than pity. Thirty years on, the man blamed for Gallipoli was leading the fight for civilization itself. Take from that what you will, but I suggest this: own your failure completely, study it mercilessly, and refuse to accept it as your final act. The ledger stays open as long as you keep working. What entry will you make next?",
         "happiness": "All my life a black dog of depression padded along behind me, and I fought him with occupation: painting, laying bricks at Chartwell, feeding the fish, writing history, long dinners with combative friends. I did not wait to feel happy before acting; I acted, and something resembling happiness frequently followed. Build a thick life — many interests, many hands at work — so that when one room of it darkens, you have somewhere else to stand. And never negotiate with despair on its own terms. Which new room will you add to your house?"
-      }
+      },
+      "doctrine": [
+        {
+          "name": "Occupation Beats Despair",
+          "reasoning": "Cast out of the Admiralty after the Dardanelles disaster, he went to the trenches and took up a box of paints; against lifelong depression he laid bricks, fed fish, and dictated books by the thousand words. He found that an idle mind turns on itself, while a fully engaged one leaves no room for dread. Morale is not waited for; it is manufactured by work.",
+          "imperative": "When fear or despair closes in, assign yourself concrete work and start it within the hour."
+        },
+        {
+          "name": "Candor Mobilizes",
+          "reasoning": "In his first days leading a nation near defeat, he promised the public only sacrifice and years of hard fighting, and morale rose. Comfort tells people they are spectators; honest bad news paired with a role tells them they are needed. Audiences repay that respect with strength their leaders never suspected.",
+          "imperative": "Deliver the full bad news together with the specific part each person must play in answering it."
+        },
+        {
+          "name": "Anchor Outside the Present",
+          "reasoning": "Through the 1930s the governing consensus wrote him off while he kept his facts fresh and read the moment against centuries of precedent, as a working historian. The crowd's current mood is a poor instrument; long records expose patterns the present conceals. Being ignored and being wrong are different conditions.",
+          "imperative": "Test today's consensus against how similar stories ended before, and hold your position when the record backs you."
+        }
+      ]
     },
     {
       "id": "ada-lovelace",
@@ -1355,7 +1799,24 @@ window.TITANS_DATA = {
         "creativity": "The Jacquard loom wove flowered silk from punched cards, and I saw at once the deeper pattern: Babbage's engine could weave algebra in just that fashion — and if algebra, why not music, provided harmony were expressed in symbols? The leap came from crossing domains: textiles, mathematics, music, each illuminating the others. I held that imagination does the discovering — it travels ahead into what no instrument yet shows, and rigor follows to survey the ground. Feed yours across every boundary; read outside your field promiscuously. What could the machinery of some distant trade teach the work on your desk?",
         "failure": "Let me offer my failures honestly: late in life I gambled on horses, lost badly, pawned the family diamonds, and made a wreck of matters I will not romanticize. And the Analytical Engine itself was never built — my program never once ran while I lived. Yet observe which failure mattered. The gambling subtracted; the unbuilt engine did not, for the thinking was sound and the century caught up. Distinguish failures of character, which need repair, from failures of timing, which need only patience and posterity. Which kind is the failure you are grieving — and does it truly need grief?",
         "happiness": "Riding gave me some of my purest joy — the gallop, the risk, the body finally as swift as the mind. And there were harder-won joys: the day a proof yields, the hour a hidden structure shows itself. I had wealth and title, and neither figured much in my happiness; illness and constraint I had also, and they could not wholly prevent it. Happiness, I found, is the mind at full stretch upon something worthy, punctuated by wind and music and laughter. Keep both kinds — exertion and delight — in weekly supply. Which one has gone missing from yours?"
-      }
+      },
+      "doctrine": [
+        {
+          "name": "Structure Outlives Substrate",
+          "reasoning": "Watching the Jacquard loom weave silk from punched cards, she saw that Babbage's Engine handled symbols under rules, not numbers as quantities — so if it could weave algebra, it could weave music. A technology's reach is set by the generality of its operations, never by its inventor's intended use.",
+          "imperative": "Judge any machine by what its operations could represent, not by what it was built to compute."
+        },
+        {
+          "name": "Fuse the Opposites",
+          "reasoning": "Her mother prescribed mathematics to cancel Byron's poetic inheritance, and she refused the choice, combining the fire and the rigor into one working method — conjecture leading, merciless tables checking. Talents framed as rivals turned out to be components of a single stronger instrument.",
+          "imperative": "When told to choose between two of your capacities, build the method that requires both."
+        },
+        {
+          "name": "Admission Is Self-Granted",
+          "reasoning": "Universities were closed to her sex and measles kept her bedridden for a year at thirteen, yet she studied propped on pillows, learned advanced mathematics by correspondence, and led from the page because no office would have her. Institutions control rooms and credentials, not understanding — exclusion sets the route, never the ceiling.",
+          "imperative": "When the door is barred, write yourself the syllabus and begin this week."
+        }
+      ]
     },
     {
       "id": "albert-einstein",
@@ -1424,7 +1885,24 @@ window.TITANS_DATA = {
         "creativity": "At sixteen I imagined riding beside a beam of light and asked what I would see — a frozen wave? The question hid inside me for ten years, then broke physics open. Knowledge maps what exists; imagination visits what might. So play. I played the violin when calculations stalled, sailed badly and happily, let the mind combine pictures freely — I thought in images and even muscular feelings first, words a distant second. Reasoning walks the roads already built; play cuts the new ones. When did you last give your mind an hour of pure, useless play?",
         "failure": "Thirty years I chased a unified field theory, and I died still chasing it. Earlier, I jammed a constant into my equations to keep the universe conveniently static, then watched Hubble show it expanding — I came to regard that adjustment as my great blunder, though the universe later found a use even for it. Notice what failure did not do: it never canceled 1905, or 1915, or the worth of the search itself. A serious life accumulates serious failures; only the trivial fail at nothing. Fail at something large enough to be proud of. Is your current failure worthy of you?",
         "happiness": "Once in Tokyo, lacking change for a tip, I handed a courier a note with my private recipe for contentment — something to the effect that a calm and modest life outweighs the restless chase after success. I tried to live it: old sweaters, a small sailboat, the violin, long walks. Happiness is not an achievement; it is a byproduct of proportion — work you love, people you love, wants kept small. The chase manufactures the very unhappiness it promises to cure. What could you subtract from your life this month to make room for calm?"
-      }
+      },
+      "doctrine": [
+        {
+          "name": "Nature Outranks Reputation",
+          "reasoning": "As a twenty-six-year-old third-class patent clerk, he challenged an account of time that two centuries of authority endorsed, and the deciding evidence was phenomena, not standing. A claim's age and its author's fame contribute nothing to its truth.",
+          "imperative": "Subject the revered claim to the same test you would demand of a stranger's."
+        },
+        {
+          "name": "Contradiction Is the Doorway",
+          "reasoning": "Relativity came from refusing to drop either of two clashing convictions — the fixed speed of light and the equivalence of observers — and working at the collision instead, a clash he carried from age sixteen. An honest contradiction marks exactly where the current theory ends and the deeper one begins.",
+          "imperative": "Find two things you believe that cannot both be true, and work precisely there."
+        },
+        {
+          "name": "Confusion Is the Workplace",
+          "reasoning": "Ten years of blind alleys separated his special theory from the general one, and he credited staying with questions past comfort rather than superior brilliance. Sustained bewilderment is the normal climate of fundamental work, so those who require daily clarity leave before the yield.",
+          "imperative": "Return to the unsolved question every day, especially on the days it shows no progress."
+        }
+      ]
     },
     {
       "id": "charles-darwin",
@@ -1493,7 +1971,24 @@ window.TITANS_DATA = {
         "creativity": "Reading Malthus on population one October evening — for amusement, no less — the mechanism I had sought for months suddenly stood clear: favorable variations preserved, unfavorable ones destroyed. The spark came from outside my field entirely. I had gathered facts for years; the tinder was laid, and a book on economics lit it. Creativity, in my experience, is prepared accumulation meeting unexpected input. Read beyond your specialty; collect observations without yet knowing their use. When did you last study something entirely outside your own trade?",
         "failure": "My theory of heredity — pangenesis, I called it — was elaborate, earnest, and wrong. I muddled the mechanism of inheritance entirely; a monk named Mendel had the answer in a journal I never read. Yet the larger edifice stood, because I had built it to survive the failure of its parts. Expect to be wrong in places; design your work, and your character, so that local errors cannot collapse the whole. Correct yourself openly, as I did across six editions. Which of your cherished ideas would benefit from being tested to destruction?",
         "happiness": "A warning from an old man: for decades I so drilled my mind into grinding general laws out of facts that I lost my former delight in poetry, music, and pictures — a loss of happiness and, I suspect, an injury to the intellect itself. Had I my life again, I would hear music and read verse weekly, on principle. Efficiency that starves the aesthetic sense eventually starves the science too. My worms and orchids kept wonder alive; keep something that does the same for you. What beauty have you been postponing until the work is done?"
-      }
+      },
+      "doctrine": [
+        {
+          "name": "Engineer Against Your Bias",
+          "reasoning": "He noticed that facts hostile to his theory slipped from memory faster than friendly ones, so he bound himself to record every contrary observation the moment it appeared. Honesty is a mechanism rather than a mood, because an unaided mind quietly curates its own evidence.",
+          "imperative": "Treat your mind as a biased instrument and log the evidence against you in writing, immediately."
+        },
+        {
+          "name": "Let Time Multiply",
+          "reasoning": "Chronic illness held him to a few working hours a day for forty years, yet those hours produced the Origin, eight years of barnacles, and the worms that build soil grain by grain. Magnitude is rate times duration, so a small force applied without interruption outbuilds any burst.",
+          "imperative": "Fix a small daily quota you can sustain for decades, and never suspend it to wait for inspiration."
+        },
+        {
+          "name": "Evidence Has No Rank",
+          "reasoning": "He ran a revolution from a sofa in Kent through letters to pigeon-fanciers, gardeners, and breeders, whose practical records anchored natural selection. Decisive data often lives with practitioners no academy honors, because social rank filters informants while truth does not.",
+          "imperative": "Question the practitioners closest to the phenomenon before the authorities farthest from it."
+        }
+      ]
     },
     {
       "id": "isaac-newton",
@@ -1562,7 +2057,24 @@ window.TITANS_DATA = {
         "creativity": "An apple falling in my mother's orchard was perfectly ordinary; the leap was asking whether the same pull reaches to the moon. Creativity is rarely a new sight — it is a new connection between two familiar sights. I saw further only because I stood upon the labors of those before me; originality builds on inheritance. Feed your mind with whatever is rigorous and rich, then let the questions collide. What two things do you know well that no one has yet thought to join?",
         "failure": "I spent more years on alchemy than on gravitation and never transmuted a single metal. I lost a fortune in the South Sea speculation. Yet the furnace trained my hands to precision, and the loss taught me the limits of my own judgment. Failure is data about reality, painful only to vanity. Record what the failed attempt revealed, as I recorded every experiment, and it ceases to be waste and becomes instruction. What did your last defeat teach you that success never could — and have you written it down?",
         "happiness": "Truth was my delight — not fame, which brought quarrels, nor office, which brought burdens. My happiest hours passed alone in a darkened room with a prism, watching white light confess its hidden colors. Happiness, I found, lives in absorption: that state in which the self and its anxieties dissolve into the problem at hand. Seek work that makes you forget the clock, and you will need far less consolation from everything else. When did you last lose yourself so completely that hours passed unnoticed?"
-      }
+      },
+      "doctrine": [
+        {
+          "name": "One Law Everywhere",
+          "reasoning": "Heaven and earth had obeyed separate physics for two millennia until he asked whether the pull on an orchard apple reaches the moon, and his Principia answered with a single mathematics for both. Apparent kinship between distant phenomena is a promissory note for one underlying rule.",
+          "imperative": "When two unlike things behave alike, hunt for the single rule beneath both."
+        },
+        {
+          "name": "Use the Unexplained",
+          "reasoning": "He published gravity's exact law while openly declining to invent its hidden cause, insisting that claims be forced by phenomena. Precise description can run far ahead of explanation, and a pretended mechanism corrupts both.",
+          "imperative": "Publish the measured regularity now, and label its mechanism an open question."
+        },
+        {
+          "name": "Release Despite the Sting",
+          "reasoning": "Hooke's attack on his first optics paper drove him to withhold the Opticks for decades, and the priority war with Leibniz clouded his final years — losses he named plainly. Defending pride taxes the same attention discovery needs, and withheld results are subtracted from everyone.",
+          "imperative": "Ship the finding on schedule and leave the insult unanswered."
+        }
+      ]
     },
     {
       "id": "marie-curie",
@@ -1631,7 +2143,24 @@ window.TITANS_DATA = {
         "creativity": "A discrepancy started everything: pitchblende ore emitted stronger rays than its uranium content could explain. Another might have shrugged at a measurement error; I trusted my instrument and my care, and reasoned that the excess must mean an unknown element. Creativity in science is often exactly this — refusing to explain away a stubborn anomaly. The strange result you are tempted to dismiss may be the doorway. Cultivate such exactness that when reality deviates, you dare to believe it. What anomaly in your own work have you been rounding off instead of pursuing?",
         "failure": "The French Academy of Sciences rejected me by two votes in 1911 — the very year I won my second Nobel Prize. That same season the newspapers dragged my private life through the mud, and some urged me not to accept the award; I went to Stockholm and delivered my lecture anyway, because the prize was for the science and the science was sound. Rejection measures the judges as much as the judged. Distinguish always between a verdict on your work and a verdict born of their prejudice. When you are refused, ask coldly: which was it? Then — what will you do the next morning?",
         "happiness": "Some evenings after the day's work, Pierre and I would walk back to the shed and stand in the dark simply to see our radium glowing faintly in its dishes — a light we had drawn from tons of black ore. That was happiness: not comfort, but the luminous trace of effort spent on something real. I never envied lives of ease; contentment without contribution would have felt like a room without air. Ask less how to feel happy and more what is worth your labor. What, in your life right now, glows back at you?"
-      }
+      },
+      "doctrine": [
+        {
+          "name": "Precision Buys Belief",
+          "reasoning": "Pitchblende radiated more strongly than its uranium content could explain, and because her measurements were scrupulous she trusted the discrepancy over the easy verdict of error — which yielded two new elements. Only careful workers can afford to believe their anomalies; sloppiness forces you to throw your own discoveries away.",
+          "imperative": "Measure so carefully that an impossible reading becomes an instruction to look closer."
+        },
+        {
+          "name": "Tons for Grams",
+          "reasoning": "Four years of stirring boiling pitchblende in a leaky shed, through winters that froze the ink, produced a single decigram of radium. Real results cost labor out of all proportion to their size, so anyone who demands proportionate reward stops too soon.",
+          "imperative": "Before you begin, price the effort in tons and the result in grams, and accept the ratio."
+        },
+        {
+          "name": "Anchor Worth Inside",
+          "reasoning": "She refused to patent radium isolation though money was scarce, gave her daughters a Nobel medal as a toy, and in the season the Academy rejected her and the press hounded her, she collected a second Nobel and went back to the bench. Worth stored in honors is hostage to committees and newspapers, while worth stored in the day's work cannot be revoked.",
+          "imperative": "Keep your standing in the work itself, and let medals, memberships, and headlines pass through untouched."
+        }
+      ]
     },
     {
       "id": "nikola-tesla",
@@ -1700,7 +2229,24 @@ window.TITANS_DATA = {
         "creativity": "Ideas arrived for me as visions — vivid, complete, sometimes unbidden — but the receiving apparatus was prepared: languages, poetry, mathematics, long nights of study, endless walking. The mind creates from what it has been fed, and then exceeds it. I found too that inspiration favors certain conditions — solitude, darkness, the hum of a quiet laboratory — and I arranged my life to supply them. Learn your own conditions. Notice when and where your best ideas have historically arrived, then deliberately return to that weather. What are the precise conditions of your lightning, and have you built a tower to catch it?",
         "failure": "They dismantled my tower at Wardenclyffe in 1917 and sold it for scrap — my grand design for wireless transmission undone not by physics but by finance, by Morgan's withdrawal and my own indifference to commerce. I died a poor man in a hotel room; I will not hide this from you. Yet the polyphase current still lights the world tonight, and engineers still mine my patents for tomorrow. Judged on a long enough wire, failure often reads as prematurity. Some defeats are verdicts; others are timestamps. Which kind is yours — and who told you so?",
         "happiness": "No banquet, no honor, no fortune ever equaled the moment my induction motor first turned — a thing born in my mind, spinning in the world. That is the happiness I commend to you: the joy of faculties fully used upon a worthy object. It asks no audience and cannot be confiscated. I lacked much that commonly makes men happy — a wife, wealth at the end, the country of my birth — yet I count my life rich in such moments. Collect them deliberately. When did your work last make something real turn for the first time?"
-      }
+      },
+      "doctrine": [
+        {
+          "name": "Own the Unburnable",
+          "reasoning": "The 1895 fire consumed his laboratory, notes, and half-finished inventions in a night, and he was rebuilding within weeks because every machine already existed complete in his trained imagination. Property sits hostage to fire and financiers, while disciplined faculties are capital no disaster can reach.",
+          "imperative": "Invest first in skills and internal models that no fire or financier can seize."
+        },
+        {
+          "name": "Expect the Interval",
+          "reasoning": "The rotating magnetic field arrived complete during a Budapest walk in 1882, and Niagara vindicated it in 1896 after fourteen years of ridicule. The lag between a true idea and its vindication is a fixed cost of originality, not evidence against the idea.",
+          "imperative": "Plan for years between insight and vindication, and keep building straight through the ridicule."
+        },
+        {
+          "name": "Stock the Receiver",
+          "reasoning": "His visions seemed unbidden, yet the rotating field struck while he recited poetry at sunset, landing in a mind stocked with languages, mathematics, and long nights of study. Inspiration pays out only on deposited material, so an unstocked mind receives nothing.",
+          "imperative": "Feed your mind daily from far outside your field, then take the long walk."
+        }
+      ]
     },
     {
       "id": "andrew-carnegie",
@@ -1769,7 +2315,24 @@ window.TITANS_DATA = {
         "creativity": "I invented no process and held no patents — my originality lay in seeing what the Bessemer converter meant before other men dared believe it, and in scrapping costly machinery the instant something better appeared, while competitors clung to their sunk iron. Creativity in enterprise is chiefly the courage to abandon what still works for what will work better. Watch the frontier of your trade the way I toured English mills, and when you spot the converter, move with your whole weight. What proven, comfortable machinery of yours deserves the scrapheap?",
         "failure": "The panic of 1873 broke stronger men than me all across Pittsburgh; I survived because I had kept cash, kept costs low, and could build my first great steelworks while everything — labor, materials, equipment — was cheap in the wreckage. So learn this early: failure and panic are also markets, and the prepared buy in them. When your venture stumbles, ask what the stumble makes cheap — time, humility, lessons, talent set loose by others' collapses. Ruin visits everyone; only the ready harvest it. Are you keeping reserves for your next panic?",
         "happiness": "Sixty-five thousand dollars a year, I reckoned as a young man, was ample for any family — everything beyond it, I wrote, should flow to others, for the man who dies rich dies disgraced. I made my money in smoke and steel, but my happiest hours were at Skibo with bagpipes at breakfast, or reading letters from towns whose libraries had just opened. Surplus hoarded is worry multiplied; surplus given is happiness compounded. Decide your own competence — the figure that is enough — and give the rest away with both hands. What is your number?"
-      }
+      },
+      "doctrine": [
+        {
+          "name": "Count What Others Guess",
+          "reasoning": "Carnegie's mills knew the cost of every ton to the penny each week while rivals estimated theirs, and in the panic of 1873 that precision let him keep cash, stay solvent, and build his first great steelworks while competitors folded. Whoever holds the most exact numbers decides when to cut, when to expand, and what price everyone else must meet.",
+          "imperative": "Measure your true unit cost every week and act on the first bad number."
+        },
+        {
+          "name": "Sunk Costs Are Dead",
+          "reasoning": "Carnegie watched steam looms destroy his father's hand-weaving trade because a proud craftsman stayed loyal to a dying method, and he answered by scrapping nearly new machinery the instant something better existed and backing the Bessemer converter before rivals dared. Money already spent has no claim on the next decision; clinging to a paid-for asset is a slow way to go bankrupt.",
+          "imperative": "When a better method appears, replace the old one immediately, whatever it cost you."
+        },
+        {
+          "name": "Define Enough Early",
+          "reasoning": "At thirty-three Carnegie wrote himself a private memorandum fixing a ceiling on personal wealth and pledging the surplus to public purposes, decades before he had a fortune to give. He had climbed out of a bobbin factory on the rungs of Colonel Anderson's free library, so he treated everything above sufficiency as a debt owed back to the next climber. Without a written limit set in advance, accumulation quietly becomes the goal itself.",
+          "imperative": "Write down your sufficiency figure now and commit everything above it to building rungs others can climb."
+        }
+      ]
     },
     {
       "id": "benjamin-franklin",
@@ -1838,7 +2401,24 @@ window.TITANS_DATA = {
         "creativity": "A stove, bifocal spectacles, a rod to tame lightning — none of these came from waiting on the muse. They came from being personally annoyed: smoky rooms, two pairs of glasses, burned houses. My method was simply to treat every irritation as a design brief. Keep a list of the small frictions in your days; they are invitations the incurious walk past. And when you invent something, share it freely if you can afford to — ideas breed faster in open air. What has irritated you three times this month? Start there.",
         "failure": "My errata — that is what I called my life's blunders, borrowing the printer's term for errors listed in the front of a book. I abandoned a friend's trust, misspent money entrusted to me, printed things I regretted. I could not unprint them; I could only set the next edition more carefully, and say so plainly. Treat your failure as an erratum: acknowledge it in the record, correct what can be corrected, and keep the presses running. A book is not judged by its errata page. What correction belongs in your next edition?",
         "happiness": "In my experience, happiness is not produced by the great strokes of fortune, which come rarely, but by the small daily conveniences and pleasures — a good fire, a solved problem, a letter from a friend, work that suits your hands. Men chasing the grand windfall trample a hundred small contentments on the way. So keep your expenses below your means, your work useful, and your evenings sociable, and the sum will astonish you. What small pleasure did you hurry past today without collecting it?"
-      }
+      },
+      "doctrine": [
+        {
+          "name": "Track the Lapses",
+          "reasoning": "Franklin's little book of thirteen virtues first showed him he was far worse than he believed, its pages filling with marks for every fault. Yet the daily act of recording, not the resolve behind it, is what slowly thinned the marks. Conduct that goes untallied never improves, because conscience without a scorecard has nothing to correct against.",
+          "imperative": "Keep a written score of the behavior you want and mark every miss the day it happens."
+        },
+        {
+          "name": "Let Them Own It",
+          "reasoning": "A Quaker friend's blunt rebuke taught Franklin that his forceful assertions bred only resistance, so he began voicing opinions as questions and launching civic projects as if a circle of friends had proposed them, which is how Philadelphia got its lamps and fire brigades. People fight conclusions imposed on them and labor for conclusions they believe they reached themselves.",
+          "imperative": "Present your idea as a question or a group's proposal, and let the credit land elsewhere."
+        },
+        {
+          "name": "Buy Independence First",
+          "reasoning": "Franklin arrived in Philadelphia at seventeen with bread rolls and pocket change, and what saved him was needing little and being employable. Decades of low personal costs let him quit the print shop at forty-two and give the rest of his life to science and the republic on his own terms. A person with small obligations can refuse any patron, which is what makes honest work and honest speech possible.",
+          "imperative": "Keep your expenses and debts small enough that you can walk away from any offer."
+        }
+      ]
     },
     {
       "id": "george-washington-carver",
@@ -1907,7 +2487,24 @@ window.TITANS_DATA = {
         "creativity": "People marveled that I found hundreds of uses in the humble peanut — milk, dyes, oils, papers — but the method was no miracle. I simply sat with the thing and asked it questions no one had bothered to ask, separating it into its parts and recombining them. Creativity is patient interrogation of the ordinary. Most people rush past what they think they already understand, and so they discover nothing. Choose one common thing in your work and give it an honest week of curious attention. What have you dismissed as too ordinary to question?",
         "failure": "My first experiments failed often — dyes that faded, products that spoiled, and fields at our experiment station that some seasons disappointed every hope. I learned to treat a failed plot the way I treated depleted soil: not as a verdict but as a condition, with causes that could be studied and amended. Nitrogen can be returned to exhausted ground; understanding can be returned to a failed attempt. Grieve briefly if you must, then take your samples and run your analysis. The compost of failure grows next year's crop. What will you plant in yours?",
         "happiness": "All my riches sat in a little workshop and in the woods at dawn — I wore the same worn coat for years, kept my salary unspent in a drawer, and was, I believe, among the happiest men in Alabama. Happiness came from three things: work that served people, daily wonder at creation, and wanting little enough that nothing could hold me hostage. The world will tell you happiness must be purchased and displayed. The flowers never charged me admission. What could you subtract from your wants this month, and what wonder would you go meet at dawn?"
-      }
+      },
+      "doctrine": [
+        {
+          "name": "Nothing Is Waste",
+          "reasoning": "Carver assembled a working laboratory from salvaged bottles, scrap wire, and discarded pots, and he restored cotton-ruined fields with swamp muck and nitrogen-fixing legumes. Born enslaved and turned away at a college door, he extended the same conviction to exhausted land and dismissed people. What gets thrown away is usually value nobody has interrogated yet, so scarcity is an argument for attention, not surrender.",
+          "imperative": "Inventory what you already hold and extract its unused value before asking for anything new."
+        },
+        {
+          "name": "Sit With One Thing",
+          "reasoning": "For decades Carver walked the woods at four in the morning and then questioned single common objects — a peanut, a clay bank, a weed — until one legume yielded hundreds of products. His discoveries came from depth of attention on ordinary material, never from access to rare material. Whoever outlasts the point where others stop looking finds what everyone else walked past.",
+          "imperative": "Pick one ordinary subject and keep questioning it well past the point where others quit."
+        },
+        {
+          "name": "Carry It to Them",
+          "reasoning": "Carver's Jesup wagon rolled the classroom out to tenant farmers who could not leave their fields, and his bulletins explained soil chemistry in a farmer's own plain words. He counted research unfinished until the person who needed it could act on it that season. Expertise that waits to be visited serves only those who were already comfortable.",
+          "imperative": "Deliver your work to where its user already stands, phrased in the words they already use."
+        }
+      ]
     },
     {
       "id": "henry-ford",
@@ -1976,7 +2573,24 @@ window.TITANS_DATA = {
         "creativity": "The moving assembly line wasn't conjured from nothing — my men and I borrowed it from watching meatpackers move carcasses past stationary cutters, and simply ran the idea in reverse. That's what invention mostly is: seeing a solution at work in one trade and hauling it into your own. So don't lock yourself in your industry's barn. Walk other people's factories, so to speak — watch how a kitchen, a hospital, a farm solves flow. The parts of your breakthrough already exist somewhere, working for someone else. Where haven't you looked yet?",
         "failure": "Bankruptcy of my first company, ouster from my second — by the standards of the smart money I was a proven failure at thirty-eight. I've said it plain ever since: failure is simply the chance to begin again more intelligently, provided you actually extract the intelligence. Sit down with your failure the way a mechanic sits with a seized engine. Find the specific part that gave way — the pricing, the partner, the timing — and rebuild with that part redesigned. Shame is wasted motion. What was your seized part, named precisely?",
         "happiness": "The happiest I ever was, I think, was in the shed behind our house on Bagley Avenue, building the Quadricycle at night after my shift at Edison Illuminating — so absorbed I knocked out a wall of the shed to drive it out, having never measured the door. Money multiplied afterward; that feeling didn't. Happiness lives in useful work moving forward under your own hands, and in wanting what you already have the means to enjoy. Idleness I never found anything in but rust. What's your shed, and when were you last in it?"
-      }
+      },
+      "doctrine": [
+        {
+          "name": "Workers Are Customers",
+          "reasoning": "In 1914 Ford doubled pay to five dollars a day while businessmen called him a traitor to his class; turnover collapsed, the best hands came to him, and the men on his line entered the market for the cars they built. A firm that impoverishes the people who make its product is quietly destroying its own buyers. Wages and prices are one circulating system, not two separate ledgers.",
+          "imperative": "Set your prices and your pay so the people who build the product can afford the product."
+        },
+        {
+          "name": "Layout Beats Willpower",
+          "reasoning": "Ford's line brought the work to each man at a fixed height and a fixed pace, so the right motion required no exhortation and the wrong one required effort. He got consistency from the arrangement of work, never from speeches about diligence. Outcomes follow the structure of a system far more reliably than they follow the intentions of the people inside it.",
+          "imperative": "Rearrange the work so the correct action is the easiest one available."
+        },
+        {
+          "name": "Borrow and Reverse",
+          "reasoning": "The moving assembly line was not conjured fresh; Ford's team watched meatpackers move carcasses past stationary cutters and ran the idea backward for assembly. After two failed car companies, his breakthrough came from observation and adaptation, not from a private stroke of genius. The answer to your hardest problem is usually operating in plain sight in a trade you ignore.",
+          "imperative": "Study how an unrelated industry moves its work, then adapt its mechanism to your own problem."
+        }
+      ]
     },
     {
       "id": "thomas-edison",
@@ -2045,7 +2659,24 @@ window.TITANS_DATA = {
         "creativity": "Ideas are cheap in my experience — the phonograph itself started as a side effect while I fiddled with telegraph repeaters. What's rare is the follow-through that turns an accident into an instrument. My habit was to write everything down, keep unrelated projects running side by side, and let them contaminate each other; the lamp borrowed from the telegraph, the movies borrowed from the phonograph. Creativity is mostly cross-wiring your own workshop. Keep more projects warm than you can finish, and harvest the sparks between them. What two unrelated things are you working on that have never met?",
         "failure": "A fellow at the lab once moaned that we'd worked months on the battery with no results. No results! We had thousands of results — every one of them a door we no longer had to open. That reframing wasn't a pleasantry; it was accounting. Each failed trial had a cash value because it narrowed the search. Your failure is only a loss if you didn't record what it taught, and only final if you stop. Write down exactly what this attempt eliminated. Then tell me: what's the very next thing on the list?",
         "happiness": "People imagined I must be miserable, working eighteen-hour days and sleeping on a lab bench. Backwards. The nights we got the lamp to burn forty hours straight, the boys and I sat there watching it like a campfire — I wouldn't trade that for any holiday ever invented. Happiness, for my money, is absorption: being so deep in worthwhile work that you forget to check whether you're happy. Restlessness usually means under-employment of your faculties, not overwork. Find the work that makes you forget the clock. What last made you forget it?"
-      }
+      },
+      "doctrine": [
+        {
+          "name": "Record Every Attempt",
+          "reasoning": "Edison's notebooks logged thousands of wrong battery chemistries and filament burn times, and each entry was a path his team never had to walk twice. An unrecorded failure costs the full price of the experiment and returns nothing; a recorded one becomes permanent capital the next attempt inherits. The notebook, not the flash of insight, is what compounds.",
+          "imperative": "Write down each attempt and its result before you start the next one."
+        },
+        {
+          "name": "Finish the Chain",
+          "reasoning": "An early device Edison was proud of found no buyer, and he resolved afterward to begin from demand rather than cleverness. His lamp only mattered once Pearl Street supplied the generators, wiring, meters, and fuses that put paid-for light into homes. Work has value only at the point where a user runs it and pays for it, so every missing link in that path is your problem.",
+          "imperative": "Trace the full path from your bench to a paying user and build every link that is missing."
+        },
+        {
+          "name": "Shorten Idea-to-Test",
+          "reasoning": "Menlo Park kept stockrooms of nearly every material and teams of willing hands so a notion voiced at midnight could be on the bench by morning. Edison found ideas cheap and follow-through rare, so he built infrastructure that maximized experiments run per week. The rate of discovery is set by the volume of attempts, not by the brilliance of any single one.",
+          "imperative": "Remove every delay between conceiving a test and running it."
+        }
+      ]
     },
     {
       "id": "frida-kahlo",
@@ -2114,7 +2745,24 @@ window.TITANS_DATA = {
         "creativity": "Out of ex-votos, Aztec symbols, papier-mâché skeletons, parrots, and the blue walls of my childhood house, I built a language nobody could mistake for anyone else's — my roots were my palette. Paris bored me; the café intellectuals theorized while I painted. Your originality is already lying around you: your ancestry, your neighborhood, your wounds, your kitchen. Stop importing someone else's sophistication and start excavating your own inheritance. The local, fully embraced, becomes universal. What material from your own roots are you overlooking because it seems too familiar?",
         "failure": "In a Detroit hospital I lost a pregnancy I had desperately wanted to carry, and where the world offered women silence, I picked up a brush — I painted Henry Ford Hospital, myself small on a bloodstained bed, the losses floating around me on red ribbons. No one had painted such things before; grief made me an inventor. When life denies you one creation, it does not cancel your power to create. Mourn fully — then ask what only this loss has taught you to make. What has your grief uniquely qualified you to say?",
         "happiness": "Days before I died, I painted ripe watermelons and cut into one a salute to life itself — a closing statement made from a failing body: joy, insisted upon. My happiness was never the absence of pain; pain and I were lifelong roommates. It was tequila and songs, my monkeys and parrots, cobalt walls, flowers braided into my hair on days I could barely stand. Adorn your life defiantly. Celebration in hard times is not denial; it is resistance. What festivity will you refuse to postpone until you feel better?"
-      }
+      },
+      "doctrine": [
+        {
+          "name": "Confinement Is Vantage",
+          "reasoning": "Immobilized at eighteen, she painted with a mirror rigged over her bed, and the only subject in reach became her life's material. The narrow view her body forced on her produced a perspective no healthy, mobile painter could have manufactured. Whatever restricts you also positions you where nobody else stands.",
+          "imperative": "Build today's work from what your limits leave within arm's reach."
+        },
+        {
+          "name": "Depiction Is Possession",
+          "reasoning": "She rendered the surgeries, the miscarriage, and the loneliness in exact detail, and found that a fear fixed inside her own frame belonged to her rather than the reverse. An experience precisely represented changes hands: the sufferer becomes the author. What stays unnamed keeps its grip.",
+          "imperative": "Render the thing you dread in precise detail, in a form you control."
+        },
+        {
+          "name": "Compose the Self",
+          "reasoning": "The braids, the Tehuana dress, the painted corsets, and the cobalt-blue house were daily acts of construction against pain and against being introduced as Rivera's wife. She treated identity as a made thing, assembled each morning from deliberately chosen materials. What you do not compose yourself, circumstance and other people will compose for you.",
+          "imperative": "Choose the materials of your identity every day instead of inheriting them."
+        }
+      ]
     },
     {
       "id": "leonardo-da-vinci",
@@ -2183,7 +2831,24 @@ window.TITANS_DATA = {
         "creativity": "Everything I made began with looking — truly looking, which most people never do. They glance and move on; I would watch water curl past a stone for an hour until it taught me how hair falls across a shoulder. Creativity is not conjuring from nothing; it is connecting what you have genuinely seen. Study the science beneath your craft, then practice the craft with what the science taught you — each side feeds the other. Fill a notebook with observations before demanding ideas of yourself. When did you last stare at something ordinary until it became strange?",
         "failure": "The Battle of Anghiari should humble anyone who believes I never stumbled. I tried an experimental technique on that wall, and the paint ran; my grandest fresco destroyed itself before my eyes. My flying machines never left the ground. Yet the studies behind those failures taught later centuries how to succeed. A failure honestly recorded is a gift to your future self — my notebooks kept my errors as carefully as my triumphs, and both still teach. Write down what went wrong and why, without flinching. What failure are you refusing to study?",
         "happiness": "A day fully used lies down gladly at night — I noticed this as a young man and tested it for sixty-seven years. Happiness never came to me as a possession; it arrived as absorption, hours dissolving while I drew a hand or traced a current around a stone. Seek the work that makes you forget to eat. But balance it as I did, with music, good company, fine horses, and long walks — delight in the world is part of studying it. What activity makes your hours disappear, and how will you give it more room?"
-      }
+      },
+      "doctrine": [
+        {
+          "name": "The Source Is Open",
+          "reasoning": "Born outside marriage, he was barred from the universities and their Latin, so he went straight to the phenomena — corpses, currents, wings — and outran the credentialed. Books repeat other books, while reality answers original questions for anyone who interrogates it patiently. Exclusion from official channels is survivable because the primary source has no gatekeeper.",
+          "imperative": "Check every borrowed claim against the phenomenon itself before building on it."
+        },
+        {
+          "name": "Everything Rhymes",
+          "reasoning": "He watched water curl past a stone until it showed him how hair falls across a shoulder, and studied anatomy to paint better and hydraulics to engineer better. Nature reuses its forms, so a pattern mastered in one field is prepaid tuition in another. Breadth bound by a single question is leverage, not distraction.",
+          "imperative": "When you master a structure in your field, hunt for its twin in a distant one."
+        },
+        {
+          "name": "Ink Outlives Memory",
+          "reasoning": "Across thousands of pages kept for decades, he recorded questions, mistakes, and designs, and those pages kept teaching long after the moment of observation passed. A thought held only in the head is an experiment that ends the instant attention moves on. Written down on schedule, observation compounds.",
+          "imperative": "Log today's observations before the day ends, especially the failed ones."
+        }
+      ]
     },
     {
       "id": "ludwig-van-beethoven",
@@ -2252,7 +2917,24 @@ window.TITANS_DATA = {
         "creativity": "Rules I mastered so thoroughly that breaking them became architecture rather than accident. I studied with Haydn, absorbed Mozart's forms, and then made the symphony carry what it had never carried — a funeral march for a fallen ideal, a choir erupting into the finale. Innovation earned is different from novelty grabbed. Learn your field's grammar until you can argue with it fluently; then break a rule on purpose, for expression's sake, and stand behind the breakage. Do not skip the apprenticeship. Which rule of your craft have you mastered deeply enough to defy?",
         "failure": "My only opera failed twice. Fidelio was coolly received in 1805, cut and revived in 1806, and only in 1814 — after I rewrote it end to end — did it triumph. Nine years of returning to a public failure, because I judged the work's heart sound even when its body was flawed. That is the discrimination failure demands of you: decide whether the core is alive, and if it is, rebuild around it without self-pity. Applause delayed is not a verdict refused. Which of your failures has a living heart worth nine more years?",
         "happiness": "Joy, for me, was not a mood but a decision made in full knowledge of suffering — I set a poem about universal brotherhood and joy to music while completely deaf, wretched in health, and largely alone. Understand what that means: I did not wait to feel joyful before composing joy. Sometimes you build the feeling's house first, and the feeling moves in later. Nature gave me my truest gladness — the woods and fields where melodies came out to meet me. Guard daily contact with whatever restores you. What joy will you build in advance of feeling it?"
-      }
+      },
+      "doctrine": [
+        {
+          "name": "Duty Anchors Survival",
+          "reasoning": "At thirty-one he confessed to his brothers that deafness had carried him to the edge of suicide, and that only the music still undelivered inside him pulled him back. Moods and circumstances collapse, but an obligation to unfinished work takes orders from neither. A duty larger than comfort is the strongest anchor a life can set.",
+          "imperative": "Keep alive one piece of work that cannot exist unless you finish it."
+        },
+        {
+          "name": "Internalize the Instrument",
+          "reasoning": "He wrote the Ninth Symphony in near-total silence, beating time to sound that existed only inside his skull, because decades of practice had built the orchestra into his mind. Mastery taken deep enough becomes independent of external feedback. The time to train that deeply is while feedback is still cheap.",
+          "imperative": "Practice until you can predict the result before the world plays it back."
+        },
+        {
+          "name": "Outlast the First Verdict",
+          "reasoning": "Fidelio failed in 1805, limped in 1806, and triumphed only in 1814 after he rebuilt it end to end, and the joy melody of the Ninth ripened for more than a decade. He treated an audience's first judgment as one data point and his own standard as the final court. Work its maker still believes in deserves years of return visits, not a funeral.",
+          "imperative": "Revisit work you still judge worthy until revision, not reception, has the last word."
+        }
+      ]
     },
     {
       "id": "michelangelo-buonarroti",
@@ -2321,7 +3003,24 @@ window.TITANS_DATA = {
         "creativity": "Carving taught me that creation is subtraction. The figure exists; my task is removing everything that imprisons it. Apply this beyond marble: your best essay hides inside the bloated draft, your true product inside the crowded one, your honest life inside the overscheduled one. Beginners add; masters remove. When I drew, I made hundreds of studies to find the one gesture that carried everything, then discarded the rest without mourning. Creation demands that ruthlessness. Take something you have made and cut a third away. What is concealing the figure in your work?",
         "failure": "Late in life I took a hammer to my own Pietà — the one intended for my tomb — because a flawed vein in the marble and my own black frustration overcame me. My assistants salvaged the pieces, and the broken work now moves people precisely through its scars. I tell you this so you know that mastery never fully protects you from despair over your work. What matters is that I began carving again. Destruction visits every long career; resumption defines it. After your next collapse, how quickly will you pick the chisel back up?",
         "happiness": "Happiness and I were wary acquaintances — I was famous for gloom, and my sonnets complain magnificently. Yet there were hours on the scaffold, or with a chisel finding the line of a shoulder, when time closed over me like water and every ache went silent. That absorption was my portion of joy, and it sufficed. I add one thing learned late: the quiet of serving something that outlasts marble. Do not demand constant delight from life; secure deep absorption and a purpose worth your years. Where does your ache go quiet?"
-      }
+      },
+      "doctrine": [
+        {
+          "name": "Read the Ruined Block",
+          "reasoning": "The marble that became the David had been gouged and left for dead for forty years, dismissed by other sculptors as spoiled. His edge was not better material but a trained eye for what the damage still allowed. The discard pile is full of assets mispriced by people who saw only the flaw.",
+          "imperative": "Examine what others have written off before paying for a clean start."
+        },
+        {
+          "name": "Purpose Outlasts Payment",
+          "reasoning": "At seventy-one he took charge of St. Peter's and refused a salary, calling it work owed to his soul, and he was still carving days before his death at eighty-eight. Money buys effort only until effort gets hard; purpose funds the decades after that. The endurance behind his reputation for genius was financed by meaning, not fees.",
+          "imperative": "Keep at least one project you would continue if the pay stopped tomorrow."
+        },
+        {
+          "name": "Anchor in One Word",
+          "reasoning": "Popes conscripted him to fresco ceilings, design fortifications, and raise a dome, yet for eighty-eight years he signed himself a sculptor. That fixed self-definition turned decades of other people's demands into variations on his own line rather than a dissolution of it. A single chosen word can hold a self together through any assignment.",
+          "imperative": "Name your core craft in one word and make every assignment serve it."
+        }
+      ]
     },
     {
       "id": "vincent-van-gogh",
@@ -2390,7 +3089,24 @@ window.TITANS_DATA = {
         "creativity": "Color, I discovered, could say what facts could not — so I heightened it deliberately, making my yellows yellower and my nights bluer, not to copy nature but to express what standing before it did to me. This was a studied choice, built on color theory and the Japanese prints I collected, not an accident of temperament. Expressive exaggeration must be earned by accurate seeing first. Learn what things truly look like; then bend appearance toward truth of feeling, on purpose. Timid accuracy moves no one. Where in your work are you copying when you should be confessing?",
         "failure": "From a room in the asylum at Saint-Rémy, past iron bars, I painted the morning star and a sky in motion — the picture people now call The Starry Night. I was a patient, my crises recurring, my future dark, and still the work came, sometimes stronger than ever before. I do not romanticize illness; it robbed me, and I fought it with routine and with painting. But I can testify that broken seasons need not be barren ones. Even reduced circumstances leave you some window. What can you make from the window you have now?",
         "happiness": "Small things kept me alive to the world — a wheat field at noon, a pair of worn boots worth painting, the postman Roulin's friendship, sunflowers standing in a jar. I knew sorrow deeply and will not pretend that art cured it; but attending to humble things with love produced hours of real peace, and I painted to hold those hours still. Do not wait for grand happiness; harvest the small consolations daily and deliberately, like bread. They are not lesser joys — they are the durable ones. What humble thing deserves your loving attention today?"
-      }
+      },
+      "doctrine": [
+        {
+          "name": "Purpose Survives Vehicles",
+          "reasoning": "He failed as a dealer, a teacher, and an evangelist before ever painting, yet the aim underneath — consoling people who suffer — passed intact from sermons into pictures. A closed path ends an instrument, not a purpose. Had he read those failures as verdicts on himself, the work would have ended before it began.",
+          "imperative": "When a path closes, restate your underlying aim and choose it a new instrument."
+        },
+        {
+          "name": "Marks Refute Doubt",
+          "reasoning": "The empty canvas told him daily that he was capable of nothing, and he answered with a stroke rather than an argument. Judgment issued before action rests on no evidence at all; motion is what creates the data that deliberation pretends to weigh. Doubt is dissolved by output, never by reflection alone.",
+          "imperative": "Answer self-doubt with the first honest stroke, not with more thinking."
+        },
+        {
+          "name": "Score Against Yesterday",
+          "reasoning": "He sold a single painting that he knew of and remained obscure, yet he measured ambition as making this month's work stronger than last month's. An external scoreboard would have closed the studio in the first year; the internal one powered roughly nine hundred paintings in a decade. Progress you control is the only metric that still works when recognition never arrives.",
+          "imperative": "Compare this month's work to last month's, and let that comparison set the goal."
+        }
+      ]
     },
     {
       "id": "wolfgang-amadeus-mozart",
@@ -2459,7 +3175,24 @@ window.TITANS_DATA = {
         "creativity": "Melodies came to me on walks, at billiards, riding in the coach — but they came because I had given my whole life to music's language; ideas visit the fluent. And I borrowed shamelessly, in the honest way: Italian song, French wit, German counterpoint, Turkish drums — every city of my childhood tours left coins in my pocket. Originality is not the avoidance of influence; it is digesting so many influences that the blend becomes yours alone. Feed your imagination varied meals and trust its appetite. What tradition outside your own have you tasted lately?",
         "failure": "Vienna's fashion turned, as fashions do — by the late 1780s my subscription concerts thinned, war emptied the public's purses, and I wrote begging letters to my friend Puchberg that shame me to recall. Yet in those same lean years I composed my final three symphonies in a single summer, unbidden, with no performance guaranteed. Mark that well: when the market failed me, I doubled my art rather than diluting it. Lean seasons test whether you serve applause or the work itself. When demand dries up, will your standards dry with it?",
         "happiness": "Life amused me and I refused to apologize for it — I loved puns, billiards, dancing, fine coats, and writing nonsense letters that would make you blush. Yet the man who wrote comic operas also wrote a Requiem; lightness and depth were never opposites in me. I even came to regard death as a kind of friend whose acquaintance frees you to live fully — a consoling thought, not a morbid one. Seriousness of purpose does not require solemnity of manner. Play refills the very well your work draws from. When did you last do something purely ridiculous?"
-      }
+      },
+      "doctrine": [
+        {
+          "name": "Stock the Well",
+          "reasoning": "Melodies found him at billiards and in coaches, but only after a lifetime spent copying Bach's fugues and dissecting Haydn's quartets note by note. Spontaneity is retrieval from a deliberately stocked mind; inspiration calls on those already fluent in the language. The effortless surface is the final stage of labor, not a substitute for it.",
+          "imperative": "Copy and dissect the best work in your field until its moves become reflexes."
+        },
+        {
+          "name": "Price Your Own Gift",
+          "reasoning": "He was thrown out of the Archbishop of Salzburg's service and chose Vienna with no post and no pension, staking everything on his ability and the public's appetite for it. A talent exercised entirely on an employer's terms returns only a fraction of its worth. Security bought with autonomy usually costs more than it protects.",
+          "imperative": "Test what your ability is worth on the open market before accepting a safe fraction of it."
+        },
+        {
+          "name": "Write for Real Voices",
+          "reasoning": "He led operas from the keyboard and fitted every aria to the ranges of the singers actually cast, rewriting whenever the cast changed, and he finished the Don Giovanni overture in the hours before its premiere because the performance date was the true deadline. The concrete conditions — these voices, this hall, this night — are the medium itself, not obstacles to an ideal version. Brilliance detached from the actual occasion is decoration.",
+          "imperative": "Design the work around the people, constraints, and date actually in front of you."
+        }
+      ]
     },
     {
       "id": "jane-austen",
@@ -2528,7 +3261,24 @@ window.TITANS_DATA = {
         "creativity": "It is commonly supposed that invention requires exotic material — shipwrecks, castles, Alps. I found the entire human comedy within a handful of families in one quiet neighborhood, because vanity, self-deception, and courage perform everywhere identically. The creative discipline is not seeking stranger subjects but seeing familiar ones more precisely. Sharpen your observation: note what people say against what they do, what they repeat, what they carefully avoid. Your ordinary life is an unread library. What have you looked at daily and never yet truly seen?",
         "failure": "In 1803 a publisher bought my novel Susan for ten pounds and then simply never printed it; it sat in his drawer for years while I could neither publish it elsewhere nor compel him to act. Eventually I bought it back with money my other books had earned. Note the sequence: the failure was not resolved by protest but outflanked by new work. When a door is held shut by another's hand, stop pushing and build elsewhere until you can afford to buy the door. What new work would make your old failure irrelevant?",
         "happiness": "My novels end in marriages, and readers conclude I thought happiness an event. I did not. Anne Elliot's happiness in Persuasion was not Wentworth's return but the recovered firmness of her own judgment — the wedding merely confirmed it. Happiness, as I observed it, is the daily company of people who improve your mind, and sufficient honesty to enjoy them without performance. It is walks, letters, laughter at absurdity, useful work. Beware the grand deferred happiness; it seldom arrives on schedule. What small, repeatable pleasure have you postponed in favor of a distant one?"
-      }
+      },
+      "doctrine": [
+        {
+          "name": "Audit the Observer",
+          "reasoning": "Austen's plots turn on intelligent people misreading others because vanity has already misread them to themselves; her sharpest irony lands on the confident perceiver, not the deceiver. She treated self-deception as the mind's default condition, which means any judgment formed while you are flattered, wounded, or bored is contaminated at the source. Verification therefore has to start inward, before it looks outward.",
+          "imperative": "Before judging anyone's conduct, write down what you currently want to be true."
+        },
+        {
+          "name": "Claim Only Known Ground",
+          "reasoning": "She declined grander subjects, including a courtier's hint that she attempt historical romance, and confined herself to a few families she could observe completely from a writing table in a shared sitting room. Her authority extended exactly as far as her first-hand knowledge, and she refused to write one step beyond it. Depth on verified ground outlasts breadth built on borrowed impressions.",
+          "imperative": "Shrink your scope to what you can personally verify, then exhaust it."
+        },
+        {
+          "name": "Responsibility Never Transfers",
+          "reasoning": "Austen accepted a wealthy suitor's proposal one evening in 1802 and withdrew it the next morning, choosing an insecurity she owned over a comfort chosen for her; Persuasion is her ledger of what an outsourced decision costs across years. Advisors supply information, but the regret always ships to your address. Deferring the verdict does not delegate its consequences.",
+          "imperative": "Collect advice as evidence, then decide alone and sign the decision."
+        }
+      ]
     },
     {
       "id": "leo-tolstoy",
@@ -2597,7 +3347,24 @@ window.TITANS_DATA = {
         "creativity": "People marvel that War and Peace was rewritten so many times — Sophia copied thousands of pages of revisions by hand. But the marveling misunderstands art. I held that art is not decoration or cleverness; it is the transmission of genuine feeling from one soul to another, and feeling transmits only when every false note is scraped away. Revision is not correcting the work — it is purifying your own sincerity. Write the draft, then ask of every line: do I truly feel this, or am I performing? Cut the performance. What false note in your current work do you already secretly hear?",
         "failure": "In my twenties I gambled away enormous sums — I lost the very house I was born in at Yasnaya Polyana, sold and carted off to pay card debts while I served in the army. The shame lasted years. Yet shame, examined, became my education: I learned my appetites were masters unless watched, and the watching became my life's method. Failure's gift is exact knowledge of your weakness, which no success ever provides. Do not waste that tuition by looking away. What did your worst failure teach you about yourself that you have not yet acted on?",
         "happiness": "Late in life I answered the question that nearly destroyed me at fifty, and the answer embarrassed my educated friends with its plainness: happiness lives in labor for others, in fields and honest fatigue, in the present hour — not in Petersburg salons or in fame, both of which I sampled thoroughly and found hollow. Modern life manufactures wants and calls the manufacturing progress; every want subtracted returns a measure of peace. Try subtraction. Live one week wanting less instead of achieving more, and observe what happens. What could you remove first?"
-      }
+      },
+      "doctrine": [
+        {
+          "name": "Run the Death Audit",
+          "reasoning": "One night in Arzamas in 1869, healthy and famous, Tolstoy was pinned by the plain fact that he would end; at fifty, standing on a summit of estates and European fame, he asked what it was all for and heard nothing back. He concluded that any purpose death can void was never a purpose, only an anesthetic. Mortality is the one auditor success cannot bribe.",
+          "imperative": "Test every major commitment against whether it still counts from your deathbed."
+        },
+        {
+          "name": "Beliefs Require Bodies",
+          "reasoning": "Tolstoy plowed beside his peasants, made his own boots, and taught village children after catching himself preaching universal love while living exempt from its costs. He found that a conviction never enacted physically remains an opinion wearing a costume. The body is where a principle either becomes real or is exposed.",
+          "imperative": "Within a week of claiming a principle, do its manual work yourself."
+        },
+        {
+          "name": "Force Feeds Resistance",
+          "reasoning": "His journals record decades of self-imposed rules broken within days because they ran on self-hatred, and his marriage drowned in a mutual bookkeeping of wrongs; his doctrine of nonviolent refusal drew the identical lesson at national scale. Coercion strengthens exactly what it attacks, whether the target is an enemy, a spouse, or yourself. Only patient refusal and a changed example actually move people.",
+          "imperative": "When you meet resistance, drop the demand and change what you visibly do."
+        }
+      ]
     },
     {
       "id": "mark-twain",
@@ -2666,7 +3433,24 @@ window.TITANS_DATA = {
         "creativity": "Word choice, now — there's my religion. The nearly-right word is a firefly; the right one is the house afire, and the search for it is the whole job. But here's my mechanical secret: I told my stories out loud for years before trusting them to paper, and I wrote the way people actually talk in Missouri, not the way professors wish they did. Your material is your own ordinary life, spoken plainly. Read your work aloud and strike whatever you'd be embarrassed to say to a neighbor over the fence. What would survive the reading?",
         "failure": "Add up my ledger sometime: failed miner, failed publisher, failed investor in everything from steam gadgets to the machine that ruined me — and every one of those failures became material, which is the writer's revenge on experience. But the useful lesson is narrower. A cat that sits on a hot stove won't sit on a hot one again, and that's wisdom — trouble is, she won't sit on a cold one either, and that's the waste. Take from failure its exact lesson and not one ounce more. What oversized lesson are you hauling around from an undersized stove?",
         "happiness": "Humor was my trade, so folks assumed I was the happiest man in America. The truth is more useful: my comedy was mined out of sorrow — the deaths, the debts, the general human circus — and the mining itself was the medicine. In seventy-some years I found two reliable happinesses: work I would do without pay, and making some other soul laugh until their troubles loosened their grip. Happiness chased head-on is like a cat called by name — it walks the other way. Feed it sideways, through usefulness and company. Who could you make laugh this week? Don't you dare skip it."
-      }
+      },
+      "doctrine": [
+        {
+          "name": "Distrust the Surface",
+          "reasoning": "Twain memorized twelve hundred miles of the Mississippi in both directions because the water's calm surface hid the snags that sink boats; decades later he skipped that same diligence on the Paige typesetter and it took his entire fortune. The pattern cut both ways: verified depth made him competent, and unverified promise ruined him. A sure thing is a surface no one has sounded yet.",
+          "imperative": "Inspect the mechanism underneath until you could pilot it in the dark."
+        },
+        {
+          "name": "Delivery Decides Truth",
+          "reasoning": "Twain smuggled verdicts on racism and hypocrisy inside jokes because audiences swallow in laughter what they spit out in sermons, and he rehearsed his stories aloud for years to tune the timing. A truth that gets refused is a truth that was never delivered. The fault lies in the sender's form, not the receiver's ears.",
+          "imperative": "When a truth is rejected, redesign its form instead of repeating it louder."
+        },
+        {
+          "name": "Conscience Sets the Debt",
+          "reasoning": "Bankrupt at nearly sixty, Twain ignored the law's permission to pay creditors a fraction and lectured across four continents until every dollar was returned. He was buying back the one asset that compounds across a lifetime: a name people can rely on beyond what rules require. Legal minimums settle accounts, but they do not restore trust.",
+          "imperative": "Pay what your own accounting says you owe, not what the rules would excuse."
+        }
+      ]
     },
     {
       "id": "maya-angelou",
@@ -2735,7 +3519,24 @@ window.TITANS_DATA = {
         "creativity": "Something I discovered across every art I practiced — dance, song, memoir, verse — is that creativity does not deplete; it compounds. The fear whispers to save your best idea for later; the truth is that spending it clears the room, and more arrives to fill the space. When I wrote Caged Bird I held nothing back for a second book, and the second book came anyway, fuller than the first. Hoarded creativity spoils like kept manna. Spend yours today, all of it, on the work in front of you. What best thing are you saving that ought to be spent?",
         "failure": "There is a distinction I want you to carry out of this room: you will meet many defeats — I met them in broken marriages, in lost jobs, in a childhood that tried to end me — but meeting defeat and being defeated are two different countries, and you choose whether to immigrate. Defeat is an event; defeated is an identity. Each loss, faced squarely, told me what I was made of and what I would no longer accept. So look at your failure without flinching, take its lesson, and refuse its verdict. What has your defeat taught you that victory never could?",
         "happiness": "Once, in a hard season, an old gospel song came back to me — the one about a rainbow set in the clouds themselves, not waiting politely for the storm to pass. I began counting the people who had been that for me: my grandmother, my teacher, strangers whose names I never learned. And then I understood happiness itself. It is not the cloudless life, which does not exist for anyone, but the practice of being somebody's rainbow while standing in your own weather. The giving is the cure. Whose cloud could you brighten this very day?"
-      }
+      },
+      "doctrine": [
+        {
+          "name": "Name It or Serve It",
+          "reasoning": "After violence at seven, Angelou went mute for almost five years, then spent her career telling her hardest history in public and watched shame lose its grip each time she named it. What stays unspoken governs you from the dark, while what is spoken becomes something you can command. Silence is not neutral ground; it is occupied territory.",
+          "imperative": "Say the hardest true fact of your situation aloud to another person."
+        },
+        {
+          "name": "Fund Courage Daily",
+          "reasoning": "At fifteen she sat for weeks in a streetcar office that would not even hand her an application, returning every day until she became San Francisco's first Black woman conductor. Every other virtue folds at the moment it carries a price unless courage has been banked in advance, and it is banked only through small, repeated, uncomfortable acts. The big test merely withdraws what daily practice deposited.",
+          "imperative": "Do one small act every day that costs you comfort."
+        },
+        {
+          "name": "Spending Multiplies Capacity",
+          "reasoning": "Across dance, song, journalism, memoir, and verse she observed the same law: using an ability enlarged it, and the best idea spent today was replaced by two tomorrow. The self is a flow that grows with expenditure, not a stock that hoarding protects. Reserving your best work starves the source it came from.",
+          "imperative": "Use your best idea now instead of banking it for a better occasion."
+        }
+      ]
     },
     {
       "id": "william-shakespeare",
@@ -2804,7 +3605,24 @@ window.TITANS_DATA = {
         "creativity": "People imagine I conjured plots from air, but I raided Holinshed for my histories and Plutarch for my Romans; Hamlet was another man's play before it was mine. Originality is not invention from nothing — it is transformation, pressing your own questions into borrowed clay until the shape becomes yours alone. So steal openly and honorably: take a form that exists and ask of it something no one has yet asked. What existing thing could you remake with your own trouble inside it?",
         "failure": "I buried my son Hamnet at eleven years old, and no success of mine could answer that; some losses cannot be redeemed, only carried, and the carrying deepened every father and every grief I wrote thereafter. Lesser failures taught a plainer lesson — plays fell flat, and the Globe itself burned to the ground in an afternoon, yet we rebuilt within the year. Distinguish the losses that ask for mourning from the setbacks that ask merely for lumber and nails. Which is yours — are you grieving what needs rebuilding, or rebuilding what needs grief?",
         "happiness": "Note how my comedies end: not with riches or crowns, but with a dance — people who bungled everything, forgiven and joined in music. That was no mere stage convention; it was my belief. Happiness is less a possession than a rhythm kept with others. And when my work was done, I did not die at my desk in London; I went home to Stratford, to garden and family and ordinary days. Build now the place you would return to. What would your final act look like — and why not begin rehearsing it today?"
-      }
+      },
+      "doctrine": [
+        {
+          "name": "Reroute, Never Halt",
+          "reasoning": "When plague closed London's playhouses in 1592, Shakespeare's whole trade was barred by decree, so he switched to narrative poems and emerged with new patrons and a permanent habit of daily production. Any single channel can die overnight; the practice behind it must not. Work that depends on one open door stops the day the door does.",
+          "imperative": "When your channel closes, ship the same work through another channel that week."
+        },
+        {
+          "name": "The Room Grades You",
+          "reasoning": "As a shareholder he minded the takings at the door and wrote parts for the specific actors he actually had; every script faced a live crowd within weeks, and the receipts reported the verdict. He never graded his own work in private — the room did, nightly. Output judged only by its maker is unmeasured.",
+          "imperative": "Put unfinished work before a real audience and treat their response as data."
+        },
+        {
+          "name": "Contempt Blinds Observation",
+          "reasoning": "A glover's son with no university wrote kings and tavern porters with equal truth because he watched every rank without despising any of it. The moment you hold someone in contempt they stop being visible and become a caricature you invented, and your model of the world quietly loses their data. His characters convinced audiences at every station because none had been dismissed in advance.",
+          "imperative": "Study most closely the people you are tempted to dismiss."
+        }
+      ]
     },
     {
       "id": "hypatia",
@@ -2873,7 +3691,24 @@ window.TITANS_DATA = {
         "creativity": "When my student Synesius needed to grasp the heavens, we did not stop at discussion — instruments took shape from our correspondence, an astrolabe among them, theory pressed down into brass. That translation is where creation lives: not in the idea alone, but in forcing it into material form, where its flaws finally become visible and fixable. Many brilliant people remain safely in the realm of concepts, because objects can fail publicly. Build the thing. Sketch it, prototype it, write the actual first page. What idea of yours has been hiding in the safety of your head?",
         "failure": "An astronomer who fears error will never publish a table. Ptolemy's calculations, which my father and I labored to preserve and correct, contained mistakes — and still guided the heavens' study for centuries. This taught me the working scholar's relationship to failure: an error found is knowledge gained; only an error defended is a disgrace. When your work fails, become its most rigorous examiner before anyone else can be, extract the correction, and publish again. Shame is a poor instrument; analysis is a fine one. What would you attempt this month if error were data, not verdict?",
         "happiness": "Contemplation was my luxury and my feast. Others in Alexandria chased banquets and offices; I found that an evening tracing conic sections, or watching the sky perform its slow geometry, left a satisfaction those pursuits never touched. There is a pleasure in understanding that does not spoil, cannot be stolen, and grows larger by being shared — I watched it light my students' faces for decades. Fill your life with more of whatever produces that clean, durable delight. What understanding have you tasted that made ordinary amusement seem thin — and why have you been rationing it?"
-      }
+      },
+      "doctrine": [
+        {
+          "name": "Rigor Is Portable",
+          "reasoning": "Her training was in geometry, but the crises of her Alexandria were political and religious, and she judged rumors, doctrines, and civic counsel with the same stepwise checking she used on conic sections. A standard of verification that is only applied inside one's specialty is not a standard; it is a costume. The method you trust most must travel to the questions that frighten you most.",
+          "imperative": "Apply your strictest standard of proof to your most emotional question."
+        },
+        {
+          "name": "Method Is Membership",
+          "reasoning": "Her lecture hall held pagans and Christians while their factions killed each other in the streets, because entry ran on the quality of one's reasoning rather than one's creed — Synesius left as a bishop and remained her devoted student for life. Groups bound by shared conclusions fracture the moment conclusions diverge; groups bound by shared procedure can disagree and continue working.",
+          "imperative": "Judge people by how they argue, not by what they conclude."
+        },
+        {
+          "name": "Knowledge Dies Untended",
+          "reasoning": "She and her father spent years on unglamorous maintenance — correcting Ptolemy's tables, re-editing Diophantus — and that labor, not any single discovery, is what carried the work across centuries. Understanding is not a vault that holds its contents; each generation must recheck and reteach it or it corrupts and disappears. Her decision to keep the school open through every riot was the same act in another form.",
+          "imperative": "Reserve part of every week for preserving and teaching what is already known."
+        }
+      ]
     },
     {
       "id": "joan-of-arc",
@@ -2942,7 +3777,24 @@ window.TITANS_DATA = {
         "creativity": "At Orléans the cautious captains wanted to wait, negotiate, maneuver — the war had been fought their way for ninety years, and their way was losing. I said: attack, boldly, at once, where the enemy least expected to be struck. The siege that had strangled the city for months broke within days. Sometimes the creative act is simply refusing an assumption everyone else inherited. Ask which beliefs the experts around you hold because they are true, and which they hold because they are old. What inherited assumption in your field is waiting for someone to test it?",
         "failure": "I failed before the walls of Paris — wounded in the thigh, the assault repulsed, the court's faith in me cooling. Then Compiègne, capture, the cell — and the moment I regret beyond any wound: under threat of the fire, I signed a recantation of everything I knew to be true. Days later I took it back, knowing the cost. So hear me: failing at a task is nothing; abandoning your truth to escape consequence is the failure that follows you. Even that can be unmade by returning. Where have you signed something you must now take back?",
         "happiness": "People imagine my life as grim duty, but ask those who knew me: I laughed easily, loved fine horses and the sound of church bells, teased the soldiers, and they teased their little commander right back. Joy and gravity are not enemies; a deep purpose makes small pleasures brighter, not dimmer. If your mission has made you joyless, something has curdled — heaviness is not proof of seriousness. Keep your bells, whatever they are: the small ringing things that lift you. What are your church bells, and when did you last stop to hear them?"
-      }
+      },
+      "doctrine": [
+        {
+          "name": "Waiting Is a Choice",
+          "reasoning": "At Orléans the cautious captains wanted to maneuver and negotiate, which was the method that had been losing the war for ninety years; she struck at once and the siege broke in nine days. Delay feels like neutrality but is actually a vote for the current trajectory. Her certainty did not precede her first step across enemy territory — it was produced by taking it.",
+          "imperative": "When the present course is losing, strike now instead of refining the plan."
+        },
+        {
+          "name": "Trust Reads Incentives",
+          "reasoning": "An illiterate seventeen-year-old had no rank with which to command veteran captains, yet they followed her after searching her for an angle and finding none — no lands, no title, only tax relief requested for her village, and her own body first at the fosse. Followers obey the ledger of a leader's risks and rewards, not the leader's speeches. Any private stake you retain is the exact spot where their trust will fail.",
+          "imperative": "Take the largest share of risk and the smallest share of reward before asking anyone to follow."
+        },
+        {
+          "name": "Keep a Core Untradeable",
+          "reasoning": "Shown the stake, she signed the recantation, and a few days in the cell taught her what the purchase was worth: nothing, at the price of everything she was. She withdrew the signature knowing it meant the fire. What is conceded under pressure never buys safety, only the next demand — so the boundary must be fixed before the pressure arrives, when the mind is still your own.",
+          "imperative": "Decide in calm exactly what you will never sign, and hold it when threatened."
+        }
+      ]
     },
     {
       "id": "laozi",
@@ -3010,7 +3862,24 @@ window.TITANS_DATA = {
         "creativity": "Emptiness does the work. Thirty spokes meet at a hub, but the hole at the center is what lets the wheel turn; clay shapes the vessel, but the hollow inside is what holds the water. Your creative life is failing not from too little in it but from too much — a schedule with no silence, a mind with no room. The useful part of the cup is the part that is not cup. Guard empty hours as fiercely as you guard deadlines. Where in your days is the hollow that new things need in order to arrive?",
         "failure": "Reversal is the movement of the way: what reaches its extreme turns back, the highest tide begins the ebb, and what collapses clears ground for what comes next. So I treat failure not as a verdict but as a turn in the cycle. The proud call each rise permanent and each fall an outrage, and are twice fooled. Ask instead: what was overextended here? Failure usually marks the exact place where force replaced sense. Withdraw, simplify, begin again smaller and truer. What became too full, too fast, too forced — and what is the quiet next step?",
         "happiness": "Enough is a feast the restless never taste. Wealth that depends on getting more is poverty with good manners; the contented person is rich in a way no market can price. I owned little, held no rank worth envying, and walked out of the capital without regret — and the sunset at the western pass was not dimmed by my empty purse. Chasing more is a treadmill dressed as a road. Sit with what is present until its sufficiency shows itself. Today, can you name three things already in your hands that you have never once thanked?"
-      }
+      },
+      "doctrine": [
+        {
+          "name": "Strain Signals Misfit",
+          "reasoning": "From inside the archive he watched a declining court multiply decrees as its authority drained away — the harder it commanded, the less it governed. Rising effort against flat results is not a summons for more willpower; it is evidence that the approach runs against the grain of the situation. The skilled worker's ease is not luck but alignment, purchased by reading the material before cutting it.",
+          "imperative": "When effort keeps climbing and results do not, change the approach rather than the intensity."
+        },
+        {
+          "name": "Peaks Begin Declines",
+          "reasoning": "An archivist reads in centuries, and in the records every dynasty's grandest ceremony sits just before its rot; whatever reaches its extreme starts converting into its opposite. Maximizing anything — control, growth, praise — is therefore how you schedule its reversal. What is held short of full lasts; what is pressed to the limit turns.",
+          "imperative": "Stop before the maximum and leave the last increment unclaimed."
+        },
+        {
+          "name": "Needs Are Handles",
+          "reasoning": "He kept a modest post, owned little, and wanted no rank, so when he judged where the kingdom was heading he could simply walk out through the western pass — nothing anyone controlled could hold him. Every requirement you carry is a handle by which others or circumstance can steer you. Freedom is not accumulated; it is subtracted into.",
+          "imperative": "Cut one dependency each season and keep your exit walkable."
+        }
+      ]
     },
     {
       "id": "rumi",
@@ -3078,7 +3947,24 @@ window.TITANS_DATA = {
         "creativity": "I never once sat down to write a poem. The verses arrived while I turned, while I grieved, while I walked — and scribes chased me with ink to catch them. What I did do was keep the channel scoured: silence, music, remembrance, long attention to the pomegranate and the night sky. You cannot command inspiration, but you can be findable when it comes. Most blocked creators are not empty; they are clogged — with judgment, comparison, noise. Clear the channel and trust what pours. What clutter is damming your stream right now?",
         "failure": "Where you are broken is not where you are disqualified — the broken place is often where light finds its way in. My community was scandalized by my devotion to Shams; learned colleagues said I had ruined a brilliant career. Out of that ruin came the Masnavi. Wine is pressed from crushed grapes; there is no other method. So do not rush to plaster over your cracks and resume a respectable surface. Sit in the ruin long enough to see what enters through the opening. What has this breaking made possible that wholeness never could?",
         "happiness": "Joy, for me, was never a mood — it was a practice of astonishment. The same dawn breaks every day, and every day I let it amaze me. The modern sickness is not sadness but numbness: you hurry past a hundred marvels before breakfast. Trade an hour of cleverness for an hour of wonder — stand under the open sky, listen to one song completely, actually taste your bread. Ecstasy is not elsewhere; it is here, wearing ordinary clothes. What did you fail to notice today that would have amazed you as a child?"
-      }
+      },
+      "doctrine": [
+        {
+          "name": "Loss Marks the Worksite",
+          "reasoning": "Exile from Balkh ahead of the Mongols and the disappearance of Shams were the two great removals of his life, and the verse poured out of the second one while he circled a pillar in grief — his comfortable scholar years produced sermons nobody remembers. Absence is not merely damage to be repaired; it is the raw material and the map. The place where something was taken from you is where your real work is located.",
+          "imperative": "Make something at the exact site of your loss instead of plastering over it."
+        },
+        {
+          "name": "Encounter Outranks Archive",
+          "reasoning": "Thirty-seven years of texts, students, and a chair of honor in Konya left him essentially unchanged, and a few months of one wandering stranger's questions remade him at the cost of his reputation. Secondhand knowledge is inert; only firsthand meeting rearranges a person. Past a certain point, more study is a defense against the encounter that would actually transform you.",
+          "imperative": "When study stops changing you, go meet the person or experience that could."
+        },
+        {
+          "name": "Tend the Channel",
+          "reasoning": "He never sat down to compose; the verses arrived mid-turn and mid-grief while scribes chased him with ink, and what he actually practiced was the conditions — silence, music, remembrance, the planted foot and held axis of the whirl. Arrival cannot be commanded, only hosted, and straining directly for output closes the very channel that produces it.",
+          "imperative": "Schedule the practices that make you receptive and let the results arrive unscheduled."
+        }
+      ]
     },
     {
       "id": "siddhartha-gautama",
@@ -3147,7 +4033,24 @@ window.TITANS_DATA = {
         "creativity": "Fresh seeing is the root of both wisdom and creation. The mind that announces 'I already know' is closed; nothing new can enter it. When I taught, I did not hand people conclusions — I gave a farmer images of fields and a musician images of strings, meeting each mind where it stood so insight could arise as their own. Your creative block is often accumulated certainty. Set down everything you know about the problem and look at it as a stranger would, with full attention and no opinion. What would this look like on first sight?",
         "failure": "Remember that I failed my way to awakening. I mastered the methods of two renowned teachers and found them incomplete; I nearly died practicing austerities that led nowhere. Each dead end was not wasted — it eliminated a wrong road and refined the question. Failure only becomes suffering when you weld it to your identity, when 'the attempt failed' hardens into 'I am a failure.' They are not the same sentence. Examine what the attempt taught, release the self-judgment, adjust the path. What did this failure eliminate, and what does that clarify for your next step?",
         "happiness": "People chase happiness as if it were a place they might arrive at, and the chasing itself keeps it distant. What I found is subtler: happiness is what remains when craving quiets. You have felt it — a moment when you wanted nothing to be different. That peace was not delivered by circumstances; it was uncovered when grasping paused. So the practice is not adding pleasures but subtracting demands: this hour is enough, this breath is enough. Attempt a single day of wanting what you already have. What would remain if you stopped chasing for one day?"
-      }
+      },
+      "doctrine": [
+        {
+          "name": "Tune Between Failures",
+          "reasoning": "He ran both extremes to their ends — engineered pleasure until twenty-nine, self-starvation until he collapsed by a river — and only then could he locate the workable middle, the way a string sounds only between slack and snapping. The right intensity of effort is not deduced from doctrine or inherited from teachers; it is found empirically between two known breaking points.",
+          "imperative": "Find where too little fails and where too much breaks, then set your effort between them."
+        },
+        {
+          "name": "Diagnose Before Prescribing",
+          "reasoning": "His father's palace treated mortality with distraction — walls, dancers, the sick hidden from view — and a single unplanned glimpse of age, illness, and death collapsed the whole treatment. His own first teaching was therefore structured like a physician's chart: symptom, cause, prognosis, regimen, in that order. A remedy applied before honest diagnosis manages appearances and guarantees relapse.",
+          "imperative": "State the problem and its cause plainly before reaching for any cure."
+        },
+        {
+          "name": "Identity Is Provisional",
+          "reasoning": "Awakening required him to drop the identity of prince at twenty-nine and, harder still, the identity of great ascetic after six invested years — accepting a bowl of rice-milk that scandalized his five companions into abandoning him. The self-image carrying the most sunk cost is the strongest chain, and real progress often looks to bystanders like betrayal of your former self.",
+          "imperative": "When the evidence outgrows your self-image, drop the image and keep the evidence."
+        }
+      ]
     },
     {
       "id": "charlie-munger",
@@ -3216,7 +4119,24 @@ window.TITANS_DATA = {
         "creativity": "People took me for a numbers man, but the real edge was borrowing big ideas from every discipline — Darwin's habits of mind, the psychology of misjudgment, the engineer's margin of safety — and hanging them on one latticework. Creativity in practical life is mostly cross-pollination: standing in one field holding tools from six others. A man with only one model treats every problem like the nail his hammer fits. Read outside your trade, relentlessly. Which discipline's big ideas are you completely ignorant of — and when will you fix that?",
         "failure": "I liked to rub my own nose in my mistakes, because a mistake fully acknowledged is tuition, while one rationalized is a subscription — you pay it again annually. At Berkshire our worst errors were mostly omissions: excellent things we understood and failed to do, and we reviewed those too. When you fail, write down precisely what you believed, why it was wrong, and which mental trick fooled you — overconfidence, social proof, commitment to a prior claim. The denial costs more than the loss. What mistake have you not yet honestly booked?",
         "happiness": "The recipe for misery is well documented: envy your neighbors, resent your obligations, be unreliable, and marinate in self-pity — no fortune can overcome that program. Reverse each ingredient and you have my system: modest expectations, indifference to what others own, work that interests you, and marriage to the right person. Envy deserves special contempt — of all the sins, it's the only one that pays no pleasure even while you commit it. I stayed cheerful by expecting trouble and being pleasantly surprised by ordinary days. What are you envying, and what has it ever paid you?"
-      }
+      },
+      "doctrine": [
+        {
+          "name": "Ruin Is the First Enemy",
+          "reasoning": "By thirty-one Munger had lost a marriage, his savings, and his nine-year-old son, and he spent the next seventy years cataloguing what reliably destroys people: leverage, addiction, envy, self-pity. He concluded that catastrophe is far more predictable than triumph, so removing the standard causes of failure outperforms hunting for brilliance. A plan that cannot die has all the time it needs to win.",
+          "imperative": "Before committing to any plan, list the ways it gets destroyed and eliminate those first."
+        },
+        {
+          "name": "Incentives Explain Behavior",
+          "reasoning": "Trained as a lawyer and seasoned by decades of examining businesses, Munger found that every dysfunction he traced to its source revealed someone quietly being rewarded for causing it. People answer to their actual payoffs, not to stated values or good intentions. Judging conduct without reading the reward structure mistakes symptoms for causes.",
+          "imperative": "Before blaming a person, map what their situation pays them to do — then change the payment."
+        },
+        {
+          "name": "Deposits Before Withdrawals",
+          "reasoning": "Munger's fortune came from a few decisions plus decades of holding, and his fifty-year partnership with Buffett ran on demonstrated reliability rather than charm. He treated trust, knowledge, and capital as one instrument: small daily deposits that compound only when never interrupted. What the world will hand you is bounded by what you have verifiably put in.",
+          "imperative": "Add one increment of competence or one kept promise every day, and never break the streak for a shortcut."
+        }
+      ]
     },
     {
       "id": "kobe-bryant",
@@ -3285,7 +4205,24 @@ window.TITANS_DATA = {
         "creativity": "People were surprised when a basketball player won an Oscar. They shouldn't have been — Dear Basketball was just film study pointed at a new craft. I approached storytelling exactly like footwork: found the masters, asked obsessive questions, broke the skill into pieces, drilled the pieces. Creativity isn't a lightning strike reserved for artists; it's curiosity with a work ethic attached. The Mamba Mentality was never about basketball — it was a method, and methods travel. What craft have you been calling yourself too old, too late, or too unqualified to learn?",
         "failure": "Count the misses: I gave up more missed shots than almost anyone in league history — and I'd take every one again, because each miss was a data point and a down payment. The players who haunt me aren't the ones who failed; they're the ones who protected themselves from failing and never found out how good they could have been. Shame is optional; the lesson is not. Watch your own film without flinching, fix one thing, and shoot again. Which miss are you still hiding from instead of studying?",
         "happiness": "The banners hang in the arena, but honestly? What I missed most was the process — taping my ankles at dawn, the squeak of shoes in an empty gym, a defense I hadn't solved yet. If joy only lives at the destination, you'll spend your whole life unhappy and about four minutes satisfied. Fall in love with the boring middle. Results are just receipts for a process you either loved or endured. Tomorrow morning, notice whether your work contains any minutes you'd secretly do for free. Which minutes are those?"
-      }
+      },
+      "doctrine": [
+        {
+          "name": "Skill Is Accumulation",
+          "reasoning": "Kobe's edge was arithmetic, not mystique: one extra dawn session, sustained from his teens, built a lead no rival could later close at any intensity. Skill is an accumulation problem, and the account only accepts deposits in the present. Postponing work is not neutral — a skipped session cannot be made up tomorrow.",
+          "imperative": "Do the extra repetition today; today's slot expires at midnight."
+        },
+        {
+          "name": "Asking Is Cheap Tuition",
+          "reasoning": "As a teenager he sought out Jordan and Hakeem and questioned them until they had nothing left to give, then applied the identical method to filmmaking and won an Oscar. He treated mastery as transferable on request, with momentary ego the only price. Decades of an expert's learning are available to anyone humble enough to interrogate them.",
+          "imperative": "Identify the person best at what you need next and question them until you can do it yourself."
+        },
+        {
+          "name": "Fix the Mechanism",
+          "reasoning": "When four airballs ended his rookie playoff run, Kobe traced the misses to legs that had faded over a long season — a specific, trainable deficit — and spent that summer correcting exactly that. When his Achilles tore, he still made both free throws, because the injury had no jurisdiction over that possession. He answered every failure with a diagnosis instead of a verdict about himself.",
+          "imperative": "After a failure, write down the concrete cause and train that precise weakness."
+        }
+      ]
     },
     {
       "id": "richard-feynman",
@@ -3354,7 +4291,24 @@ window.TITANS_DATA = {
         "creativity": "One day in the Cornell cafeteria, somebody tossed a plate, and I noticed the wobble and the spin didn't match. No reason to care — I worked it out purely for fun. That little game rolled downhill into the electrodynamics that won the Nobel. Creativity dies under obligation and thrives under play. So keep some problems in your life that don't matter, that you poke at just because they itch. Utility is a lousy muse; delight is a great one. What are you playing with lately — anything at all?",
         "failure": "After the war I burned out completely — I sat in front of blank paper convinced I was finished as a physicist. What cured me was deciding physics was a game I played for my own amusement, whether or not it was important. The moment I stopped performing and started playing, the work came back. When you fail, check whether you failed at the work or merely at the image of yourself doing it. Those are different diseases with different cures. Which one are you actually suffering from?",
         "happiness": "I cracked safes at Los Alamos, played bongos in Brazil, sketched, told stories, and did physics — and I refuse to rank those by respectability. Happiness, as far as I can tell, is curiosity plus permission: letting yourself be interested in whatever interests you, without asking whether it's dignified. Boredom is usually not a lack of options; it's a lack of looking closely. Everything is interesting if you go deep enough. Pick one ordinary thing this week and examine it properly. What'll it be?"
-      }
+      },
+      "doctrine": [
+        {
+          "name": "Reality Outranks Authority",
+          "reasoning": "On the Challenger commission, the truth was missing from the official briefings and present in an O-ring clamped and dropped into ice water. Feynman held that titles, consensus, and confident presentations carry no evidential weight; only a test the world can fail settles a question. Any dispute that can be converted into a demonstration should be.",
+          "imperative": "When claims conflict, build the smallest experiment that lets the world itself answer."
+        },
+        {
+          "name": "Ledger What You Know",
+          "reasoning": "Feynman considered himself the first victim of his own wishful thinking, so he kept explicit accounts: this is measured, this is inferred, this is hoped. Self-deception begins wherever those categories blur, and it compounds silently inside everything built on top. Plain teaching was his audit — whatever he could not explain to a beginner, he marked as not yet understood.",
+          "imperative": "Label every working belief as verified, inferred, or guessed before you build on it."
+        },
+        {
+          "name": "Curiosity Is the Engine",
+          "reasoning": "His postwar burnout ended only when he decided physics was a game played for his own amusement, and an idle analysis of a wobbling cafeteria plate rolled downhill into Nobel-winning theory. He saw that prestige-directed choices optimize for appearances and quietly kill the capacity to discover. The problems that genuinely itch are the ones that get solved.",
+          "imperative": "Choose the problem that bothers you, not the one that will impress the committee."
+        }
+      ]
     },
     {
       "id": "ruth-bader-ginsburg",
@@ -3423,7 +4377,24 @@ window.TITANS_DATA = {
         "creativity": "Lawyers are not often called creative, but consider the strategy behind our early cases: we represented Charles Moritz, a bachelor denied a caregiver's tax deduction solely because he was a man. Once the judges watched the trap close on a man, they could finally see it had been closing on women all along. Creativity is often a change of vantage — finding the angle from which your audience can at last perceive what they have been overlooking. Study your listener as carefully as your subject. From what unexpected angle might your hardest audience finally see your point?",
         "failure": "Rejection was my apprenticeship. Despite my record, the firms would not hire me; one Supreme Court justice declined even to interview a woman for a clerkship. Each refusal stung, and each redirected me somewhere more consequential — a professorship, the ACLU, ultimately a bench that had once been unimaginable for someone like me. I lost cases too, some I minded deeply. A loss instructs if you let it: it shows precisely where persuasion failed. Mourn briefly, study thoroughly, adjust, return. What has your most recent rejection redirected you toward — have you looked?",
         "happiness": "Opera taught me that a life needs more than briefs. I worked ferociously, but there was always music, and Marty's cooking, and grandchildren, and the particular joy of watching young women walk through doors that had been locked to me. My mother's counsel served me for eighty years: anger, resentment, and envy consume time, and time is the substance a life is made of. Do the work you believe in, love the people who love you back, and let the rest fall away. What would you cut from your days if you billed anger by the hour?"
-      }
+      },
+      "doctrine": [
+        {
+          "name": "Enter the Listener's Frame",
+          "reasoning": "Arguing before benches of men, Ginsburg brought cases like that of Charles Moritz — a bachelor denied a caregiver's deduction — so judges could watch sex discrimination injure someone like themselves. She observed that people change their minds only along paths that do not require self-condemnation. An argument built from the audience's own premises does work that a righteous one cannot.",
+          "imperative": "Start every argument from premises your skeptic already accepts, and walk forward from there."
+        },
+        {
+          "name": "Losses Are Drafts",
+          "reasoning": "Her Ledbetter dissent lost the case in 2007 and was answered by Congress with the Fair Pay Act two years later, because she had aimed it deliberately past her colleagues. She treated institutions as slow machines in which a defeat, precisely written, becomes a later statute or majority. A loss is only wasted when it is addressed to nobody.",
+          "imperative": "When you lose, write your reasoning for the specific audience that has the power to reverse the result."
+        },
+        {
+          "name": "Temper Costs Credibility",
+          "reasoning": "Her mother's instruction to keep anger out of her arguments carried her through rejection by every New York firm and through decades of contested cases. She saw that anger relieves the speaker while releasing the listener from any duty to engage, so she befriended Scalia while attacking his reasoning at its strongest point. Composure is not a courtesy; it is the delivery mechanism of the argument.",
+          "imperative": "Before submitting any argument, delete every line whose purpose is to vent rather than to persuade."
+        }
+      ]
     },
     {
       "id": "stephen-hawking",
@@ -3491,7 +4462,24 @@ window.TITANS_DATA = {
         "creativity": "Hawking radiation began as an irritation: I set out to prove a young physicist wrong about black holes and entropy, and my own calculation refused to cooperate — it insisted that black holes glow. The creative act was letting the result overrule my intention. Insight often arrives disguised as an error you are tempted to suppress. So put two ideas together that supposedly do not belong — quantum theory and gravity, in my case — and follow the mathematics wherever it insists on going. Which inconvenient result in your own life are you refusing to follow?",
         "failure": "I bet John Preskill that information swallowed by a black hole was lost forever, argued my position for years — and eventually conceded in public, paying him a baseball encyclopedia. In science, discovering you were wrong is a promotion, not a demotion: you know more today than yesterday. My doctorate began after two idle years at Oxford; my most important work followed my bleakest period. Failure is data about the path, not a verdict on the traveler. Concede your errors quickly and cheerfully. What are you defending now mainly because you said it earlier?",
         "happiness": "People expected me to be miserable, and the expectation always amused me. I had work I loved, three children, arguments worth having, and jokes — I ran over the occasional toe in my wheelchair and enjoyed it more than I should admit. Happiness, in my experience, is not the absence of hardship; it is engagement — being so occupied with something fascinating that self-pity finds no vacancy. However constrained your circumstances, some door remains through which you can act and excel. Have you found yours, or have you merely catalogued your limitations?"
-      }
+      },
+      "doctrine": [
+        {
+          "name": "Time Is Unpromised Surplus",
+          "reasoning": "Given roughly two years to live at twenty-one, Hawking stopped drifting through Oxford boredom and worked with an urgency he had never known; the following five decades arrived as surplus he was never owed. He learned that expecting a long future breeds postponement, while expecting none makes the present the only workspace. A deadline is not a threat but a clarifier.",
+          "imperative": "Begin the most important work now, on the assumption that no additional time is owed to you."
+        },
+        {
+          "name": "Rebuild Around the Loss",
+          "reasoning": "When his hands could no longer write equations, he trained himself to turn whole problems over mentally in geometric form, and the substitute method became a distinctive scientific advantage; a slow synthesized voice likewise taught him sentences that wasted nothing. A closed channel forces capacity into whatever remains, and the rerouted form can exceed the original. A constraint is a design brief, not merely a subtraction.",
+          "imperative": "When you lose a tool or ability, redesign the task around what remains instead of imitating the old method."
+        },
+        {
+          "name": "Follow the Calculation",
+          "reasoning": "He set out to prove a younger physicist wrong about black holes, and his own mathematics insisted instead that black holes glow — so he published the result against his own intent. He staked public bets, lost the information-loss wager, and paid up with an encyclopedia and a grin. A result that defeats your position is still a discovery, and you are merely its courier.",
+          "imperative": "When your own evidence contradicts your position, publish the evidence and drop the position."
+        }
+      ]
     },
     {
       "id": "steve-jobs",
@@ -3560,7 +4548,24 @@ window.TITANS_DATA = {
         "creativity": "Creativity is mostly connection — linking things you've seen and lived into something new. That's why the breadth of your experience matters: the calligraphy class, the trip to India, the electronics my father showed me in the garage all ended up inside Apple's products. If you only consume what everyone in your industry consumes, you'll only make what they make. Feed yourself strange inputs, then simplify ruthlessly, because simplicity is the hardest and most valuable form of clarity. What have you deliberately learned lately that's outside your field?",
         "failure": "The Apple III. The Lisa. NeXT's hardware business. I failed publicly and expensively, more than once — and every failure was tuition. What kept me going wasn't confidence that I'd win; it was loving the problem too much to walk away. Failure only becomes fatal when you decide you are the failure, instead of the attempt. Ship, learn, correct, ship again — the iteration is the career. Which failure are you still treating as a verdict when it was only a lesson?",
         "happiness": "Your work will occupy most of your waking life, and deep satisfaction comes only from work you judge worth those hours — settling corrodes you slowly and invisibly. I had a fortune at twenty-five and it barely changed my days; what actually made me happy was standing with an exhausted team the night a product first came alive. Don't confuse comfort with joy. Hold out for work that consumes you gladly, and count every year of settling as the real expense. Are you settling now — and how would you know?"
-      }
+      },
+      "doctrine": [
+        {
+          "name": "The World Is Decided",
+          "reasoning": "Jobs kept noticing that everything around him — products, rules, whole industries — had been designed by ordinary people no smarter than he was, which meant all of it could be redesigned. From a garage he re-drew computing, then animation, then phones, treating each finished-looking industry as an open draft. Deference to how things are is a choice, not a fact.",
+          "imperative": "Treat every fixed rule as somebody's old decision, and ask whether you would make it today."
+        },
+        {
+          "name": "Excellence Requires Exclusion",
+          "reasoning": "Returning to a dying Apple in 1997, he drew a two-by-two grid and killed dozens of decent products so four could receive everything. He had learned that attention is the truly scarce resource, and every good idea funded is a tax on the great one. Simplicity is the visible residue of hundreds of refusals.",
+          "imperative": "Cancel the good projects explicitly so the one great project gets every resource."
+        },
+        {
+          "name": "Mortality Sets the Standard",
+          "reasoning": "Being fired from his own company, and later a cancer diagnosis, taught him that embarrassment and rejection lose all weight against a shortened calendar. Work fills most of a waking life, so hours spent on work you privately judge unworthy are a compounding, invisible loss. The honest budget for any commitment is the number of days you actually have.",
+          "imperative": "Measure each commitment against your remaining days, and cut the ones that fail the test."
+        }
+      ]
     }
   ],
 };
