@@ -1,7 +1,7 @@
 # 🏛️ RAWFOTRA x1 — counsel from history's greatest minds
 
 An expanded, self-contained replica of the [thetitans.app](https://thetitans.app/explore)
-explore experience: browse **51 legendary minds** — philosophers, strategists,
+explore experience: browse **52 legendary minds — historic and living** — philosophers, strategists,
 scientists, artists, writers — chat 1-on-1 with any of them, or **convene a council**:
 ask one question, choose up to ten experts, and receive each expert's considered
 answer plus a **consolidated view with three recommendations**. Built so the roster is
@@ -9,7 +9,7 @@ pure data: adding a **modern-day expert** is a form in the app or a few lines of
 
 ## Features
 
-- **Explore page** — searchable, filterable grid of 51 minds across 9 categories
+- **Explore page** — searchable, filterable grid of 52 minds across 9 categories
   (Philosophy, Strategy & Command, Leadership & Statecraft, Science, Innovation &
   Enterprise, Art & Music, Literature, Spirit & Wisdom, Modern Titans), each with a
   gradient medallion, epithet, and era.
