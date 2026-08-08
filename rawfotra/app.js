@@ -118,8 +118,8 @@
     node.textContent = titan.monogram || (titan.name || "?").slice(0, 1).toUpperCase();
     // Only hex colors reach CSS — anything else (e.g. url() from an imported file) is discarded.
     var ok = function (c) { return (typeof c === "string" && /^#[0-9a-fA-F]{3,8}$/.test(c)) ? c : null; };
-    var a = ok(titan.palette && titan.palette.a) || "#4a4238";
-    var b = ok(titan.palette && titan.palette.b) || "#7a6d58";
+    var a = ok(titan.palette && titan.palette.a) || "#155e75";
+    var b = ok(titan.palette && titan.palette.b) || "#2dd4bf";
     node.style.background = "linear-gradient(145deg, " + a + ", " + b + ")";
   }
 
@@ -1060,7 +1060,7 @@
       f.place.value = expert.place || "";
       f.tags.value = (expert.tags || []).join(", ");
       // Prefer the originally picked color so re-saving doesn't darken it each time.
-      f.color.value = expert.color || (expert.palette && expert.palette.a) || "#8a6d3b";
+      f.color.value = expert.color || (expert.palette && expert.palette.a) || "#18b2a6";
       f.bio.value = expert.bio || "";
       f.knownFor.value = (expert.knownFor || []).join("\n");
       f.principles.value = (expert.principles || []).map(function (p) { return p.title + ": " + p.text; }).join("\n");
@@ -1106,7 +1106,7 @@
       if (ta && ta.value.trim()) wisdom[topic.key] = ta.value.trim();
     });
     var name = f.name.value.trim();
-    var color = f.color.value || "#8a6d3b";
+    var color = f.color.value || "#18b2a6";
     var prev = editingId ? findTitan(editingId) : null;
     var expert = {
       id: editingId || slugify(name),
@@ -1196,7 +1196,7 @@
       category: str(e.category, "custom") || "custom", categoryLabel: str(e.categoryLabel) || undefined,
       tags: strArr(e.tags), knownFor: strArr(e.knownFor), starters: strArr(e.starters),
       monogram: str(e.monogram).slice(0, 2),
-      palette: { a: hex(e.palette && e.palette.a, "#4a4238"), b: hex(e.palette && e.palette.b, "#7a6d58") },
+      palette: { a: hex(e.palette && e.palette.a, "#155e75"), b: hex(e.palette && e.palette.b, "#2dd4bf") },
       color: hex(e.color, undefined),
       bio: str(e.bio), voice: str(e.voice), greeting: str(e.greeting),
       principles: pr, wisdom: wisdom,

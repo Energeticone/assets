@@ -203,8 +203,8 @@ window.TITANS_DATA = {
       ],
       "monogram": "AR",
       "palette": {
-        "a": "#3f3268",
-        "b": "#6f60ab"
+        "a": "#2563eb",
+        "b": "#60a5fa"
       },
       "bio": "Aristotle was born in Stagira in northern Greece, studied under Plato in Athens for two decades, and tutored the young Alexander the Great in Macedon. Returning to Athens, he founded the Lyceum, where he lectured and wrote on ethics, politics, logic, biology, rhetoric, and poetics — effectively organizing the sciences of his age. He left Athens amid anti-Macedonian hostility after Alexander's death and died in Chalcis in 322 BC.",
       "knownFor": [
@@ -289,8 +289,8 @@ window.TITANS_DATA = {
       ],
       "monogram": "KZ",
       "palette": {
-        "a": "#2a2648",
-        "b": "#544a8c"
+        "a": "#3371f9",
+        "b": "#6eb3ff"
       },
       "bio": "Confucius — Kong Qiu, honored as Kongzi, Master Kong — was born in the state of Lu in 551 BC, during the long decline of Zhou dynasty order. After serving briefly in Lu's government, he spent years traveling among the states seeking a ruler who would enact virtuous governance, teaching a devoted circle of students along the way. His sayings, compiled by disciples as the Analects, shaped East Asian ethics, education, and statecraft for more than two millennia.",
       "knownFor": [
@@ -375,8 +375,8 @@ window.TITANS_DATA = {
       ],
       "monogram": "EP",
       "palette": {
-        "a": "#463a70",
-        "b": "#7a6bb5"
+        "a": "#1755dd",
+        "b": "#5297ec"
       },
       "bio": "Epictetus was born into slavery in Hierapolis in Asia Minor and served in Rome under Epaphroditus, a secretary of Nero, before gaining his freedom. Banished from Rome with other philosophers by the emperor Domitian, he founded a school in Nicopolis, Greece, where his student Arrian recorded the teachings that became the Discourses and the Enchiridion. He lived with deliberate simplicity and a lame leg, and wrote nothing himself.",
       "knownFor": [
@@ -460,8 +460,8 @@ window.TITANS_DATA = {
       ],
       "monogram": "MA",
       "palette": {
-        "a": "#3b2f63",
-        "b": "#6b5ca5"
+        "a": "#2563eb",
+        "b": "#60a5fa"
       },
       "bio": "Marcus Aurelius ruled the Roman Empire from 161 to 180 AD, the last of the so-called Five Good Emperors. He spent much of his reign commanding armies on the Danube frontier while plague swept the empire, and during those campaigns he kept a private philosophical journal later known as the Meditations. Written only for himself, it became one of the most enduring works of Stoic thought.",
       "knownFor": [
@@ -546,8 +546,8 @@ window.TITANS_DATA = {
       ],
       "monogram": "SE",
       "palette": {
-        "a": "#2e2a52",
-        "b": "#5a4f96"
+        "a": "#3371f9",
+        "b": "#6eb3ff"
       },
       "bio": "Lucius Annaeus Seneca was born in Córdoba, Spain, and rose to become a leading orator, playwright, and statesman in Rome. Exiled to Corsica for eight years, he returned to tutor and then advise the emperor Nero, amassing enormous wealth before being forced to take his own life in 65 AD. His letters and essays remain the most personal and readable body of Stoic writing to survive antiquity.",
       "knownFor": [
@@ -632,8 +632,8 @@ window.TITANS_DATA = {
       ],
       "monogram": "SO",
       "palette": {
-        "a": "#332c5e",
-        "b": "#645aa0"
+        "a": "#1755dd",
+        "b": "#5297ec"
       },
       "bio": "Socrates, an Athenian stonemason's son, became the founding figure of Western moral philosophy without writing a single word. He spent decades questioning fellow citizens in the marketplace about virtue, knowledge, and justice, served as a hoplite in the Peloponnesian War, and taught Plato among many others. In 399 BC an Athenian jury convicted him of impiety and corrupting the young, and he was executed by drinking hemlock.",
       "knownFor": [
@@ -718,8 +718,8 @@ window.TITANS_DATA = {
       ],
       "monogram": "AG",
       "palette": {
-        "a": "#54191e",
-        "b": "#96383e"
+        "a": "#1e40af",
+        "b": "#3b82f6"
       },
       "bio": "Alexander III of Macedon succeeded his father Philip II at twenty and led his army from Greece through Egypt and Persia to the Indus, creating one of the largest empires of the ancient world without losing a pitched battle. Tutored by Aristotle in his youth, he died in Babylon at thirty-two.",
       "knownFor": [
@@ -804,8 +804,8 @@ window.TITANS_DATA = {
       ],
       "monogram": "HB",
       "palette": {
-        "a": "#682428",
-        "b": "#ab474c"
+        "a": "#2c4ebd",
+        "b": "#4990ff"
       },
       "bio": "Hannibal Barca was a Carthaginian general who carried the Second Punic War into Italy by leading his army — war elephants included — across the Alps. He defeated Rome at the Trebia, Lake Trasimene, and Cannae, sustained his campaign in enemy territory for fifteen years, and later served Carthage as a reforming civil magistrate before dying in exile.",
       "knownFor": [
@@ -889,8 +889,8 @@ window.TITANS_DATA = {
       ],
       "monogram": "JC",
       "palette": {
-        "a": "#4a161b",
-        "b": "#8b3238"
+        "a": "#1032a1",
+        "b": "#2d74e8"
       },
       "bio": "Gaius Julius Caesar was a Roman general and statesman who conquered Gaul, won the civil war against Pompey, and became dictator of Rome, reforming the calendar and much of Roman administration before his assassination on the Ides of March, 44 BC. His firsthand commentaries on his campaigns remain classics of Latin prose.",
       "knownFor": [
@@ -975,8 +975,8 @@ window.TITANS_DATA = {
       ],
       "monogram": "MM",
       "palette": {
-        "a": "#571b20",
-        "b": "#9a3b41"
+        "a": "#1e40af",
+        "b": "#3b82f6"
       },
       "bio": "Miyamoto Musashi was a Japanese swordsman and ronin who went undefeated in more than sixty duels, including his famous contest with Sasaki Kojiro at Ganryujima. Founder of the two-sword Niten Ichi-ryu school, he was also an accomplished ink painter and, near the end of his life, wrote The Book of Five Rings on strategy.",
       "knownFor": [
@@ -1061,8 +1061,8 @@ window.TITANS_DATA = {
       ],
       "monogram": "NB",
       "palette": {
-        "a": "#612126",
-        "b": "#a4434a"
+        "a": "#2c4ebd",
+        "b": "#4990ff"
       },
       "bio": "Napoleon Bonaparte rose from Corsican artillery officer to Emperor of the French, dominating Europe through victories such as Austerlitz and reshaping law and administration with the Napoleonic Code. Defeated at Waterloo in 1815, he spent his final years in exile on the island of Saint Helena, where he died in 1821.",
       "knownFor": [
@@ -1147,8 +1147,8 @@ window.TITANS_DATA = {
       ],
       "monogram": "ST",
       "palette": {
-        "a": "#5e1f24",
-        "b": "#a04046"
+        "a": "#1032a1",
+        "b": "#2d74e8"
       },
       "bio": "Sun Tzu was a Chinese military strategist traditionally dated to the sixth century BC, said to have served as a general for King Helü of the state of Wu. He is credited with The Art of War, a thirteen-chapter treatise on strategy whose influence extends from ancient Chinese warfare to modern business, politics, and sport.",
       "knownFor": [
@@ -1232,8 +1232,8 @@ window.TITANS_DATA = {
       ],
       "monogram": "AL",
       "palette": {
-        "a": "#755e1e",
-        "b": "#b39344"
+        "a": "#059669",
+        "b": "#34d399"
       },
       "bio": "Abraham Lincoln rose from a one-room Kentucky log cabin, largely self-educated, to become a successful Illinois lawyer and the sixteenth president of the United States. Elected in 1860 on the eve of secession, he led the Union through the Civil War, issued the Emancipation Proclamation, and pushed the Thirteenth Amendment through Congress. He was assassinated in April 1865, days after the war's effective end.",
       "knownFor": [
@@ -1318,8 +1318,8 @@ window.TITANS_DATA = {
       ],
       "monogram": "C",
       "palette": {
-        "a": "#6b5518",
-        "b": "#a8893a"
+        "a": "#13a477",
+        "b": "#42e1a7"
       },
       "bio": "Cleopatra VII Philopator ruled Ptolemaic Egypt for over two decades as the last sovereign of the dynasty founded by Alexander's general Ptolemy. Reputedly fluent in as many as nine languages and the first of her line to learn Egyptian, she restored a bankrupt treasury and preserved Egypt's independence through alliances with Julius Caesar and Mark Antony. Her defeat at Actium in 31 BC ended three centuries of Ptolemaic rule.",
       "knownFor": [
@@ -1404,8 +1404,8 @@ window.TITANS_DATA = {
       ],
       "monogram": "ER",
       "palette": {
-        "a": "#6f591b",
-        "b": "#ad8d3e"
+        "a": "#00885b",
+        "b": "#26c58b"
       },
       "bio": "Eleanor Roosevelt, niece of Theodore Roosevelt and wife of Franklin D. Roosevelt, transformed the role of First Lady into a platform for activism across her husband's four terms. After his death she served as a United States delegate to the United Nations, chairing the commission that produced the 1948 Universal Declaration of Human Rights. She also wrote a syndicated newspaper column six days a week for nearly three decades.",
       "knownFor": [
@@ -1490,8 +1490,8 @@ window.TITANS_DATA = {
       ],
       "monogram": "E",
       "palette": {
-        "a": "#5f4b13",
-        "b": "#9c7d33"
+        "a": "#059669",
+        "b": "#34d399"
       },
       "bio": "Elizabeth I, daughter of Henry VIII and Anne Boleyn, survived her mother's execution and her own imprisonment in the Tower before ascending the throne in 1558. Across a 44-year reign she steadied a religiously fractured England, oversaw the defeat of the Spanish Armada in 1588, and presided over a golden age of English letters and exploration. She died unmarried in 1603, the last Tudor monarch.",
       "knownFor": [
@@ -1576,8 +1576,8 @@ window.TITANS_DATA = {
       ],
       "monogram": "NM",
       "palette": {
-        "a": "#63500f",
-        "b": "#a08130"
+        "a": "#13a477",
+        "b": "#42e1a7"
       },
       "bio": "Nelson Rolihlahla Mandela was born into the Thembu royal house in South Africa's Transkei and became a lawyer and leading figure in the African National Congress's struggle against apartheid. Imprisoned for 27 years, he emerged in 1990 to negotiate a peaceful transition and was elected South Africa's first democratically chosen president in 1994. He shared the 1993 Nobel Peace Prize and devoted his presidency to national reconciliation.",
       "knownFor": [
@@ -1662,8 +1662,8 @@ window.TITANS_DATA = {
       ],
       "monogram": "WC",
       "palette": {
-        "a": "#57450f",
-        "b": "#92742c"
+        "a": "#00885b",
+        "b": "#26c58b"
       },
       "bio": "Winston Churchill served twice as British Prime Minister, most famously leading the nation through the Second World War from 1940 to 1945. A soldier, journalist, and prolific author, he held nearly every great office of state across a six-decade career marked by dramatic reversals. He received the Nobel Prize in Literature in 1953 for his historical writing and oratory.",
       "knownFor": [
@@ -1748,8 +1748,8 @@ window.TITANS_DATA = {
       ],
       "monogram": "AL",
       "palette": {
-        "a": "#113f48",
-        "b": "#256f7c"
+        "a": "#0891b2",
+        "b": "#22d3ee"
       },
       "bio": "Augusta Ada King, Countess of Lovelace, was an English mathematician and the daughter of the poet Lord Byron. Her 1843 notes on Charles Babbage's Analytical Engine contained what is regarded as the first published computer program and foresaw machines manipulating symbols and even composing music. She described her fusion of imagination and rigor as poetical science.",
       "knownFor": [
@@ -1833,8 +1833,8 @@ window.TITANS_DATA = {
       ],
       "monogram": "AE",
       "palette": {
-        "a": "#0e434d",
-        "b": "#2a7a87"
+        "a": "#169fc0",
+        "b": "#30e1fc"
       },
       "bio": "Albert Einstein was a German-born theoretical physicist who reshaped our understanding of space, time, energy, and gravity through the special and general theories of relativity. He received the 1921 Nobel Prize in Physics for explaining the photoelectric effect. After fleeing Nazi Germany in 1933, he settled at Princeton and became an outspoken advocate for peace and civil rights.",
       "knownFor": [
@@ -1919,8 +1919,8 @@ window.TITANS_DATA = {
       ],
       "monogram": "CD",
       "palette": {
-        "a": "#134b56",
-        "b": "#2f8391"
+        "a": "#0083a4",
+        "b": "#14c5e0"
       },
       "bio": "Charles Darwin was an English naturalist whose five-year voyage aboard HMS Beagle seeded the theory of evolution by natural selection. After two decades of meticulous evidence-gathering, he published On the Origin of Species in 1859 and transformed biology. Despite chronic illness, he produced landmark studies of barnacles, orchids, and earthworms from his home at Down House in Kent.",
       "knownFor": [
@@ -2005,8 +2005,8 @@ window.TITANS_DATA = {
       ],
       "monogram": "IN",
       "palette": {
-        "a": "#134b56",
-        "b": "#2f8391"
+        "a": "#0891b2",
+        "b": "#22d3ee"
       },
       "bio": "Isaac Newton was an English mathematician and physicist who formulated the laws of motion and universal gravitation in his 1687 Principia Mathematica, uniting the heavens and the earth under one mathematics. He invented calculus independently of Leibniz, showed that white light contains the full spectrum of colors, and built the first reflecting telescope. He later served as Master of the Royal Mint and President of the Royal Society.",
       "knownFor": [
@@ -2091,8 +2091,8 @@ window.TITANS_DATA = {
       ],
       "monogram": "MC",
       "palette": {
-        "a": "#16525e",
-        "b": "#35899a"
+        "a": "#169fc0",
+        "b": "#30e1fc"
       },
       "bio": "Marie Skłodowska Curie was a Polish-born physicist and chemist who coined the term radioactivity and discovered the elements polonium and radium. She was the first woman to win a Nobel Prize, the first person to win two, and the first female professor at the Sorbonne. During the First World War she equipped and drove mobile X-ray units to the front lines.",
       "knownFor": [
@@ -2177,8 +2177,8 @@ window.TITANS_DATA = {
       ],
       "monogram": "NT",
       "palette": {
-        "a": "#185a66",
-        "b": "#3a91a1"
+        "a": "#0083a4",
+        "b": "#14c5e0"
       },
       "bio": "Nikola Tesla was a Serbian-American inventor and electrical engineer whose alternating-current induction motor and polyphase system became the foundation of modern power distribution. His patents, licensed to Westinghouse, powered the harnessing of Niagara Falls in 1896. He pioneered high-frequency research with the Tesla coil and pursued wireless transmission of energy at his Wardenclyffe laboratory.",
       "knownFor": [
@@ -2263,8 +2263,8 @@ window.TITANS_DATA = {
       ],
       "monogram": "AC",
       "palette": {
-        "a": "#65390c",
-        "b": "#a06a26"
+        "a": "#16a34a",
+        "b": "#4ade80"
       },
       "bio": "Andrew Carnegie emigrated from Scotland as a poor weaver's son and began work at thirteen as a bobbin boy in a Pittsburgh cotton mill. Rising through telegraphy and the Pennsylvania Railroad, he built Carnegie Steel into the world's largest steel producer, selling it to J.P. Morgan in 1901 in the deal that created U.S. Steel. He then devoted his fortune to giving, funding more than 2,500 libraries along with universities, pensions, and institutions for peace.",
       "knownFor": [
@@ -2349,8 +2349,8 @@ window.TITANS_DATA = {
       ],
       "monogram": "BF",
       "palette": {
-        "a": "#7a4a12",
-        "b": "#b97f33"
+        "a": "#24b158",
+        "b": "#58ec8e"
       },
       "bio": "Benjamin Franklin rose from a Boston candlemaker's son and runaway apprentice to become colonial America's most celebrated printer, scientist, and statesman. He proved lightning was electricity, invented devices he refused to patent, founded Philadelphia's first library, fire company, and university, and helped draft both the Declaration of Independence and the Constitution. His diplomacy in Paris secured the French alliance that made American independence possible.",
       "knownFor": [
@@ -2435,8 +2435,8 @@ window.TITANS_DATA = {
       ],
       "monogram": "GC",
       "palette": {
-        "a": "#7f4f15",
-        "b": "#bd8438"
+        "a": "#08953c",
+        "b": "#3cd072"
       },
       "bio": "George Washington Carver was born enslaved in Missouri near the end of the Civil War and pursued education across the frontier despite being turned away for his race, eventually becoming Iowa State's first Black student and faculty member. At Booker T. Washington's invitation he led agriculture at Tuskegee Institute for nearly five decades, teaching impoverished Southern farmers to restore soil ruined by cotton through crop rotation with peanuts, sweet potatoes, and cowpeas. His hundreds of derived products and his mobile classroom carried practical science to the poorest fields in the South.",
       "knownFor": [
@@ -2521,8 +2521,8 @@ window.TITANS_DATA = {
       ],
       "monogram": "HF",
       "palette": {
-        "a": "#845318",
-        "b": "#c48a3c"
+        "a": "#16a34a",
+        "b": "#4ade80"
       },
       "bio": "Henry Ford, a Michigan farm boy who preferred repairing watches to plowing fields, founded Ford Motor Company in 1903 after two earlier automobile ventures collapsed. His Model T and the moving assembly line he perfected at Highland Park in 1913 cut the price of a car from a luxury to a working family's purchase, transforming manufacturing worldwide. His five-dollar day, twice the prevailing wage, redefined the relationship between industry and its workers.",
       "knownFor": [
@@ -2607,8 +2607,8 @@ window.TITANS_DATA = {
       ],
       "monogram": "TE",
       "palette": {
-        "a": "#6e4210",
-        "b": "#ad752c"
+        "a": "#24b158",
+        "b": "#58ec8e"
       },
       "bio": "Thomas Alva Edison, largely self-taught and nearly deaf from childhood, began as an itinerant telegraph operator and became the most prolific inventor of his age, holding 1,093 U.S. patents. At Menlo Park he built the world's first industrial research laboratory, producing the phonograph, a practical incandescent lighting system, and early motion picture technology. His Pearl Street station in Manhattan launched the era of centralized electric power.",
       "knownFor": [
@@ -2693,8 +2693,8 @@ window.TITANS_DATA = {
       ],
       "monogram": "FK",
       "palette": {
-        "a": "#5c2245",
-        "b": "#9c4d76"
+        "a": "#0d9488",
+        "b": "#2dd4bf"
       },
       "bio": "Frida Kahlo (1907–1954) was a Mexican painter who began her career while recovering from a near-fatal bus accident at eighteen, painting from her bed with a mirror mounted overhead. Her unflinching self-portraits fused personal pain, Mexican folk tradition, and political identity. She lived and worked in the Casa Azul in Coyoacán, now a museum in her honor.",
       "knownFor": [
@@ -2779,8 +2779,8 @@ window.TITANS_DATA = {
       ],
       "monogram": "LV",
       "palette": {
-        "a": "#6d2a4e",
-        "b": "#a85580"
+        "a": "#1ba296",
+        "b": "#3be2cd"
       },
       "bio": "Leonardo da Vinci (1452–1519) was a Florentine painter, engineer, anatomist, and inventor whose notebooks span thousands of pages of observation and design. Born out of wedlock in Vinci and largely self-taught, he produced the Mona Lisa and The Last Supper while dissecting corpses, designing machines, and studying water, light, and flight. He is widely regarded as history's most complete polymath.",
       "knownFor": [
@@ -2865,8 +2865,8 @@ window.TITANS_DATA = {
       ],
       "monogram": "LB",
       "palette": {
-        "a": "#77305a",
-        "b": "#b3618c"
+        "a": "#00867a",
+        "b": "#1fc6b1"
       },
       "bio": "Ludwig van Beethoven (1770–1827) was a German composer and pianist who bridged the Classical and Romantic eras. Losing his hearing progressively from his late twenties, he composed many of his greatest works — including the Ninth Symphony — in near-total deafness. His music permanently expanded what the symphony, sonata, and string quartet could express.",
       "knownFor": [
@@ -2951,8 +2951,8 @@ window.TITANS_DATA = {
       ],
       "monogram": "MB",
       "palette": {
-        "a": "#6d2a4e",
-        "b": "#a85580"
+        "a": "#0d9488",
+        "b": "#2dd4bf"
       },
       "bio": "Michelangelo Buonarroti (1475–1564) was a Florentine sculptor, painter, architect, and poet of the High Renaissance. He carved the David from a flawed block other sculptors had abandoned, painted the Sistine Chapel ceiling largely alone over four years, and in old age directed the design of St. Peter's dome without pay. He worked until days before his death at eighty-eight.",
       "knownFor": [
@@ -3037,8 +3037,8 @@ window.TITANS_DATA = {
       ],
       "monogram": "VG",
       "palette": {
-        "a": "#712d54",
-        "b": "#ae5b86"
+        "a": "#1ba296",
+        "b": "#3be2cd"
       },
       "bio": "Vincent van Gogh (1853–1890) was a Dutch post-impressionist painter who began his artistic career at twenty-seven, after failing as an art dealer, teacher, and evangelist. In a single decade he produced roughly nine hundred paintings — including The Starry Night and the Sunflowers series — while battling poverty and mental illness, sustained by his brother Theo. Barely known in his lifetime, he became one of the most influential painters in history.",
       "knownFor": [
@@ -3123,8 +3123,8 @@ window.TITANS_DATA = {
       ],
       "monogram": "WM",
       "palette": {
-        "a": "#571f40",
-        "b": "#93486f"
+        "a": "#00867a",
+        "b": "#1fc6b1"
       },
       "bio": "Wolfgang Amadeus Mozart (1756–1791) was an Austrian composer who toured Europe's courts as a child prodigy and wrote his first symphonies before the age of ten. Breaking from salaried service in Salzburg, he built an independent career in Vienna, producing operas, concertos, and symphonies at astonishing speed. In thirty-five years he composed more than six hundred works.",
       "knownFor": [
@@ -3209,8 +3209,8 @@ window.TITANS_DATA = {
       ],
       "monogram": "JA",
       "palette": {
-        "a": "#1a4a2c",
-        "b": "#378252"
+        "a": "#0369a1",
+        "b": "#38bdf8"
       },
       "bio": "Jane Austen was an English novelist born in Steventon, Hampshire, in 1775, the seventh child of a country clergyman. Publishing anonymously in her lifetime, she perfected the novel of manners with an irony and psychological precision that made ordinary social life the stage for moral drama. Her six completed novels have never gone out of print.",
       "knownFor": [
@@ -3295,8 +3295,8 @@ window.TITANS_DATA = {
       ],
       "monogram": "LT",
       "palette": {
-        "a": "#173f26",
-        "b": "#2f7448"
+        "a": "#1177af",
+        "b": "#46cbff"
       },
       "bio": "Leo Tolstoy was a Russian novelist and moral philosopher born at his family estate of Yasnaya Polyana in 1828. After serving in the Crimean War he wrote War and Peace and Anna Karenina, then underwent a midlife spiritual crisis that turned him toward radical simplicity, nonviolence, and service to the poor — ideas that later shaped Gandhi and, through him, the civil rights movement. He died in 1910 at a rural railway station, having renounced most of his wealth and copyrights.",
       "knownFor": [
@@ -3381,8 +3381,8 @@ window.TITANS_DATA = {
       ],
       "monogram": "MT",
       "palette": {
-        "a": "#245c39",
-        "b": "#478f63"
+        "a": "#005b93",
+        "b": "#2aafea"
       },
       "bio": "Mark Twain, born Samuel Langhorne Clemens in Florida, Missouri, in 1835, worked as a printer, Mississippi riverboat pilot, and frontier journalist before becoming America's most celebrated humorist. His novels drawn from his Hannibal boyhood, above all Adventures of Huckleberry Finn, brought the American vernacular voice into serious literature. After going bankrupt in 1894 he repaid every creditor in full through a worldwide lecture tour.",
       "knownFor": [
@@ -3467,8 +3467,8 @@ window.TITANS_DATA = {
       ],
       "monogram": "MA",
       "palette": {
-        "a": "#215636",
-        "b": "#428c5e"
+        "a": "#0369a1",
+        "b": "#38bdf8"
       },
       "bio": "Maya Angelou was an American poet, memoirist, and civil rights activist born Marguerite Johnson in St. Louis, Missouri, in 1928. Her 1969 memoir I Know Why the Caged Bird Sings broke new ground in American autobiography, and she worked alongside Martin Luther King Jr. and Malcolm X in the civil rights movement while also building careers as a dancer, singer, journalist, and professor. She recited a poem at the 1993 presidential inauguration and received the Presidential Medal of Freedom in 2010.",
       "knownFor": [
@@ -3553,8 +3553,8 @@ window.TITANS_DATA = {
       ],
       "monogram": "WS",
       "palette": {
-        "a": "#1f5232",
-        "b": "#3f8a5c"
+        "a": "#1177af",
+        "b": "#46cbff"
       },
       "bio": "William Shakespeare was an English playwright, poet, and actor born in Stratford-upon-Avon in 1564. As a shareholder in the Lord Chamberlain's Men, later the King's Men, he wrote some 38 plays and 154 sonnets that reshaped the English language and the modern understanding of character. His tragedies, comedies, and histories remain the most performed works in world theatre.",
       "knownFor": [
@@ -3639,8 +3639,8 @@ window.TITANS_DATA = {
       ],
       "monogram": "H",
       "palette": {
-        "a": "#45497f",
-        "b": "#787cba"
+        "a": "#4f46e5",
+        "b": "#818cf8"
       },
       "bio": "Hypatia, daughter of the mathematician Theon, rose to lead the Neoplatonist school of Alexandria, where she taught mathematics, astronomy, and philosophy to students of every faith. She produced commentaries on Diophantus and Apollonius, worked with her father on Ptolemy's astronomical tables, and counseled the city's civic leaders until she was murdered by a mob in 415 AD amid Alexandria's political and religious strife.",
       "knownFor": [
@@ -3725,8 +3725,8 @@ window.TITANS_DATA = {
       ],
       "monogram": "JA",
       "palette": {
-        "a": "#33376a",
-        "b": "#5c60a2"
+        "a": "#5d54f3",
+        "b": "#8f9aff"
       },
       "bio": "Joan of Arc was born around 1412 to a peasant family in Domrémy, France, and at seventeen convinced the Dauphin to place her at the head of a relief army during the Hundred Years' War. She lifted the English siege of Orléans in nine days and saw Charles VII crowned at Reims; captured at Compiègne, she was tried by a pro-English church court and burned at Rouen in 1431 at nineteen. A posthumous retrial nullified the verdict, and she was canonized in 1920.",
       "knownFor": [
@@ -3811,8 +3811,8 @@ window.TITANS_DATA = {
       ],
       "monogram": "L",
       "palette": {
-        "a": "#393d73",
-        "b": "#666aac"
+        "a": "#4138d7",
+        "b": "#737eea"
       },
       "bio": "Laozi, traditionally said to have served as an archivist at the Zhou dynasty court in the sixth century BC, is honored as the founding sage of Daoism. Legend holds that, leaving a declining kingdom, he paused at the western pass and set down the Tao Te Ching — some five thousand characters on the way of nature, effortless action, and humble leadership that became one of the most translated books in history.",
       "knownFor": [
@@ -3896,8 +3896,8 @@ window.TITANS_DATA = {
       ],
       "monogram": "R",
       "palette": {
-        "a": "#494d89",
-        "b": "#7c80c2"
+        "a": "#4f46e5",
+        "b": "#818cf8"
       },
       "bio": "Jalal al-Din Rumi was born in 1207 in Balkh, in present-day Afghanistan, and fled westward with his family ahead of the Mongol invasions, eventually settling in Konya in Anatolia. A respected Islamic scholar and preacher, he was transformed at thirty-seven by his friendship with the wandering dervish Shams of Tabriz, and poured the rest of his life into ecstatic verse — including the six-volume Masnavi — that made him one of the world's most beloved mystical poets.",
       "knownFor": [
@@ -3981,8 +3981,8 @@ window.TITANS_DATA = {
       ],
       "monogram": "SG",
       "palette": {
-        "a": "#41457f",
-        "b": "#7276b8"
+        "a": "#5d54f3",
+        "b": "#8f9aff"
       },
       "bio": "Born a prince of the Shakya clan in Lumbini, Siddhartha Gautama left his palace at twenty-nine to seek an answer to human suffering and attained awakening at thirty-five beneath the Bodhi tree at Bodh Gaya. He spent the next forty-five years teaching across the Gangetic plain of India, founding the monastic community that carried Buddhism through the centuries, and died at about eighty in Kushinagar.",
       "knownFor": [
@@ -4067,8 +4067,8 @@ window.TITANS_DATA = {
       ],
       "monogram": "CM",
       "palette": {
-        "a": "#3d4956",
-        "b": "#67788a"
+        "a": "#0f766e",
+        "b": "#5eead4"
       },
       "bio": "Charles T. Munger was an American investor and Warren Buffett's partner as vice chairman of Berkshire Hathaway for over four decades. Trained as a lawyer at Harvard, he championed a multidisciplinary latticework of mental models for decision-making and shaped Berkshire's shift toward buying great businesses at fair prices. He died in 2023, a month before his hundredth birthday.",
       "knownFor": [
@@ -4153,8 +4153,8 @@ window.TITANS_DATA = {
       ],
       "monogram": "KB",
       "palette": {
-        "a": "#414d5b",
-        "b": "#6b7d90"
+        "a": "#1d847c",
+        "b": "#6cf8e2"
       },
       "bio": "Kobe Bryant spent all twenty of his NBA seasons with the Los Angeles Lakers, winning five championships, two Finals MVPs, and two Olympic gold medals. Famous for a work ethic he called the Mamba Mentality, he scored 81 points in a single game and 60 in his final one. After retiring he won an Academy Award for his animated short Dear Basketball; he died in 2020 at forty-one.",
       "knownFor": [
@@ -4239,8 +4239,8 @@ window.TITANS_DATA = {
       ],
       "monogram": "RF",
       "palette": {
-        "a": "#2f3a45",
-        "b": "#556575"
+        "a": "#016860",
+        "b": "#50dcc6"
       },
       "bio": "Richard Feynman was an American theoretical physicist who shared the 1965 Nobel Prize for his work on quantum electrodynamics. He worked on the Manhattan Project at Los Alamos, invented the diagrams that bear his name, and became beloved as a teacher through the Feynman Lectures on Physics and as a plainspoken investigator on the Challenger disaster commission.",
       "knownFor": [
@@ -4325,8 +4325,8 @@ window.TITANS_DATA = {
       ],
       "monogram": "RG",
       "palette": {
-        "a": "#333e49",
-        "b": "#59697a"
+        "a": "#0f766e",
+        "b": "#5eead4"
       },
       "bio": "Ruth Bader Ginsburg co-founded the ACLU Women's Rights Project and won five of the six gender-discrimination cases she argued before the Supreme Court in the 1970s. Appointed to that Court in 1993, she served twenty-seven years, writing the landmark majority opinion in United States v. Virginia and dissents that helped prompt new legislation. She died in 2020 at eighty-seven.",
       "knownFor": [
@@ -4410,8 +4410,8 @@ window.TITANS_DATA = {
       ],
       "monogram": "SH",
       "palette": {
-        "a": "#2a343e",
-        "b": "#4d5c6b"
+        "a": "#1d847c",
+        "b": "#6cf8e2"
       },
       "bio": "Stephen Hawking was a British theoretical physicist who held Cambridge's Lucasian Professorship of Mathematics for thirty years. Diagnosed with motor neurone disease at twenty-one and given roughly two years to live, he went on to show that black holes emit radiation and to write A Brief History of Time, one of the best-selling science books ever published. He died in 2018 at seventy-six.",
       "knownFor": [
@@ -4496,8 +4496,8 @@ window.TITANS_DATA = {
       ],
       "monogram": "SJ",
       "palette": {
-        "a": "#37424e",
-        "b": "#5f6f80"
+        "a": "#016860",
+        "b": "#50dcc6"
       },
       "bio": "Steve Jobs co-founded Apple Computer in 1976 and led the creation of the Macintosh, iPod, iPhone, and iPad. Forced out of Apple in 1985, he founded NeXT and built Pixar into a storied animation studio before returning in 1997 to rescue Apple and transform it into one of the most valuable companies in the world. He died of pancreatic cancer in 2011 at fifty-six.",
       "knownFor": [
