@@ -50,7 +50,7 @@
 
 <!-- ══════════════ EXPLORE ══════════════ -->
 <main class="explore">
-  <div class="chips" id="categoryChips" role="tablist" aria-label="Categories"></div>
+  <div class="chips" id="categoryChips" role="group" aria-label="Categories"></div>
   <div class="grid" id="titanGrid"></div>
   <div class="empty" id="emptyState" hidden>
     <p>No titans match that search.</p>
@@ -126,7 +126,7 @@
 
 <!-- ══════════════ CODEX MODAL ══════════════ -->
 <div class="overlay" id="codexOverlay" hidden>
-  <section class="modal codex" role="dialog" aria-modal="true" aria-labelledby="codexTitle">
+  <section class="modal codex" tabindex="-1" role="dialog" aria-modal="true" aria-labelledby="codexTitle">
     <button class="modal-x" data-close aria-label="Close">✕</button>
     <h2 id="codexTitle">The Codex</h2>
     <p class="fine">First principles of the pantheon — distilled from across the fifty-one minds, each stated as
@@ -138,7 +138,7 @@
 
 <!-- ══════════════ PROFILE MODAL ══════════════ -->
 <div class="overlay" id="profileOverlay" hidden>
-  <section class="modal profile" role="dialog" aria-modal="true" aria-labelledby="profileName">
+  <section class="modal profile" tabindex="-1" role="dialog" aria-modal="true" aria-labelledby="profileName">
     <button class="modal-x" data-close aria-label="Close">✕</button>
     <div class="profile-head">
       <div class="medallion medallion-lg" id="profileMedallion"></div>
@@ -193,7 +193,7 @@
     </div>
   </header>
   <div class="chat-scroll" id="chatScroll">
-    <div class="chat-log" id="chatLog"></div>
+    <div class="chat-log" id="chatLog" role="log" aria-live="polite" aria-label="Conversation"></div>
     <div class="chat-starters" id="chatStarters"></div>
   </div>
   <form class="chat-inputrow" id="chatForm">
@@ -204,7 +204,7 @@
 
 <!-- ══════════════ SETTINGS MODAL ══════════════ -->
 <div class="overlay" id="settingsOverlay" hidden>
-  <section class="modal settings" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
+  <section class="modal settings" tabindex="-1" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
     <button class="modal-x" data-close aria-label="Close">✕</button>
     <h2 id="settingsTitle">Chat engine</h2>
     <label class="choice">
@@ -236,7 +236,7 @@
 
 <!-- ══════════════ ADD / EDIT EXPERT MODAL ══════════════ -->
 <div class="overlay" id="expertOverlay" hidden>
-  <section class="modal expert" role="dialog" aria-modal="true" aria-labelledby="expertTitle">
+  <section class="modal expert" tabindex="-1" role="dialog" aria-modal="true" aria-labelledby="expertTitle">
     <button class="modal-x" data-close aria-label="Close">✕</button>
     <h2 id="expertTitle">Add a modern expert</h2>
     <p class="fine">Anyone can join the pantheon — a modern scientist, an investor, a coach, your grandmother.

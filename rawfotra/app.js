@@ -43,7 +43,10 @@
   var currentTitan = null;     // titan open in profile modal
   var chatTitan = null;        // titan open in chat
   var editingId = null;        // expert being edited
-  var pendingReply = false;
+  var pendingReplies = {};     // titan id -> reply in flight
+  var chatGen = {};            // titan id -> generation, bumped on Clear to drop late replies
+  var expertDirty = false;     // unsaved edits in the expert form
+  var lastFocus = null;        // element to restore focus to when a modal closes
 
   function allTitans() { return base.titans.concat(customExperts); }
   function findTitan(id) {
@@ -81,11 +84,19 @@
   function load(key, fallback) {
     try {
       var raw = localStorage.getItem(key);
-      return raw ? JSON.parse(raw) : fallback;
+      if (!raw) return fallback;
+      var val = JSON.parse(raw);
+      // Stored value must match the fallback's basic shape, or the app can die at boot.
+      if (val == null) return fallback;
+      if (Array.isArray(fallback) && !Array.isArray(val)) return fallback;
+      if (fallback && typeof fallback === "object" && !Array.isArray(fallback) &&
+          (typeof val !== "object" || Array.isArray(val))) return fallback;
+      return val;
     } catch (e) { return fallback; }
   }
   function save(key, val) {
-    try { localStorage.setItem(key, JSON.stringify(val)); } catch (e) { /* storage full/blocked */ }
+    try { localStorage.setItem(key, JSON.stringify(val)); return true; }
+    catch (e) { return false; }
   }
   function titleCase(s) {
     return String(s || "").replace(/[-_]/g, " ").replace(/\b\w/g, function (c) { return c.toUpperCase(); });
@@ -105,9 +116,21 @@
   function paintMedallion(node, titan, sizeCls) {
     node.className = "medallion " + sizeCls;
     node.textContent = titan.monogram || (titan.name || "?").slice(0, 1).toUpperCase();
-    var a = (titan.palette && titan.palette.a) || "#4a4238";
-    var b = (titan.palette && titan.palette.b) || "#7a6d58";
+    // Only hex colors reach CSS — anything else (e.g. url() from an imported file) is discarded.
+    var ok = function (c) { return (typeof c === "string" && /^#[0-9a-fA-F]{3,8}$/.test(c)) ? c : null; };
+    var a = ok(titan.palette && titan.palette.a) || "#4a4238";
+    var b = ok(titan.palette && titan.palette.b) || "#7a6d58";
     node.style.background = "linear-gradient(145deg, " + a + ", " + b + ")";
+  }
+
+  function openOverlay(id) {
+    lastFocus = document.activeElement;
+    ["header.nav", "section.hero", "main.explore", "footer.foot"].forEach(function (sel) {
+      document.querySelectorAll(sel).forEach(function (n) { n.inert = true; });
+    });
+    $(id).hidden = false;
+    var modal = $(id).querySelector(".modal");
+    if (modal) modal.focus();
   }
 
   /* ── Explore: chips + grid + daily wisdom ──────────────────── */
@@ -116,9 +139,14 @@
     var wrap = $("categoryChips");
     wrap.innerHTML = "";
     var titans = allTitans();
+    // Self-heal a filter whose chip no longer exists (last custom expert deleted, etc.).
+    var valid = activeCategory === "all" ||
+      (activeCategory === "__custom" && customExperts.length > 0) ||
+      titans.some(function (t) { return t.category === activeCategory; });
+    if (!valid) activeCategory = "all";
     var mk = function (key, label, count) {
       var chip = el("button", "chip" + (activeCategory === key ? " active" : ""));
-      chip.setAttribute("role", "tab");
+      chip.setAttribute("aria-pressed", activeCategory === key ? "true" : "false");
       chip.appendChild(document.createTextNode(label));
       chip.appendChild(el("span", "count", String(count)));
       chip.addEventListener("click", function () {
@@ -251,7 +279,8 @@
     var custom = isCustom(t.id);
     $("profileEditBtn").hidden = !custom;
     $("profileDeleteBtn").hidden = !custom;
-    $("profileOverlay").hidden = false;
+    closeOverlays();
+    openOverlay("profileOverlay");
   }
 
   /* ── Chat ──────────────────────────────────────────────────── */
@@ -263,7 +292,7 @@
     var t = findTitan(id);
     if (!t) return;
     chatTitan = t;
-    location.hash = "#/chat/" + id;
+    location.hash = "#/chat/" + encodeURIComponent(id);
     paintMedallion($("chatMedallion"), t, "medallion-sm");
     $("chatName").textContent = t.name;
     $("chatEpithet").textContent = t.epithet;
@@ -333,7 +362,7 @@
   }
 
   function sendMessage() {
-    if (!chatTitan || pendingReply) return;
+    if (!chatTitan || pendingReplies[chatTitan.id]) return;
     var input = $("chatInput");
     var text = input.value.trim();
     if (!text) return;
@@ -341,6 +370,7 @@
     autoGrow(input);
 
     var id = chatTitan.id;
+    var gen = chatGen[id] || 0;
     var history = chatHistory(id);
     history.push({ role: "user", text: text });
     saveChat(id, history);
@@ -348,27 +378,36 @@
     renderChatStarters(history);
     scrollChat();
 
-    pendingReply = true;
+    pendingReplies[id] = true;
     var bubble = msgNode("titan thinking", "");
     var dots = el("span", "dots");
     bubble.appendChild(dots);
     $("chatLog").appendChild(bubble);
     scrollChat();
 
+    // History-first completion: the reply always lands in the right titan's
+    // saved history, even if this chat was closed or another one opened
+    // meanwhile; the DOM is only touched when the bubble is still live.
     var finish = function (replyText) {
-      bubble.classList.remove("thinking");
-      bubble.textContent = replyText;
+      delete pendingReplies[id];
+      if ((chatGen[id] || 0) !== gen) return; // conversation was cleared mid-flight
       var h = chatHistory(id);
       h.push({ role: "titan", text: replyText });
       saveChat(id, h);
-      pendingReply = false;
-      scrollChat();
+      if (bubble.isConnected) {
+        bubble.classList.remove("thinking");
+        bubble.textContent = replyText;
+        scrollChat();
+      } else if (chatTitan && chatTitan.id === id && !$("chatView").hidden) {
+        renderChatLog();
+      }
     };
     var fail = function (message) {
+      delete pendingReplies[id];
+      if ((chatGen[id] || 0) !== gen || !bubble.isConnected) return;
       bubble.remove();
       var e = msgNode("error", message);
       $("chatLog").appendChild(e);
-      pendingReply = false;
       scrollChat();
     };
 
@@ -452,10 +491,18 @@
   }
 
   function claudeReply(t, history, bubble, finish, fail) {
-    var messages = history
+    // Coalesce consecutive same-role turns (the API rejects them; a failed
+    // reply otherwise leaves an unpaired user turn that poisons the thread).
+    var messages = [];
+    history
       .filter(function (m) { return m.role === "user" || m.role === "titan"; })
       .slice(-24)
-      .map(function (m) { return { role: m.role === "user" ? "user" : "assistant", content: m.text }; });
+      .forEach(function (m) {
+        var role = m.role === "user" ? "user" : "assistant";
+        var last = messages[messages.length - 1];
+        if (last && last.role === role) last.content += "\n\n" + m.text;
+        else messages.push({ role: role, content: m.text });
+      });
     // The API requires the first message to be a user turn; drop a leading greeting.
     while (messages.length && messages[0].role !== "user") messages.shift();
 
@@ -471,7 +518,9 @@
       },
       body: JSON.stringify({
         model: settings.model || "claude-opus-5",
-        max_tokens: 1024,
+        // Thinking-on-by-default models spend part of this cap on internal
+        // reasoning; the stream keeps timeouts out of the picture.
+        max_tokens: 8192,
         system: personaSystemPrompt(t),
         messages: messages,
         stream: true,
@@ -520,9 +569,11 @@
         });
       }
       return pump().then(function () {
-        if (stopReason === "refusal" && !acc) {
+        if (stopReason === "refusal") {
+          // Discard any partial output rather than saving it as complete counsel.
           throw new Error("The model declined this request. Try rephrasing, or switch engines in Settings.");
         }
+        if (stopReason === "max_tokens" && acc) acc += " […]";
       });
     }).then(function () {
       if (acc) finish(acc);
@@ -761,10 +812,12 @@
       if (!doResearch) return Promise.resolve();
       setStatus("Researching the question…");
       var messages = [{ role: "user", content: "Research this question thoroughly for a panel of advisors about to deliberate on it. Gather current facts, relevant data, and context. Then produce a neutral research brief (300-500 words) they can rely on:\n\n" + q }];
+      // Haiku only supports the basic web-search variant.
+      var searchTool = model.indexOf("haiku") !== -1 ? "web_search_20250305" : "web_search_20260209";
       var step = function (msgs, depth) {
         return apiCall({
-          model: model, max_tokens: 3000, messages: msgs,
-          tools: [{ type: "web_search_20260209", name: "web_search", max_uses: 4 }],
+          model: model, max_tokens: 8000, messages: msgs,
+          tools: [{ type: searchTool, name: "web_search", max_uses: 4 }],
         }).then(function (r) {
           if (r.stop_reason === "pause_turn" && depth < 3) {
             return step(msgs.concat([{ role: "assistant", content: r.content }]), depth + 1);
@@ -784,7 +837,7 @@
         ? "The question before the council:\n\n" + q + "\n\nA neutral research brief prepared for the council:\n\n" + brief
         : "The question before the council:\n\n" + q;
       return apiCall({
-        model: model, max_tokens: 1500, system: sys,
+        model: model, max_tokens: 6000, system: sys,
         messages: [{ role: "user", content: content }],
       }).then(function (r) {
         if (r.stop_reason === "refusal") throw new Error("declined to answer this question");
@@ -817,9 +870,8 @@
 
     var synthesize = function () {
       if (!report.answers.length) {
-        setStatus("No answers could be gathered — check your API key or try the offline engine.");
-        councilBusy = false;
-        return;
+        // Throw so the terminal catch handles it and finishAll never declares success.
+        throw new Error("no answers could be gathered — check your API key or try the offline engine");
       }
       setStatus("Consolidating the council's counsel…");
       var schema = {
@@ -853,6 +905,7 @@
         try { parsed = JSON.parse(textOf(r)); } catch (e) { throw new Error("could not parse synthesis"); }
         showConsolidated(parsed.consolidated, (parsed.recommendations || []).slice(0, 3));
       }).catch(function (e) {
+        if (/no answers could be gathered/.test(String(e.message))) throw e;
         // Fall back to the mechanical synthesis rather than losing the session.
         var syn = offlineSynthesis(q, members);
         showConsolidated(syn.summary, syn.recs);
@@ -926,11 +979,14 @@
     $("apiKeyInput").value = settings.apiKey || "";
     $("modelSelect").value = settings.model || "claude-opus-5";
     syncApiFields();
-    $("settingsOverlay").hidden = false;
+    openOverlay("settingsOverlay");
   }
   function syncApiFields() {
     var engine = document.querySelector("input[name=engine]:checked");
-    $("apiFields").classList.toggle("disabled", !engine || engine.value !== "claude");
+    var off = !engine || engine.value !== "claude";
+    $("apiFields").classList.toggle("disabled", off);
+    $("apiKeyInput").disabled = off;
+    $("modelSelect").disabled = off;
   }
   function saveSettings() {
     var engine = document.querySelector("input[name=engine]:checked");
@@ -969,7 +1025,8 @@
     var o = el("option", null, "+ New category…");
     o.value = "__new";
     sel.appendChild(o);
-    if (selected && sel.querySelector('option[value="' + selected + '"]')) sel.value = selected;
+    var exists = Array.prototype.some.call(sel.options, function (opt) { return opt.value === selected; });
+    if (selected && exists) sel.value = selected;
     else sel.selectedIndex = 0;
   }
 
@@ -1002,7 +1059,8 @@
       f.years.value = expert.years || "";
       f.place.value = expert.place || "";
       f.tags.value = (expert.tags || []).join(", ");
-      f.color.value = (expert.palette && expert.palette.a) || "#8a6d3b";
+      // Prefer the originally picked color so re-saving doesn't darken it each time.
+      f.color.value = expert.color || (expert.palette && expert.palette.a) || "#8a6d3b";
       f.bio.value = expert.bio || "";
       f.knownFor.value = (expert.knownFor || []).join("\n");
       f.principles.value = (expert.principles || []).map(function (p) { return p.title + ": " + p.text; }).join("\n");
@@ -1010,7 +1068,8 @@
       f.greeting.value = expert.greeting || "";
       f.starters.value = (expert.starters || []).join("\n");
     }
-    $("expertOverlay").hidden = false;
+    expertDirty = false;
+    openOverlay("expertOverlay");
   }
 
   function slugify(name) {
@@ -1048,6 +1107,7 @@
     });
     var name = f.name.value.trim();
     var color = f.color.value || "#8a6d3b";
+    var prev = editingId ? findTitan(editingId) : null;
     var expert = {
       id: editingId || slugify(name),
       name: name,
@@ -1055,7 +1115,9 @@
       years: f.years.value.trim(),
       place: f.place.value.trim(),
       category: category,
-      categoryLabel: categoryLabelText || undefined,
+      categoryLabel: categoryLabelText ||
+        (prev && prev.category === category ? prev.categoryLabel : undefined),
+      color: color,
       tags: f.tags.value.split(",").map(function (s) { return s.trim().toLowerCase(); }).filter(Boolean),
       monogram: name.split(/\s+/).map(function (w) { return w[0]; }).join("").slice(0, 2).toUpperCase(),
       palette: { a: shade(color, -30), b: shade(color, 25) },
@@ -1073,12 +1135,15 @@
     } else {
       customExperts.push(expert);
     }
-    save(LS.experts, customExperts);
+    var stored = save(LS.experts, customExperts);
     editingId = null;
+    expertDirty = false;
     closeOverlays();
     renderChips();
     renderGrid();
-    toast(expert.name + " has joined the pantheon.");
+    toast(stored
+      ? expert.name + " has joined the pantheon."
+      : "Could not save — browser storage is full or blocked; this expert will be lost on reload.");
   }
 
   function deleteExpert(id) {
@@ -1086,6 +1151,8 @@
     if (!t || !isCustom(id)) return;
     if (!confirm("Remove " + t.name + " and their conversation history?")) return;
     customExperts = customExperts.filter(function (e) { return e.id !== id; });
+    var ci = councilSel.indexOf(id);
+    if (ci !== -1) councilSel.splice(ci, 1);
     save(LS.experts, customExperts);
     try { localStorage.removeItem(LS.chat(id)); } catch (e) { /* ignore */ }
     closeOverlays();
@@ -1105,6 +1172,37 @@
     toast("Exported " + customExperts.length + " expert(s). Paste into data/titans.js to make permanent.");
   }
 
+  // Imported files are untrusted: coerce every field into the shape the app
+  // renders, so a hand-edited or malicious JSON can't crash search/profiles
+  // or smuggle CSS values.
+  function sanitizeExpert(e) {
+    var str = function (v, d) { return typeof v === "string" ? v : (d || ""); };
+    var strArr = function (v) {
+      if (Array.isArray(v)) return v.filter(function (s) { return typeof s === "string"; });
+      if (typeof v === "string") return v.split(/[,\n]/).map(function (s) { return s.trim(); }).filter(Boolean);
+      return [];
+    };
+    var hex = function (v, d) { return (typeof v === "string" && /^#[0-9a-fA-F]{3,8}$/.test(v)) ? v : d; };
+    var wisdom = {};
+    if (e.wisdom && typeof e.wisdom === "object" && !Array.isArray(e.wisdom)) {
+      Object.keys(e.wisdom).forEach(function (k) { if (typeof e.wisdom[k] === "string") wisdom[k] = e.wisdom[k]; });
+    }
+    var pr = (Array.isArray(e.principles) ? e.principles : []).filter(function (p) {
+      return p && (typeof p.title === "string" || typeof p.text === "string");
+    }).map(function (p) { return { title: str(p.title) || "Teaching", text: str(p.text) }; });
+    return {
+      id: String(e.id), name: String(e.name),
+      epithet: str(e.epithet), years: str(e.years), place: str(e.place),
+      category: str(e.category, "custom") || "custom", categoryLabel: str(e.categoryLabel) || undefined,
+      tags: strArr(e.tags), knownFor: strArr(e.knownFor), starters: strArr(e.starters),
+      monogram: str(e.monogram).slice(0, 2),
+      palette: { a: hex(e.palette && e.palette.a, "#4a4238"), b: hex(e.palette && e.palette.b, "#7a6d58") },
+      color: hex(e.color, undefined),
+      bio: str(e.bio), voice: str(e.voice), greeting: str(e.greeting),
+      principles: pr, wisdom: wisdom,
+    };
+  }
+
   function importExperts(file) {
     var reader = new FileReader();
     reader.onload = function () {
@@ -1113,15 +1211,18 @@
         if (!Array.isArray(arr)) throw new Error("not an array");
         var added = 0;
         arr.forEach(function (e) {
-          if (!e || !e.name || !e.id) return;
-          if (findTitan(e.id)) e.id = e.id + "-" + Math.floor(Math.random() * 1000);
+          if (!e || typeof e !== "object" || typeof e.name !== "string" || !e.name || e.id == null) return;
+          e = sanitizeExpert(e);
+          e.id = slugify(e.id); // also resolves collisions with existing ids
           customExperts.push(e);
           added++;
         });
-        save(LS.experts, customExperts);
+        var stored = save(LS.experts, customExperts);
         renderChips();
         renderGrid();
-        toast("Imported " + added + " expert(s).");
+        toast(stored
+          ? "Imported " + added + " expert(s)."
+          : "Imported " + added + " but could not save — browser storage is full or blocked.");
       } catch (err) {
         toast("Import failed: not a valid experts JSON file.");
       }
@@ -1133,6 +1234,17 @@
 
   function closeOverlays() {
     ["profileOverlay", "settingsOverlay", "expertOverlay", "codexOverlay"].forEach(function (id) { $(id).hidden = true; });
+    ["header.nav", "section.hero", "main.explore", "footer.foot"].forEach(function (sel) {
+      document.querySelectorAll(sel).forEach(function (n) { n.inert = false; });
+    });
+    if (lastFocus && document.contains(lastFocus)) { try { lastFocus.focus(); } catch (e) { /* ignore */ } }
+    lastFocus = null;
+  }
+
+  // User-initiated dismissal (backdrop, Escape, ✕): protect an unsaved expert form.
+  function dismissOverlays() {
+    if (!$("expertOverlay").hidden && expertDirty && !confirm("Discard your unsaved expert?")) return;
+    closeOverlays();
   }
 
   function autoGrow(ta) {
@@ -1141,10 +1253,17 @@
   }
 
   function handleHash() {
-    var m = location.hash.match(/^#\/(chat|titan)\/([\w-]+)$/);
+    var m = location.hash.match(/^#\/(chat|titan)\/(.+)$/);
     if (!m) { if (!$("chatView").hidden) closeChat(); return; }
-    if (m[1] === "chat") openChat(m[2]);
-    else openProfile(m[2]);
+    var id = decodeURIComponent(m[2]);
+    if (m[1] === "chat") {
+      // Ignore the echo of openChat's own hash write — re-opening would
+      // rebuild the log and orphan an in-flight reply bubble.
+      if (chatTitan && chatTitan.id === id && !$("chatView").hidden) return;
+      openChat(id);
+    } else {
+      openProfile(id);
+    }
   }
 
   function wire() {
@@ -1167,7 +1286,7 @@
     $("heroAddExpert").addEventListener("click", function () { openExpertForm(null); });
     $("councilBtn").addEventListener("click", function () { openCouncil(); });
     $("heroCouncil").addEventListener("click", function () { openCouncil(); });
-    $("codexBtn").addEventListener("click", function () { $("codexOverlay").hidden = false; });
+    $("codexBtn").addEventListener("click", function () { openOverlay("codexOverlay"); });
     $("councilBack").addEventListener("click", closeCouncil);
     $("councilFilter").addEventListener("input", renderCouncilPicker);
     $("councilConvene").addEventListener("click", conveneCouncil);
@@ -1189,17 +1308,20 @@
       b.addEventListener("click", function () { openExpertForm(null); });
     });
 
-    // Overlay closing: backdrop click, ✕ buttons, Escape.
+    // Overlay closing: backdrop click, ✕ buttons, Escape. Backdrop dismissal keys
+    // off where the press *started*, so a select-drag that ends outside the modal
+    // can't nuke the form.
     document.querySelectorAll(".overlay").forEach(function (ov) {
-      ov.addEventListener("click", function (e) { if (e.target === ov) closeOverlays(); });
+      ov.addEventListener("mousedown", function (e) { ov._downOnSelf = (e.target === ov); });
+      ov.addEventListener("click", function (e) { if (e.target === ov && ov._downOnSelf) dismissOverlays(); });
     });
     document.querySelectorAll("[data-close]").forEach(function (b) {
-      b.addEventListener("click", closeOverlays);
+      b.addEventListener("click", dismissOverlays);
     });
     document.addEventListener("keydown", function (e) {
       if (e.key === "Escape") {
         var anyOverlay = ["profileOverlay", "settingsOverlay", "expertOverlay", "codexOverlay"].some(function (id) { return !$(id).hidden; });
-        if (anyOverlay) closeOverlays();
+        if (anyOverlay) dismissOverlays();
         else if (!$("chatView").hidden) closeChat();
         else if (!$("councilView").hidden) closeCouncil();
       }
@@ -1224,6 +1346,9 @@
     $("chatBack").addEventListener("click", closeChat);
     $("chatClear").addEventListener("click", function () {
       if (!chatTitan) return;
+      // Bump the generation so an in-flight reply for this chat is dropped.
+      chatGen[chatTitan.id] = (chatGen[chatTitan.id] || 0) + 1;
+      delete pendingReplies[chatTitan.id];
       try { localStorage.removeItem(LS.chat(chatTitan.id)); } catch (e) { /* ignore */ }
       renderChatLog();
     });
@@ -1232,7 +1357,8 @@
       sendMessage();
     });
     $("chatInput").addEventListener("keydown", function (e) {
-      if (e.key === "Enter" && !e.shiftKey) {
+      // isComposing covers Chrome/Firefox IME; keyCode 229 covers Safari's quirk.
+      if (e.key === "Enter" && !e.shiftKey && !e.isComposing && e.keyCode !== 229) {
         e.preventDefault();
         sendMessage();
       }
@@ -1246,6 +1372,7 @@
     $("settingsSave").addEventListener("click", saveSettings);
 
     // Expert form
+    $("expertForm").addEventListener("input", function () { expertDirty = true; });
     $("expertForm").addEventListener("submit", saveExpert);
     $("exportExpertsBtn").addEventListener("click", exportExperts);
     $("importExpertsBtn").addEventListener("click", function () { $("importFile").click(); });

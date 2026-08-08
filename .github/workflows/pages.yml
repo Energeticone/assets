@@ -5,7 +5,7 @@ on:
     branches: ["master"]
     paths:
       - "travelnow/**"
-      - "titans/**"
+      - "rawfotra/**"
       - ".github/workflows/pages.yml"
   workflow_dispatch:
 
@@ -38,11 +38,11 @@ jobs:
 
       - name: Assemble site
         # TravelNow keeps the site root (existing URLs unchanged);
-        # The Titans is served under /titans/
+        # RAWFOTRA x1 is served under /rawfotra/
         run: |
           mkdir -p _site
           cp -r travelnow/. _site/
-          cp -r titans _site/titans
+          cp -r rawfotra _site/rawfotra
 
       - name: Upload site artifact
         uses: actions/upload-pages-artifact@v3
