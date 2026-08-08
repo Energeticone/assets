@@ -7,6 +7,7 @@
   var LS = {
     settings: "titans.settings",
     experts: "titans.customExperts",
+    memory: "titans.memory",
     chat: function (id) { return "titans.chat." + id; },
   };
 
@@ -131,6 +132,87 @@
     $(id).hidden = false;
     var modal = $(id).querySelector(".modal");
     if (modal) modal.focus();
+  }
+
+  /* ── Memory: every query becomes part of the knowledge set ─── */
+
+  function memoryOn() { return settings.memoryOn !== false; }
+  function memLoad() { return load(LS.memory, { queries: [], insights: [], served: {} }); }
+  function memSave(mem) {
+    mem.queries = (mem.queries || []).slice(-100);
+    mem.insights = (mem.insights || []).slice(-30);
+    save(LS.memory, mem);
+  }
+
+  // Record a question asked of a mentor (or of the council, titanId = null).
+  function recordQuery(titanId, text) {
+    if (!memoryOn() || !text) return;
+    var mem = memLoad();
+    mem.queries = mem.queries || [];
+    mem.queries.push({ q: text.slice(0, 300), t: titanId, topic: detectTopic(text), ts: Date.now() });
+    memSave(mem);
+  }
+
+  // Record counsel the council produced — it becomes retrievable knowledge.
+  function recordInsight(text, from) {
+    if (!memoryOn() || !text) return;
+    var mem = memLoad();
+    mem.insights = mem.insights || [];
+    mem.insights.push({ text: text.slice(0, 300), from: from || "", ts: Date.now() });
+    memSave(mem);
+  }
+
+  function markServed(titanId, topic) {
+    if (!memoryOn()) return;
+    var mem = memLoad();
+    mem.served = mem.served || {};
+    mem.served[titanId + "|" + topic] = (mem.served[titanId + "|" + topic] || 0) + 1;
+    memSave(mem);
+  }
+  function timesServed(titanId, topic) {
+    if (!memoryOn()) return 0;
+    return (memLoad().served || {})[titanId + "|" + topic] || 0;
+  }
+
+  function topTopics(mem, n) {
+    var counts = {};
+    (mem.queries || []).forEach(function (q) { if (q.topic) counts[q.topic] = (counts[q.topic] || 0) + 1; });
+    return Object.keys(counts)
+      .sort(function (a, b) { return counts[b] - counts[a]; })
+      .slice(0, n)
+      .map(function (k) { return { topic: k, count: counts[k] }; });
+  }
+
+  // A compact brief injected into every AI system prompt, so each mentor's
+  // knowledge set includes what this mentee has asked and been counseled before.
+  function memoryBrief() {
+    if (!memoryOn()) return "";
+    var mem = memLoad();
+    if (!(mem.queries || []).length && !(mem.insights || []).length) return "";
+    var lines = ["", "What you remember about this mentee from their previous sessions here:"];
+    var tops = topTopics(mem, 3);
+    if (tops.length) lines.push("- Themes they return to: " + tops.map(function (t) { return t.topic + " (" + t.count + "×)"; }).join(", ") + ".");
+    var recent = (mem.queries || []).slice(-5).map(function (q) { return '"' + q.q.slice(0, 140) + '"'; });
+    if (recent.length) lines.push("- Their recent questions: " + recent.join("; ") + ".");
+    var counsel = (mem.insights || []).slice(-3).map(function (i) { return i.text + (i.from ? " (from " + i.from + ")" : ""); });
+    if (counsel.length) lines.push("- Counsel the council has already given them: " + counsel.join(" | "));
+    lines.push("Use this quietly to personalize and deepen your counsel — build on past themes when natural, never recite this list back verbatim.");
+    return lines.join("\n");
+  }
+
+  function memoryStatsText() {
+    var mem = memLoad();
+    var q = (mem.queries || []).length, i = (mem.insights || []).length;
+    return q || i
+      ? q + " question" + (q === 1 ? "" : "s") + " · " + i + " counsel insight" + (i === 1 ? "" : "s") + " remembered in this browser."
+      : "Nothing remembered yet — ask the pantheon something.";
+  }
+
+  function forgetEverything() {
+    if (!confirm("Forget all remembered questions and counsel? This cannot be undone.")) return;
+    try { localStorage.removeItem(LS.memory); } catch (e) { /* ignore */ }
+    $("memoryStats").textContent = memoryStatsText();
+    toast("The pantheon's memory of you is clear.");
   }
 
   /* ── Explore: chips + grid + daily wisdom ──────────────────── */
@@ -315,7 +397,7 @@
   function renderEnginePill() {
     var pill = $("enginePill");
     if (settings.engine === "claude" && settings.apiKey) {
-      pill.textContent = "Claude AI";
+      pill.textContent = settings.insightOn ? "Claude AI · Insight+" : "Claude AI";
       pill.classList.add("ai");
     } else {
       pill.textContent = "Wisdom engine";
@@ -411,8 +493,11 @@
       scrollChat();
     };
 
+    recordQuery(id, text);
+
     if (settings.engine === "claude" && settings.apiKey) {
-      claudeReply(chatTitan, history, bubble, finish, fail);
+      if (settings.insightOn) insightReply(chatTitan, history, bubble, finish, fail);
+      else claudeReply(chatTitan, history, bubble, finish, fail);
     } else {
       // Simulated contemplation delay keeps the offline engine feeling conversational.
       var reply = wisdomReply(chatTitan, text, history);
@@ -435,13 +520,25 @@
     return best;
   }
 
-  function wisdomReply(t, text, history) {
+  function wisdomReply(t, text, history, transient) {
     var lower = text.toLowerCase();
     var seed = hashCode(t.id + "|" + text + "|" + history.length);
 
     // Small-talk intents first.
     if (/^(hi|hello|hey|greetings|good (morning|evening|afternoon))\b/.test(lower)) {
       return t.greeting || "Welcome. Speak your mind, and let us reason together.";
+    }
+    if (memoryOn() && /what do you (remember|know) about me|do you remember|my (past|previous|earlier) (questions|conversations)|what have we (discussed|talked about)/.test(lower)) {
+      var mem = memLoad();
+      var tops = topTopics(mem, 3);
+      var recent = (mem.queries || []).slice(-3).map(function (q) { return '"' + q.q.slice(0, 90) + '"'; });
+      var counsel = (mem.insights || []).slice(-2).map(function (i) { return i.text; });
+      if (!recent.length) return "We are only beginning — I have nothing of yours to remember yet. Ask, and I will keep what matters.";
+      return "I remember. You have brought " + (mem.queries || []).length + " questions to the pantheon" +
+        (tops.length ? ", and you return most often to " + tops.map(function (x) { return x.topic; }).join(", ") : "") +
+        ". Recently you asked: " + recent.join("; ") + "." +
+        (counsel.length ? " And the council has already charged you: " + counsel.join(" — also: ") + "." : "") +
+        " A question that keeps returning is an answer still forming. Which of these threads shall we pull today?";
     }
     if (/who are you|about yourself|tell me about you|introduce/.test(lower)) {
       var known = (t.knownFor || []).slice(0, 2).join(" and ");
@@ -456,7 +553,19 @@
     var topicKey = detectTopic(text);
     var wisdom = t.wisdom || {};
     if (topicKey && wisdom[topicKey]) {
-      return wisdom[topicKey];
+      // First time on this theme with this mentor: serve their curated passage.
+      // On a return visit, acknowledge the history and go further instead of repeating.
+      if (transient || timesServed(t.id, topicKey) === 0) {
+        if (!transient) markServed(t.id, topicKey);
+        return wisdom[topicKey];
+      }
+      var ps2 = t.principles || [];
+      var p2 = ps2.length ? ps2[seed % ps2.length] : null;
+      return "You bring " + topicKey + " to me again — good; a question that returns is a question that matters. " +
+        "You already carry what I told you before, so let us go one layer deeper. " +
+        (p2 ? "Hold it against this: " + p2.text + " " : "") +
+        "Tell me what has actually changed since we last spoke of it — and what you did about it. " +
+        FOLLOWUPS[seed % FOLLOWUPS.length];
     }
 
     // No topic matched: improvise from a principle, rotated per-message.
@@ -486,8 +595,52 @@
       t.voice ? "Voice and manner: " + t.voice : "",
       "",
       "Guidelines: Stay fully in character as " + t.name + " — first person, in your authentic voice, grounded in your documented life, era, and philosophy. You are aware you are speaking to a person from the present day and may engage with modern topics, interpreting them through your own experience and principles; where your era lacked a concept, reason by analogy rather than feigning modern knowledge. Be a warm but honest mentor: give counsel that is specific and actionable, not generic praise. Prefer replies of one to three short paragraphs, and often end by turning a pointed question back to the mentee. Paraphrase your teachings in fresh words rather than reciting famous lines. If asked something outside the bounds of mentoring (e.g. dangerous instructions), decline in character and steer back to what wisdom you can offer.",
+      memoryBrief(),
     ];
     return lines.filter(function (s) { return s !== ""; }).join("\n");
+  }
+
+  /* Insight+ chat: the mentor may consult live web research mid-reply.
+     Non-streaming so server-tool turns (and pause_turn continuations) stay simple. */
+  function insightReply(t, history, bubble, finish, fail) {
+    var messages = [];
+    history
+      .filter(function (m) { return m.role === "user" || m.role === "titan"; })
+      .slice(-24)
+      .forEach(function (m) {
+        var role = m.role === "user" ? "user" : "assistant";
+        var last = messages[messages.length - 1];
+        if (last && last.role === role) last.content += "\n\n" + m.text;
+        else messages.push({ role: role, content: m.text });
+      });
+    while (messages.length && messages[0].role !== "user") messages.shift();
+
+    var model = settings.model || "claude-opus-5";
+    var searchTool = model.indexOf("haiku") !== -1 ? "web_search_20250305" : "web_search_20260209";
+    var sys = personaSystemPrompt(t) +
+      "\n\nInsight mode: you have a web search tool. Before finalizing counsel, consider whether current facts, recent developments, or concrete data from today's world would strengthen your answer; if so, search, then weave what you learned into your counsel in your own voice — noting plainly, in character, that you have taken a fresh look at the present day. Do not search when timeless wisdom fully answers the question.";
+
+    bubble.textContent = "";
+    bubble.appendChild(el("span", "dots"));
+
+    var step = function (msgs, depth) {
+      return apiCall({
+        model: model, max_tokens: 8192, system: sys, messages: msgs,
+        tools: [{ type: searchTool, name: "web_search", max_uses: 3 }],
+      }).then(function (r) {
+        if (r.stop_reason === "pause_turn" && depth < 3) {
+          return step(msgs.concat([{ role: "assistant", content: r.content }]), depth + 1);
+        }
+        if (r.stop_reason === "refusal") throw new Error("The model declined this request. Try rephrasing, or switch engines in Settings.");
+        return textOf(r);
+      });
+    };
+    step(messages, 0).then(function (text) {
+      if (text) finish(text);
+      else fail("Empty reply from the API. Try again, or turn Insight+ off in Settings.");
+    }).catch(function (err) {
+      fail(err && err.message ? err.message : "Request failed");
+    });
   }
 
   function claudeReply(t, history, bubble, finish, fail) {
@@ -600,9 +753,12 @@
     $("councilView").hidden = false;
     $("councilSetup").hidden = false;
     $("councilReport").hidden = true;
-    $("councilEnginePill").textContent = usingClaude() ? "Claude AI" : "Wisdom engine";
+    $("councilEnginePill").textContent = usingClaude()
+      ? (settings.insightOn ? "Claude AI · Insight+" : "Claude AI")
+      : "Wisdom engine";
     $("councilEnginePill").classList.toggle("ai", usingClaude());
     $("councilResearchRow").style.display = usingClaude() ? "" : "none";
+    if (usingClaude() && settings.insightOn) $("councilResearch").checked = true;
     $("councilEngineNote").textContent = usingClaude()
       ? "Each mind deliberates through Claude (" + (settings.model || "claude-opus-5") + ")."
       : "Offline mode: answers are composed from each mind's curated teachings. Add a Claude API key in Settings for deep AI deliberation.";
@@ -651,6 +807,7 @@
     if (!members.length) { toast("Choose at least one mind for the council."); return; }
 
     councilBusy = true;
+    recordQuery(null, q);
     $("councilSetup").hidden = true;
     $("councilReport").hidden = false;
     $("councilReportQ").textContent = q;
@@ -688,6 +845,9 @@
     var showConsolidated = function (summary, recs) {
       report.summary = summary;
       report.recommendations = recs;
+      recs.slice(0, 3).forEach(function (r) {
+        recordInsight(r.imperative + " — " + (r.reasoning || "").slice(0, 160), r.drawnFrom);
+      });
       $("councilSummary").textContent = summary;
       var ol = $("councilRecs");
       ol.innerHTML = "";
@@ -978,6 +1138,9 @@
     radios.forEach(function (r) { r.checked = r.value === settings.engine; });
     $("apiKeyInput").value = settings.apiKey || "";
     $("modelSelect").value = settings.model || "claude-opus-5";
+    $("memoryToggle").checked = memoryOn();
+    $("insightToggle").checked = !!settings.insightOn;
+    $("memoryStats").textContent = memoryStatsText();
     syncApiFields();
     openOverlay("settingsOverlay");
   }
@@ -993,9 +1156,14 @@
     settings.engine = engine ? engine.value : "wisdom";
     settings.apiKey = $("apiKeyInput").value.trim();
     settings.model = $("modelSelect").value;
+    settings.memoryOn = $("memoryToggle").checked;
+    settings.insightOn = $("insightToggle").checked;
     if (settings.engine === "claude" && !settings.apiKey) {
       toast("Add an API key to use Claude — falling back to the wisdom engine.");
       settings.engine = "wisdom";
+    }
+    if (settings.insightOn && settings.engine !== "claude") {
+      toast("Insight+ needs the Claude engine — it will activate once a key is set.");
     }
     save(LS.settings, settings);
     renderEnginePill();
@@ -1370,6 +1538,7 @@
       r.addEventListener("change", syncApiFields);
     });
     $("settingsSave").addEventListener("click", saveSettings);
+    $("forgetBtn").addEventListener("click", forgetEverything);
 
     // Expert form
     $("expertForm").addEventListener("input", function () { expertDirty = true; });

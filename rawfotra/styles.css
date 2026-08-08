@@ -254,6 +254,7 @@ a { color: var(--gold); }
 .fine { font-size: 12.5px; color: var(--ink-faint); margin-top: 10px; line-height: 1.5; }
 .fine code { color: var(--ink-dim); }
 .modal-foot { display: flex; justify-content: flex-end; margin-top: 22px; gap: 10px; }
+.memrow { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 10px 2px 4px; flex-wrap: wrap; }
 .modal-foot.spread { justify-content: space-between; align-items: center; flex-wrap: wrap; }
 
 .expert-form { display: flex; flex-direction: column; gap: 12px; margin-top: 16px; }

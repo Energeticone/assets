@@ -37,6 +37,18 @@ pure data: adding a **modern-day expert** is a form in the app or a few lines of
 - **The Codex** — first principles of the whole pantheon, distilled across the 51
   minds and chained into a sequence; each entry is an observation, its consequence,
   and one imperative, credited to the exemplar minds who embody it.
+- **Memory** ✦ — every question you ask (chat and council) and every counsel the
+  council produces is remembered — **stored only in this browser** — and folded
+  back into the knowledge set: mentors greet returning themes instead of repeating
+  themselves, "what do you remember about me?" gets a real answer, and with the
+  Claude engine every mentor's system prompt carries a quiet memory brief (your
+  recurring themes, recent questions, and counsel already given) so advice builds
+  on your history instead of starting cold. Toggle and a **Forget everything**
+  button live in Settings.
+- **Insight+** 🔎 — ties into your Claude capabilities to *always check for more
+  insight and knowledge*: with the Claude engine on, mentors get a live web-search
+  tool and consult today's world whenever current facts would strengthen their
+  counsel (woven in, in-voice), and the council's deep research pass defaults on.
 - **Daily wisdom** — a teaching from the pantheon, rotating by date.
 - **Add modern experts** — the **+ Add expert** button opens a form (name, epithet,
   bio, teachings, voice, greeting, starters, optional wisdom bank). Custom experts

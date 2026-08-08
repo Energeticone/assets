@@ -228,6 +228,21 @@
       </label>
       <p class="fine">Your key is stored only in this browser (localStorage) and sent only to <code>api.anthropic.com</code>. Get one at <a href="https://platform.claude.com" target="_blank" rel="noopener">platform.claude.com</a>.</p>
     </div>
+
+    <h3>Memory &amp; Insight+</h3>
+    <label class="choice">
+      <input type="checkbox" id="memoryToggle" />
+      <div><b>Memory</b><span>Remember every question you ask and every counsel the council gives — stored only in this browser — and quietly feed it back into each mentor's knowledge, so their counsel builds on your history instead of starting cold.</span></div>
+    </label>
+    <div class="memrow">
+      <span class="fine" id="memoryStats"></span>
+      <button type="button" class="btn btn-ghost" id="forgetBtn">Forget everything</button>
+    </div>
+    <label class="choice">
+      <input type="checkbox" id="insightToggle" />
+      <div><b>Insight+</b><span>With the Claude engine, mentors always check for more insight and knowledge: live web research is woven into chat replies when it would strengthen the counsel, and the council's deep research pass turns on by default.</span></div>
+    </label>
+
     <div class="modal-foot">
       <button class="btn btn-gold" id="settingsSave">Save</button>
     </div>
