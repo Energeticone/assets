@@ -88,6 +88,7 @@ tipclip/
 │   └── sms.js         SMS abstraction: Mock (console) / Twilio adapter
 ├── public/            The web app
 │   ├── tip.html       Tip page — what an NFC tap opens (works with zero install)
+│   ├── signup.html    Wearer onboarding — signup → payout connect → claim clip
 │   └── dashboard.html Wearer dashboard — earnings, tips feed, payout status
 ├── ios/
 │   └── TipClipApp.swift  SwiftUI sketch: Core NFC tag reading + BLE nearby-wearer scan
@@ -109,6 +110,7 @@ Then simulate a tap on the demo clip:
 
 - **Tip page** (what the NFC tap opens): http://localhost:8787/t/demo
 - **Wearer dashboard**: http://localhost:8787/dashboard.html?wearer=w_demo
+- **Wearer onboarding** (signup → payout → claim clip): http://localhost:8787/signup.html
 
 Tip a few dollars from the tip page and watch the dashboard update; "SMS"
 messages print to the server console via the mock provider. Set
@@ -124,6 +126,7 @@ in the real rails.
 | `POST /api/tip` | `{clipId, amountCents, tipperPhone?}` → charge, record, SMS both sides |
 | `GET  /api/wearer/:wearerId` | Dashboard data: totals, recent tips, payout status |
 | `POST /api/signup` | Create wearer + mint an unclaimed clip ID |
+| `POST /api/wearer/:id/payout` | Connect payout destination (instant debit card vs bank) |
 | `POST /api/clip/:clipId/claim` | Wearer claims a physical clip |
 
 ## 6. Production hardening (beyond this prototype)

@@ -81,6 +81,15 @@ function claimClip(clipId, wearerId) {
   return clip;
 }
 
+function updateWearerPayout(wearerId, payout) {
+  const d = load();
+  const w = d.wearers[wearerId];
+  if (!w) return null;
+  w.payout = { ...w.payout, ...payout };
+  save();
+  return w;
+}
+
 function recordTip(tip) {
   const d = load();
   d.tips.push(tip);
@@ -92,4 +101,4 @@ function tipsForWearer(wearerId) {
   return load().tips.filter((t) => t.wearerId === wearerId);
 }
 
-module.exports = { getClip, getWearer, createWearer, claimClip, recordTip, tipsForWearer };
+module.exports = { getClip, getWearer, createWearer, claimClip, updateWearerPayout, recordTip, tipsForWearer };

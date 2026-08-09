@@ -8,6 +8,7 @@
 //   POST /api/tip                {clipId, amountCents, tipperPhone?} → charge + SMS
 //   GET  /api/wearer/:wearerId   dashboard data
 //   POST /api/signup             {name, role, phone} → new wearer + unclaimed clip
+//   POST /api/wearer/:id/payout  {label, instant} → connect payout destination
 //   POST /api/clip/:clipId/claim {wearerId}
 //   GET  /*                      static files from ../public
 'use strict';
@@ -146,6 +147,15 @@ const server = http.createServer(async (req, res) => {
         const { wearer, clipId } = store.createWearer({ name, role, phone });
         return json(res, 200, { wearerId: wearer.id, clipId, tapUrl: `/t/${clipId}` });
       }
+      // Payout connect. Production: create a Stripe Express account, return an
+      // account-link URL for hosted KYC, and flip `instant` on when a debit
+      // card is attached. The prototype records the chosen destination directly.
+      if (req.method === 'POST' && parts[1] === 'wearer' && parts[2] && parts[3] === 'payout') {
+        const { label, instant } = await readBody(req);
+        if (!label) return json(res, 400, { error: 'label required' });
+        const w = store.updateWearerPayout(parts[2], { label, instant: Boolean(instant) });
+        return w ? json(res, 200, { ok: true, payout: w.payout }) : json(res, 404, { error: 'Unknown wearer' });
+      }
       if (req.method === 'POST' && parts[1] === 'clip' && parts[2] && parts[3] === 'claim') {
         const { wearerId } = await readBody(req);
         const clip = store.claimClip(parts[2], wearerId);
@@ -173,5 +183,6 @@ server.listen(PORT, () => {
   console.log(`TipClip server on http://localhost:${PORT}`);
   console.log(`  Tap the demo clip:   http://localhost:${PORT}/t/demo`);
   console.log(`  Wearer dashboard:    http://localhost:${PORT}/dashboard.html?wearer=w_demo`);
+  console.log(`  Wearer onboarding:   http://localhost:${PORT}/signup.html`);
   console.log(`  Payments: ${getProvider().name} · SMS: ${getSms().name}`);
 });
