@@ -32,9 +32,6 @@ jobs:
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
-        with:
-          # Enable Pages (with GitHub Actions as the source) if not already on
-          enablement: true
 
       - name: Assemble site
         # TravelNow keeps the site root (existing URLs unchanged);
