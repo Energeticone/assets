@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>TipClip — get your clip</title>
+<style>
+  :root { --bg:#0b0d12; --card:#151923; --ink:#f4f6fb; --muted:#8b93a7; --accent:#22c55e; --line:#232a3a; }
+  * { box-sizing: border-box; margin: 0; }
+  body { background: var(--bg); color: var(--ink); min-height: 100vh;
+    font: 16px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    display: flex; justify-content: center; padding: 24px 16px calc(24px + env(safe-area-inset-bottom)); }
+  .wrap { width: 100%; max-width: 420px; }
+  .brand { text-align: center; color: var(--muted); font-size: 13px; letter-spacing: .12em; text-transform: uppercase; margin-bottom: 8px; }
+  h1 { text-align: center; font-size: 24px; margin-bottom: 6px; }
+  .sub { text-align: center; color: var(--muted); font-size: 14px; margin-bottom: 24px; }
+  .steps { display: flex; gap: 8px; margin-bottom: 24px; }
+  .steps span { flex: 1; height: 4px; border-radius: 2px; background: var(--line); }
+  .steps span.on { background: var(--accent); }
+  .step { display: none; }
+  .step.on { display: block; }
+  label { display: block; font-size: 13px; color: var(--muted); margin: 14px 0 6px; }
+  input { width: 100%; background: var(--card); border: 1px solid var(--line); border-radius: 14px;
+    color: var(--ink); font-size: 16px; padding: 14px 16px; outline: none; }
+  input:focus { border-color: var(--accent); }
+  .btn { width: 100%; border: 0; border-radius: 16px; padding: 16px; font-size: 17px; font-weight: 700;
+    background: var(--ink); color: var(--bg); cursor: pointer; margin-top: 22px; }
+  .btn:disabled { opacity: .4; }
+  .opt { width: 100%; text-align: left; background: var(--card); border: 1.5px solid var(--line);
+    border-radius: 16px; padding: 16px; color: var(--ink); font-size: 15px; cursor: pointer; margin-bottom: 10px;
+    display: flex; justify-content: space-between; align-items: center; }
+  .opt.sel { border-color: var(--accent); background: rgba(34,197,94,.1); }
+  .opt small { display: block; color: var(--muted); margin-top: 3px; }
+  .opt .badge { font-size: 12px; color: var(--accent); white-space: nowrap; }
+  .clipcard { background: var(--card); border: 1px solid var(--line); border-radius: 20px;
+    padding: 26px; text-align: center; margin-bottom: 16px; }
+  .clipcard .disc { width: 110px; height: 110px; margin: 0 auto 16px; border-radius: 50%;
+    background: radial-gradient(circle at 32% 28%, #39415a, #1c2230);
+    border: 2px solid var(--line); display: flex; align-items: center; justify-content: center;
+    flex-direction: column; font-size: 13px; color: var(--muted); }
+  .clipcard .disc b { font-size: 22px; color: var(--ink); }
+  .clipcard code { display: inline-block; background: var(--bg); border: 1px solid var(--line);
+    border-radius: 8px; padding: 6px 12px; font-size: 15px; color: var(--accent); margin-top: 4px; }
+  .fine { color: var(--muted); font-size: 13px; text-align: center; margin-top: 12px; }
+  .done { text-align: center; padding-top: 6vh; }
+  .done .big { font-size: 70px; margin-bottom: 16px; }
+  .done h2 { font-size: 26px; margin-bottom: 10px; }
+  .done p { color: var(--muted); margin-bottom: 20px; }
+  a.link { color: var(--accent); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="brand">TipClip</div>
+  <h1 id="title">Get your clip</h1>
+  <p class="sub" id="subtitle">Wear it. Get tapped. Get paid.</p>
+  <div class="steps" id="stepBar"><span class="on"></span><span></span><span></span></div>
+
+  <!-- Step 1: about you -->
+  <div class="step on" id="s1">
+    <label>First name (shown to tippers)</label>
+    <input id="name" placeholder="Marcus" autocomplete="given-name">
+    <label>Where you work (optional)</label>
+    <input id="role" placeholder="Valet · St. Mary’s Hospital">
+    <label>Mobile number — we text you every tip</label>
+    <input id="phone" type="tel" inputmode="tel" placeholder="+1 555 010 0000" autocomplete="tel">
+    <button class="btn" id="next1">Continue</button>
+  </div>
+
+  <!-- Step 2: payout -->
+  <div class="step" id="s2">
+    <button class="opt" data-instant="1" data-label="Debit card">
+      <span><b>Debit card</b><small>Revolut, Chase, any bank’s debit card</small></span>
+      <span class="badge">⚡ Instant — minutes</span>
+    </button>
+    <button class="opt" data-instant="0" data-label="Bank account">
+      <span><b>Bank account</b><small>Any US checking account (ACH)</small></span>
+      <span class="badge">1–2 days</span>
+    </button>
+    <label id="destLabel" hidden>Card / account number</label>
+    <input id="dest" hidden inputmode="numeric" placeholder="•••• •••• •••• 4821">
+    <button class="btn" id="next2" disabled>Connect payout</button>
+    <div class="fine">In production this step is Stripe’s hosted onboarding —
+      identity verification and card/bank connection happen on Stripe, and
+      TipClip never sees your numbers.</div>
+  </div>
+
+  <!-- Step 3: claim clip -->
+  <div class="step" id="s3">
+    <div class="clipcard">
+      <div class="disc"><span>TAP TO TIP</span><b>💸</b></div>
+      <div>Your clip code</div>
+      <code id="clipCode">…</code>
+    </div>
+    <div class="fine">Have the clip in hand? Tap it with your phone (or type its
+      code above) — the code on the back must match. New signups get one mailed
+      within 3–5 days, pre-encoded with this code.</div>
+    <button class="btn" id="claimBtn">Claim my clip</button>
+  </div>
+
+  <!-- Done -->
+  <div class="step" id="s4">
+    <div class="done">
+      <div class="big">🎉</div>
+      <h2 id="doneName">You’re live!</h2>
+      <p>Anyone who taps your clip can now tip you.<br>Every tip lands in your
+        account and you get a text.</p>
+      <a class="link" id="dashLink" href="#">Open my dashboard →</a>
+      <div class="fine" style="margin-top:16px">Try it: <a class="link" id="tapLink" href="#"></a></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const $ = (id) => document.getElementById(id);
+let state = { wearerId: null, clipId: null, payout: null };
+
+function goto(n) {
+  for (let i = 1; i <= 4; i++) $('s' + i).classList.toggle('on', i === n);
+  [...$('stepBar').children].forEach((s, i) => s.classList.toggle('on', i < n));
+  if (n === 4) { $('title').hidden = true; $('subtitle').hidden = true; $('stepBar').hidden = true; }
+}
+
+$('next1').onclick = async () => {
+  const name = $('name').value.trim();
+  if (!name) { $('name').focus(); return; }
+  $('next1').disabled = true;
+  const res = await fetch('/api/signup', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name, role: $('role').value.trim(), phone: $('phone').value.trim() }),
+  });
+  const out = await res.json();
+  state.wearerId = out.wearerId;
+  state.clipId = out.clipId;
+  $('clipCode').textContent = out.clipId;
+  goto(2);
+};
+
+document.querySelectorAll('.opt').forEach((b) => {
+  b.onclick = () => {
+    document.querySelectorAll('.opt').forEach((x) => x.classList.remove('sel'));
+    b.classList.add('sel');
+    state.payout = { instant: b.dataset.instant === '1', kind: b.dataset.label };
+    $('destLabel').hidden = false; $('dest').hidden = false;
+    $('destLabel').textContent = state.payout.instant ? 'Debit card number' : 'Account number';
+    $('next2').disabled = false;
+  };
+});
+
+$('next2').onclick = async () => {
+  $('next2').disabled = true;
+  const last4 = ($('dest').value.replace(/\D/g, '').slice(-4)) || '0000';
+  await fetch(`/api/wearer/${state.wearerId}/payout`, {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ label: `${state.payout.kind} ••${last4}`, instant: state.payout.instant }),
+  });
+  goto(3);
+};
+
+$('claimBtn').onclick = async () => {
+  $('claimBtn').disabled = true;
+  await fetch(`/api/clip/${state.clipId}/claim`, {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ wearerId: state.wearerId }),
+  });
+  $('doneName').textContent = `You’re live, ${$('name').value.trim()}!`;
+  $('dashLink').href = `/dashboard.html?wearer=${state.wearerId}`;
+  $('tapLink').href = `/t/${state.clipId}`;
+  $('tapLink').textContent = location.origin + '/t/' + state.clipId;
+  goto(4);
+};
+</script>
+</body>
+</html>
