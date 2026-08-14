@@ -1,0 +1,204 @@
+/* FLYNOW staff portal — login gate + operations dashboard.
+ * Reuses the design tokens from styles.css. */
+
+/* ---------- sign in ---------- */
+
+.login-wrap {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background:
+    radial-gradient(1100px 500px at 80% -10%, #2c4257 0%, transparent 60%),
+    linear-gradient(150deg, var(--slate) 0%, var(--slate-deep) 70%);
+}
+
+.login-card {
+  width: min(400px, 100%);
+  background: var(--card);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-lift);
+  padding: 34px 36px 28px;
+  display: grid;
+  gap: 14px;
+}
+
+.login-brand { text-align: center; margin-bottom: 6px; line-height: 1.15; }
+.login-brand .brand-name { color: var(--slate); letter-spacing: .34em; font-size: 24px; display: block; }
+.login-brand .brand-tag  { color: var(--gold-deep); letter-spacing: .3em; font-size: 10px; display: block; margin-top: 4px; }
+
+.login-card h1 { margin: 0; font-size: 22px; text-align: center; }
+
+.lfield { display: grid; gap: 6px; }
+.lfield > span {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+.lfield input {
+  padding: 12px 13px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  font: inherit;
+  width: 100%;
+}
+.lfield input:focus { outline: 2px solid var(--gold); border-color: var(--gold); }
+
+.login-error {
+  display: none;
+  margin: 0;
+  color: var(--red);
+  font-weight: 600;
+  font-size: 14px;
+}
+.login-error.show { display: block; }
+.login-card.shake { animation: shake .3s; }
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-7px); }
+  75% { transform: translateX(7px); }
+}
+
+.login-btn { width: 100%; margin-top: 4px; }
+.login-hint { margin: 8px 0 0; font-size: 12.5px; color: var(--ink-faint); text-align: center; }
+
+/* ---------- dashboard chrome ---------- */
+
+.who { color: #b8c2cc; font-size: 14px; }
+.btn-signout { border-color: rgba(255, 255, 255, .55); color: #fff; padding: 8px 20px; }
+.btn-signout:hover { border-color: var(--gold); color: var(--gold); }
+
+.admin-main {
+  max-width: 1480px;
+  margin: 0 auto;
+  padding: 30px 34px;
+  display: grid;
+  gap: 22px;
+}
+
+.admin-head h1 { margin: 0 0 2px; font-size: 26px; }
+.admin-head p { margin: 0; }
+
+/* ---------- stat tiles ---------- */
+
+.tiles {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+}
+.tile {
+  background: var(--card);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 18px 22px;
+}
+.tile .t-label {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+}
+.tile .t-value {
+  font-size: 30px;
+  font-weight: 700;
+  margin-top: 6px;
+  font-variant-numeric: tabular-nums;
+}
+.tile .t-sub { font-size: 13px; color: var(--ink-soft); margin-top: 3px; }
+
+/* ---------- tables ---------- */
+
+.admin-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 22px;
+  align-items: start;
+}
+
+.card-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-bottom: 6px;
+}
+.card-head h2 { margin: 0; }
+
+.table-scroll { overflow-x: auto; }
+
+.data-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+.data-table th {
+  text-align: left;
+  font-size: 11.5px;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  font-weight: 700;
+  padding: 10px 12px 8px 0;
+  border-bottom: 1px solid var(--line);
+  white-space: nowrap;
+}
+.data-table td {
+  padding: 10px 12px 10px 0;
+  border-bottom: 1px solid var(--line);
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+.data-table tr:last-child td { border-bottom: 0; }
+.data-table .num { text-align: right; padding-right: 22px; }
+
+.status {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-weight: 600;
+  font-size: 13px;
+}
+.status .s-dot { width: 9px; height: 9px; border-radius: 50%; flex: 0 0 auto; }
+.status.good  .s-dot { background: var(--green); }
+.status.warn  .s-dot { background: var(--gold-deep); }
+.status.bad   .s-dot { background: var(--red); }
+.status.plain .s-dot { background: var(--ink-faint); }
+
+/* ---------- booking lookup ---------- */
+
+.lookup { display: flex; gap: 8px; }
+.lookup input {
+  padding: 9px 12px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  font: inherit;
+  width: 170px;
+  text-transform: uppercase;
+}
+.lookup .btn { padding: 9px 18px; }
+
+.lookup-card {
+  border: 1.5px solid var(--gold);
+  border-radius: 12px;
+  padding: 14px 18px;
+  margin: 10px 0 14px;
+  background: #fdfaf3;
+  font-size: 14.5px;
+  display: grid;
+  gap: 4px;
+}
+.lookup-card .lc-head { display: flex; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+.lookup-card strong { font-size: 16px; }
+
+/* ---------- responsive ---------- */
+
+@media (max-width: 1080px) {
+  .tiles { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .admin-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 620px) {
+  .admin-main { padding: 18px; }
+  .tiles { grid-template-columns: 1fr; }
+  .login-card { padding: 26px 22px 22px; }
+}

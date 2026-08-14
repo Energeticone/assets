@@ -6,6 +6,7 @@ on:
     paths:
       - "travelnow/**"
       - "rawfotra/**"
+      - "flynow/**"
       - ".github/workflows/pages.yml"
   workflow_dispatch:
 
@@ -38,11 +39,12 @@ jobs:
 
       - name: Assemble site
         # TravelNow keeps the site root (existing URLs unchanged);
-        # RAWFOTRA x1 is served under /rawfotra/
+        # RAWFOTRA x1 is served under /rawfotra/, FLYNOW under /flynow/
         run: |
           mkdir -p _site
           cp -r travelnow/. _site/
           cp -r rawfotra _site/rawfotra
+          cp -r flynow _site/flynow
           touch _site/.nojekyll
 
       - name: Upload site artifact
