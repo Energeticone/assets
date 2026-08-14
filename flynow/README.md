@@ -31,6 +31,20 @@ extras upsells, and a collapsible payment summary.
    details, guests, complimentary perks ("Included" chip), and assigned
    seats per direction.
 
+## Staff portal
+
+`admin.html` is the airline's back office, behind a demo login gate:
+
+- **Sign in**: username `admin`, password `0000` (shown on the login screen —
+  the check runs client-side in the browser; it's a demo gate, not security).
+- **Dashboard**: KPI tiles (bookings, revenue, load factor, on-time rate),
+  today's departure board for the Abu Dhabi hub — driven by the *same*
+  seeded schedule generator as the booking site, so staff see the flights
+  customers can book — plus a recent-bookings table and a booking-reference
+  lookup. All figures are date-seeded demo data.
+- Linked from the booking site's footer ("Staff portal ›"); sign-out and
+  session persistence via `sessionStorage`.
+
 ## Nerdy bits
 
 - **Deterministic schedules** — flights for a route + date are produced by a
@@ -56,7 +70,10 @@ python3 -m http.server 8000
 
 ```
 flynow/
-├── index.html   # shell: header, stepper, flow column + summary rail
+├── index.html   # booking site shell: header, stepper, flow column + summary rail
 ├── styles.css   # the premium-carrier look (slate/gold/teal)
-└── app.js       # data, seeded schedule generator, state, all rendering
+├── app.js       # data, seeded schedule generator, state, all rendering
+├── admin.html   # staff portal: login gate + operations dashboard
+├── admin.css    # portal styling (login card, stat tiles, tables)
+└── admin.js     # demo auth (admin / 0000), date-seeded ops & bookings data
 ```

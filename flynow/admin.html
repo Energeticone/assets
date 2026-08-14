@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FLYNOW Staff — sign in</title>
+  <meta name="description" content="FLYNOW staff portal — a demo back-office over the fictional airline: sign in to see today's departures, bookings and revenue.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%9B%A9%EF%B8%8F%3C/text%3E%3C/svg%3E">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+
+  <!-- ---------- sign in ---------- -->
+  <section class="login-wrap" id="loginView">
+    <form class="login-card" id="loginForm">
+      <div class="login-brand">
+        <span class="brand-name">FLYNOW</span>
+        <span class="brand-tag">STAFF PORTAL</span>
+      </div>
+      <h1>Sign in</h1>
+      <label class="lfield"><span>Username</span>
+        <input name="user" autocomplete="username" placeholder="Username" required></label>
+      <label class="lfield"><span>Password</span>
+        <input name="pass" type="password" autocomplete="current-password" placeholder="Password" required></label>
+      <p class="login-error" id="loginError">Wrong username or password. Try admin / 0000.</p>
+      <button class="btn btn-gold login-btn" type="submit">Sign in</button>
+      <p class="login-hint">Demo sign-in: <strong>admin</strong> / <strong>0000</strong> — this is a fictional
+        airline's back office; the check runs entirely in your browser.</p>
+    </form>
+  </section>
+
+  <!-- ---------- dashboard ---------- -->
+  <div id="dashView" hidden>
+    <header class="topbar">
+      <a class="brand" href="index.html" aria-label="FLYNOW booking site">
+        <span class="brand-name">FLYNOW</span>
+        <span class="brand-tag">STAFF PORTAL</span>
+      </a>
+      <div class="topbar-right">
+        <span class="demo-pill">DEMO</span>
+        <span class="who" id="whoAmI"></span>
+        <button class="btn btn-ghost btn-signout" id="signOut" type="button">Sign out</button>
+      </div>
+    </header>
+
+    <main class="admin-main">
+      <div class="admin-head">
+        <h1>Operations today</h1>
+        <p class="muted" id="todayLabel"></p>
+      </div>
+
+      <div class="tiles" id="tiles"></div>
+
+      <div class="admin-grid">
+        <section class="card">
+          <h2>Departures — Abu Dhabi hub</h2>
+          <div class="table-scroll">
+            <table class="data-table" id="depTable"></table>
+          </div>
+        </section>
+
+        <section class="card">
+          <div class="card-head">
+            <h2>Recent bookings</h2>
+            <form class="lookup" id="lookupForm">
+              <input name="ref" placeholder="Find booking ref…" maxlength="6" spellcheck="false">
+              <button class="btn btn-slate" type="submit">Look up</button>
+            </form>
+          </div>
+          <div id="lookupResult"></div>
+          <div class="table-scroll">
+            <table class="data-table" id="bookTable"></table>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <footer class="foot">
+      <p><strong>FLYNOW</strong> is a fictional airline built as a self-contained UI demo. Every figure on
+      this page is generated locally in your browser from a date-seeded generator — there are no real
+      flights, guests or payments, and the sign-in is a demo gate, not security.</p>
+    </footer>
+  </div>
+
+  <script src="admin.js"></script>
+</body>
+</html>
