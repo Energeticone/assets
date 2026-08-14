@@ -41,6 +41,10 @@ validators_settings:
       - ".golangci.yml"
       - "Makefile"
       - "bin"
+      - "flynow"
+      - "rawfotra"
+      - "travelnow"
+      - "hormuz-hawk"
     skip_files:
       - "node_modules"
 
