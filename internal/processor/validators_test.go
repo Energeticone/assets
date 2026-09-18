@@ -1,9 +1,9 @@
 package processor
 
 import (
-	"os"
 	"path/filepath"
 	"reflect"
+	"runtime"
 	"strings"
 	"testing"
 
@@ -52,12 +52,7 @@ func TestValidateChainInfoFile_UsesConfiguredTagsWhenAPIUnavailable(t *testing.T
 		config.Default = originalConfig
 	})
 
-	wd, err := os.Getwd()
-	if err != nil {
-		t.Fatalf("failed to get working directory: %v", err)
-	}
-
-	repoRoot := filepath.Clean(filepath.Join(wd, "../.."))
+	repoRoot := getRepositoryRoot(t)
 	if err := config.SetConfig(filepath.Join(repoRoot, ".github/assets.config.yaml")); err != nil {
 		t.Fatalf("failed to set config: %v", err)
 	}
@@ -78,12 +73,7 @@ func TestValidateChainInfoFile_ReturnsErrorWhenAPIUnavailableAndNoFallbackTags(t
 		config.Default = originalConfig
 	})
 
-	wd, err := os.Getwd()
-	if err != nil {
-		t.Fatalf("failed to get working directory: %v", err)
-	}
-
-	repoRoot := filepath.Clean(filepath.Join(wd, "../.."))
+	repoRoot := getRepositoryRoot(t)
 	if err := config.SetConfig(filepath.Join(repoRoot, ".github/assets.config.yaml")); err != nil {
 		t.Fatalf("failed to set config: %v", err)
 	}
@@ -94,11 +84,22 @@ func TestValidateChainInfoFile_ReturnsErrorWhenAPIUnavailableAndNoFallbackTags(t
 	service := NewService(assetfile.NewService())
 	chainInfoFile := assetfile.NewAssetFile(filepath.Join(repoRoot, "blockchains/cosmos/info/info.json"))
 
-	err = service.ValidateChainInfoFile(chainInfoFile)
+	err := service.ValidateChainInfoFile(chainInfoFile)
 	if err == nil {
 		t.Fatal("ValidateChainInfoFile() error = nil, want non-nil")
 	}
 	if !strings.Contains(err.Error(), "failed to get tag values") {
 		t.Fatalf("ValidateChainInfoFile() error = %v, want to contain %q", err, "failed to get tag values")
 	}
+}
+
+func getRepositoryRoot(t *testing.T) string {
+	t.Helper()
+
+	_, currentFile, _, ok := runtime.Caller(0)
+	if !ok {
+		t.Fatal("failed to resolve current file path")
+	}
+
+	return filepath.Clean(filepath.Join(filepath.Dir(currentFile), "../.."))
 }
