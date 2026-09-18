@@ -179,8 +179,17 @@ the three recommendations always parse.
 
 ## Deployment
 
-Deployed by `.github/workflows/pages.yml` alongside TravelNow: the Pages artifact is
-assembled with TravelNow at the site root and RAWFOTRA v6.2 under **`/rawfotra/`**.
+Live in two places, both updated automatically on every push to `master`:
+
+- **https://rawfotra.vercel.app** — the primary link. A Vercel project imported
+  from this repository; the root `vercel.json` serves this folder as the site
+  root with no build step.
+- **https://energeticone.github.io/assets/rawfotra/** — GitHub Pages, deployed
+  by `.github/workflows/pages.yml` alongside TravelNow (TravelNow at the site
+  root, RAWFOTRA under `/rawfotra/`).
+
+The two URLs are separate origins, so an install or data saved on one does not
+carry to the other — pick one (the Vercel link) to share and install from.
 
 ## Attribution
 
