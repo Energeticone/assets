@@ -88,6 +88,23 @@ python3 -m http.server 8000
 # open http://localhost:8000
 ```
 
+## Install it as an app (iPhone / iPad / Android / desktop)
+
+RAWFOTRA is a full progressive web app: `manifest.webmanifest`, app icons in
+`icons/`, and a service worker (`sw.js`) that precaches the shell and answers
+network-first, so the installed app updates on the first online launch and
+keeps working offline (the built-in wisdom engine needs no connection; the
+Claude engine needs one).
+
+On an **iPhone or iPad**: open the site in Safari → tap **Share** → **Add to
+Home Screen**. It launches fullscreen with its own icon, keeps its own
+settings, memory and chat history, and works offline. On **Android/desktop
+Chrome**, use the install prompt in the address bar.
+
+For a native App Store build, wrap this folder with
+[Capacitor](https://capacitorjs.com) (`npx cap add ios`) on a Mac with Xcode —
+no code changes are needed; the app is self-contained static files.
+
 ## Adding experts permanently (`data/titans.js`)
 
 Everything comes from `window.TITANS_DATA` in [`data/titans.js`](data/titans.js). To

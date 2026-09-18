@@ -46,6 +46,7 @@ a { color: var(--gold); }
   position: sticky; top: 0; z-index: 40;
   display: flex; align-items: center; gap: 18px;
   padding: 14px 26px;
+  padding-top: calc(14px + env(safe-area-inset-top));
   background: rgba(6, 20, 29, 0.86);
   backdrop-filter: blur(10px);
   border-bottom: 1px solid var(--line-soft);
@@ -199,6 +200,7 @@ a { color: var(--gold); }
 .chat-head {
   display: flex; align-items: center; gap: 16px;
   padding: 12px 22px; border-bottom: 1px solid var(--line-soft);
+  padding-top: calc(12px + env(safe-area-inset-top));
   background: var(--bg-raise);
 }
 .chat-id { display: flex; align-items: center; gap: 12px; flex: 1; justify-content: center; }

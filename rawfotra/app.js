@@ -1607,4 +1607,13 @@
   renderCodex();
   wire();
   handleHash();
+
+  // Installable app: register the service worker (relative path keeps the
+  // scope correct under /assets/rawfotra/ on GitHub Pages). file:// and
+  // unsupported browsers just skip it — the site works unchanged.
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", function () {
+      navigator.serviceWorker.register("sw.js").catch(function () { /* ignore */ });
+    });
+  }
 })();
