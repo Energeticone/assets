@@ -19,7 +19,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Confiugre AWS credentials
+      - name: Configure AWS credentials
         if: github.repository_owner == 'trustwallet'
         uses: aws-actions/configure-aws-credentials@v1
         with:
