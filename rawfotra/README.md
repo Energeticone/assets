@@ -1,4 +1,6 @@
-# 🏛️ RAWFOTRA x1 — counsel from history's greatest minds
+# 🏛️ RAWFOTRA v6.2 — a Magnetic Glass Initiative
+
+Counsel from history's greatest minds.
 
 An expanded, self-contained replica of the [thetitans.app](https://thetitans.app/explore)
 explore experience: browse **52 legendary minds — historic and living** — philosophers, strategists,
@@ -155,7 +157,7 @@ the three recommendations always parse.
 ## Deployment
 
 Deployed by `.github/workflows/pages.yml` alongside TravelNow: the Pages artifact is
-assembled with TravelNow at the site root and RAWFOTRA x1 under **`/rawfotra/`**.
+assembled with TravelNow at the site root and RAWFOTRA v6.2 under **`/rawfotra/`**.
 
 ## Attribution
 

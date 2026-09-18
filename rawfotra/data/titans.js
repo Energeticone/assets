@@ -1,4 +1,4 @@
-/* RAWFOTRA x1 — the pantheon.
+/* RAWFOTRA v6.2 — the pantheon.
  *
  * 51 minds across 9 categories. Every entry is original writing that
  * paraphrases the figure's documented ideas — no verbatim quotations.

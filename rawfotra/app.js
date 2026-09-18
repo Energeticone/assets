@@ -1089,7 +1089,7 @@
   function copyCouncilReport() {
     var r = load("titans.council.last", null);
     if (!r) return;
-    var md = "# Council report — RAWFOTRA x1\n\n**Question:** " + r.question + "\n\n" +
+    var md = "# Council report — RAWFOTRA v6.2\n\n**Question:** " + r.question + "\n\n" +
       r.answers.map(function (a) { return "## " + a.name + "\n\n" + a.text; }).join("\n\n") +
       "\n\n## Consolidated counsel\n\n" + r.summary + "\n\n### Three recommendations\n\n" +
       r.recommendations.map(function (rec, i) {
