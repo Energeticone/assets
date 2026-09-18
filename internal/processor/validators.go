@@ -191,10 +191,13 @@ func (s *Service) ValidateChainInfoFile(f *file.AssetFile) error {
 		}
 		tags = fallbackTags
 	} else {
-		tags = make([]string, 0, len(receivedTags.Tags))
+		tags = make([]string, 0, len(receivedTags.Tags)+len(fallbackTags))
 		for _, t := range receivedTags.Tags {
-			tags = append(tags, t.ID)
+			if t.ID != "" {
+				tags = append(tags, t.ID)
+			}
 		}
+		tags = mergeTagIDs(tags, fallbackTags)
 	}
 
 	err = info.ValidateCoin(coinInfo, tags)
@@ -361,4 +364,22 @@ func getConfiguredTagIDs(tags []config.Tag) []string {
 	}
 
 	return tagIDs
+}
+
+func mergeTagIDs(primaryTags []string, fallbackTags []string) []string {
+	mergedTags := make([]string, 0, len(primaryTags)+len(fallbackTags))
+	seen := make(map[string]struct{}, len(primaryTags)+len(fallbackTags))
+
+	for _, tag := range append(primaryTags, fallbackTags...) {
+		if tag == "" {
+			continue
+		}
+		if _, exists := seen[tag]; exists {
+			continue
+		}
+		seen[tag] = struct{}{}
+		mergedTags = append(mergedTags, tag)
+	}
+
+	return mergedTags
 }

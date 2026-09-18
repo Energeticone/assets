@@ -46,6 +46,37 @@ func Test_getConfiguredTagIDs(t *testing.T) {
 	}
 }
 
+func Test_mergeTagIDs(t *testing.T) {
+	tests := []struct {
+		name         string
+		primaryTags  []string
+		fallbackTags []string
+		want         []string
+	}{
+		{
+			name:         "keeps primary order and appends missing fallback tags",
+			primaryTags:  []string{"a", "b"},
+			fallbackTags: []string{"b", "c"},
+			want:         []string{"a", "b", "c"},
+		},
+		{
+			name:         "skips empty tags",
+			primaryTags:  []string{"", "a"},
+			fallbackTags: []string{"", "a", "b"},
+			want:         []string{"a", "b"},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := mergeTagIDs(tt.primaryTags, tt.fallbackTags)
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("mergeTagIDs() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
 func TestValidateChainInfoFile_UsesConfiguredTagsWhenAPIUnavailable(t *testing.T) {
 	originalConfig := config.Default
 	t.Cleanup(func() {
