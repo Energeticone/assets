@@ -130,8 +130,13 @@
       document.querySelectorAll(sel).forEach(function (n) { n.inert = true; });
     });
     $(id).hidden = false;
+    $(id).scrollTop = 0;
     var modal = $(id).querySelector(".modal");
-    if (modal) modal.focus();
+    // preventScroll: focusing a taller-than-viewport modal must not scroll
+    // away the overlay's top padding (it opened pinned to the screen edge).
+    if (modal) {
+      try { modal.focus({ preventScroll: true }); } catch (e) { modal.focus(); }
+    }
   }
 
   /* ── Memory: every query becomes part of the knowledge set ─── */
@@ -217,6 +222,15 @@
 
   /* ── Explore: chips + grid + daily wisdom ──────────────────── */
 
+  // 1 → "I", 2 → "II" … for the category index, XXXVII-style.
+  function roman(n) {
+    var table = [[10, "X"], [9, "IX"], [5, "V"], [4, "IV"], [1, "I"]], out = "";
+    for (var i = 0; i < table.length; i++) {
+      while (n >= table[i][0]) { out += table[i][1]; n -= table[i][0]; }
+    }
+    return out;
+  }
+
   function renderChips() {
     var wrap = $("categoryChips");
     wrap.innerHTML = "";
@@ -239,11 +253,14 @@
       wrap.appendChild(chip);
     };
     mk("all", "All", titans.length);
+    var chipNo = 0;
     categories().forEach(function (c) {
       var count = titans.filter(function (t) { return t.category === c.key; }).length;
-      if (count > 0) mk(c.key, c.label, count);
+      if (count > 0) { chipNo++; mk(c.key, roman(chipNo) + ". " + c.label, count); }
     });
-    if (customExperts.length > 0) mk("__custom", "Yours", customExperts.length);
+    if (customExperts.length > 0) { chipNo++; mk("__custom", roman(chipNo) + ". Yours", customExperts.length); }
+    var hi = $("heroIndex");
+    if (hi) hi.textContent = "Indexing " + titans.length + " minds — " + chipNo + " categories";
   }
 
   function matchesSearch(t, q) {
@@ -266,9 +283,10 @@
     grid.innerHTML = "";
     var list = visibleTitans();
     $("emptyState").hidden = list.length > 0;
-    list.forEach(function (t) {
+    list.forEach(function (t, i) {
       var card = el("button", "titan-card");
       card.setAttribute("aria-label", "Open " + t.name);
+      card.appendChild(el("span", "tc-num", ("00" + (i + 1)).slice(-3)));
 
       var top = el("div", "tc-top");
       var med = el("div");

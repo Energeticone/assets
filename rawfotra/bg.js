@@ -91,4 +91,16 @@
 
   build();
   if (reduced) paint(0); else start();
+
+  // Hero readout clock — a live UTC timestamp, Futurekäst-style.
+  var clock = document.getElementById("utcClock");
+  if (clock) {
+    var two = function (n) { return (n < 10 ? "0" : "") + n; };
+    var tick = function () {
+      var d = new Date();
+      clock.textContent = two(d.getUTCHours()) + ":" + two(d.getUTCMinutes()) + ":" + two(d.getUTCSeconds()) + " UTC";
+    };
+    tick();
+    setInterval(tick, 1000);
+  }
 })();
