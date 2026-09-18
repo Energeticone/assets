@@ -66,5 +66,10 @@ validators_settings:
     has_files:
       - "logo.png"
 
+  coin_info_file:
+    tags:
+      - id: "defi"
+      - id: "staking-native"
+
   dapps_folder:
     ext: ".png"
