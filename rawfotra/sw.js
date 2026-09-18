@@ -21,6 +21,7 @@ var SHELL = [
   "data/titans.js",
   "manifest.webmanifest",
   "assets/cosmos.webp",
+  "assets/council.webp",
   "icons/apple-touch-icon.png",
   "icons/icon-192.png",
   "icons/icon-512.png",
