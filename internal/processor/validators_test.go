@@ -4,6 +4,7 @@ import (
 	"os"
 	"path/filepath"
 	"reflect"
+	"strings"
 	"testing"
 
 	assetfile "github.com/trustwallet/assets-go-libs/file"
@@ -68,5 +69,36 @@ func TestValidateChainInfoFile_UsesConfiguredTagsWhenAPIUnavailable(t *testing.T
 
 	if err := service.ValidateChainInfoFile(chainInfoFile); err != nil {
 		t.Fatalf("ValidateChainInfoFile() error = %v, want nil", err)
+	}
+}
+
+func TestValidateChainInfoFile_ReturnsErrorWhenAPIUnavailableAndNoFallbackTags(t *testing.T) {
+	originalConfig := config.Default
+	t.Cleanup(func() {
+		config.Default = originalConfig
+	})
+
+	wd, err := os.Getwd()
+	if err != nil {
+		t.Fatalf("failed to get working directory: %v", err)
+	}
+
+	repoRoot := filepath.Clean(filepath.Join(wd, "../.."))
+	if err := config.SetConfig(filepath.Join(repoRoot, ".github/assets.config.yaml")); err != nil {
+		t.Fatalf("failed to set config: %v", err)
+	}
+
+	config.Default.ClientURLs.AssetsManagerAPI = "http://127.0.0.1:1"
+	config.Default.ValidatorsSettings.CoinInfoFile.Tags = nil
+
+	service := NewService(assetfile.NewService())
+	chainInfoFile := assetfile.NewAssetFile(filepath.Join(repoRoot, "blockchains/cosmos/info/info.json"))
+
+	err = service.ValidateChainInfoFile(chainInfoFile)
+	if err == nil {
+		t.Fatal("ValidateChainInfoFile() error = nil, want non-nil")
+	}
+	if !strings.Contains(err.Error(), "failed to get tag values") {
+		t.Fatalf("ValidateChainInfoFile() error = %v, want to contain %q", err, "failed to get tag values")
 	}
 }
