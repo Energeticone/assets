@@ -184,17 +184,20 @@ func (s *Service) ValidateChainInfoFile(f *file.AssetFile) error {
 
 	fallbackTags := getConfiguredTagIDs(config.Default.ValidatorsSettings.CoinInfoFile.Tags)
 	receivedTags, err := s.assetsManager.GetTagValues()
-	if err != nil && len(fallbackTags) == 0 {
-		return fmt.Errorf("failed to get tag values: %w", err)
-	}
-
-	tags := make([]string, 0, len(receivedTags.Tags))
-	for _, t := range receivedTags.Tags {
-		tags = append(tags, t.ID)
-	}
-
-	if len(tags) == 0 {
+	var tags []string
+	if err != nil {
+		if len(fallbackTags) == 0 {
+			return fmt.Errorf("failed to get tag values: %w", err)
+		}
 		tags = fallbackTags
+	} else {
+		tags = make([]string, 0, len(receivedTags.Tags))
+		for _, t := range receivedTags.Tags {
+			tags = append(tags, t.ID)
+		}
+		if len(tags) == 0 {
+			tags = fallbackTags
+		}
 	}
 
 	err = info.ValidateCoin(coinInfo, tags)
