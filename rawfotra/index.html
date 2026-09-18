@@ -202,6 +202,25 @@
   </form>
 </div>
 
+<!-- ══════════════ ADMIN GATE ══════════════ -->
+<div class="overlay" id="adminOverlay" hidden>
+  <section class="modal admin" tabindex="-1" role="dialog" aria-modal="true" aria-labelledby="adminTitle">
+    <button class="modal-x" data-close aria-label="Close">✕</button>
+    <h2 id="adminTitle">Admin Settings Restricted</h2>
+    <p class="admin-msg">Contact <b>KA</b> or Enter Admin Password</p>
+    <form id="adminForm" class="admin-form">
+      <label class="field">Admin password
+        <input type="password" id="adminPassword" autocomplete="off" placeholder="••••••••••" />
+      </label>
+      <div class="fine admin-error" id="adminError" hidden>Incorrect password — contact KA for access.</div>
+      <div class="modal-foot">
+        <button type="button" class="btn btn-ghost" data-close>Cancel</button>
+        <button type="submit" class="btn btn-gold" id="adminUnlock">Unlock settings</button>
+      </div>
+    </form>
+  </section>
+</div>
+
 <!-- ══════════════ SETTINGS MODAL ══════════════ -->
 <div class="overlay" id="settingsOverlay" hidden>
   <section class="modal settings" tabindex="-1" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">

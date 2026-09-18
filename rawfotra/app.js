@@ -1131,6 +1131,51 @@
     });
   }
 
+  /* ── Admin gate: settings require the admin password ───────── */
+
+  // SHA-256 digest of the admin password (the password itself never ships in code).
+  var ADMIN_SHA256 = "7bfe190c56dca87e80b04e32a2812a861b11c677239ed174988edcec3c34803b";
+  var ADMIN_FALLBACK = 755144483; // hashCode digest, used only where Web Crypto is unavailable
+
+  function adminUnlocked() {
+    try { return sessionStorage.getItem("titans.adminOk") === "1"; } catch (e) { return false; }
+  }
+  function requireAdmin(next) {
+    if (adminUnlocked()) { next(); return; }
+    requireAdmin._next = next;
+    $("adminError").hidden = true;
+    $("adminPassword").value = "";
+    openOverlay("adminOverlay");
+    $("adminPassword").focus();
+  }
+  function checkAdminPassword(pw) {
+    if (window.crypto && crypto.subtle) {
+      return crypto.subtle.digest("SHA-256", new TextEncoder().encode(pw)).then(function (buf) {
+        var hex = Array.prototype.map.call(new Uint8Array(buf), function (b) {
+          return b.toString(16).padStart(2, "0");
+        }).join("");
+        return hex === ADMIN_SHA256;
+      });
+    }
+    return Promise.resolve(hashCode(pw) === ADMIN_FALLBACK);
+  }
+  function submitAdmin(evt) {
+    evt.preventDefault();
+    checkAdminPassword($("adminPassword").value).then(function (ok) {
+      if (ok) {
+        try { sessionStorage.setItem("titans.adminOk", "1"); } catch (e) { /* ignore */ }
+        closeOverlays();
+        var next = requireAdmin._next;
+        requireAdmin._next = null;
+        if (next) next();
+      } else {
+        $("adminError").hidden = false;
+        $("adminPassword").value = "";
+        $("adminPassword").focus();
+      }
+    });
+  }
+
   /* ── Settings ──────────────────────────────────────────────── */
 
   function openSettings() {
@@ -1401,7 +1446,7 @@
   /* ── Overlay & routing plumbing ────────────────────────────── */
 
   function closeOverlays() {
-    ["profileOverlay", "settingsOverlay", "expertOverlay", "codexOverlay"].forEach(function (id) { $(id).hidden = true; });
+    ["profileOverlay", "settingsOverlay", "expertOverlay", "codexOverlay", "adminOverlay"].forEach(function (id) { $(id).hidden = true; });
     ["header.nav", "section.hero", "main.explore", "footer.foot"].forEach(function (sel) {
       document.querySelectorAll(sel).forEach(function (n) { n.inert = false; });
     });
@@ -1449,7 +1494,7 @@
       var list = allTitans();
       if (list.length) openProfile(list[Math.floor(Math.random() * list.length)].id);
     });
-    $("settingsBtn").addEventListener("click", openSettings);
+    $("settingsBtn").addEventListener("click", function () { requireAdmin(openSettings); });
     $("addExpertBtn").addEventListener("click", function () { openExpertForm(null); });
     $("heroAddExpert").addEventListener("click", function () { openExpertForm(null); });
     $("councilBtn").addEventListener("click", function () { openCouncil(); });
@@ -1488,7 +1533,7 @@
     });
     document.addEventListener("keydown", function (e) {
       if (e.key === "Escape") {
-        var anyOverlay = ["profileOverlay", "settingsOverlay", "expertOverlay", "codexOverlay"].some(function (id) { return !$(id).hidden; });
+        var anyOverlay = ["profileOverlay", "settingsOverlay", "expertOverlay", "codexOverlay", "adminOverlay"].some(function (id) { return !$(id).hidden; });
         if (anyOverlay) dismissOverlays();
         else if (!$("chatView").hidden) closeChat();
         else if (!$("councilView").hidden) closeCouncil();
@@ -1538,6 +1583,7 @@
       r.addEventListener("change", syncApiFields);
     });
     $("settingsSave").addEventListener("click", saveSettings);
+    $("adminForm").addEventListener("submit", submitAdmin);
     $("forgetBtn").addEventListener("click", forgetEverything);
 
     // Expert form
