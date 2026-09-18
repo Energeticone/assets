@@ -182,14 +182,22 @@ func (s *Service) ValidateChainInfoFile(f *file.AssetFile) error {
 		return err
 	}
 
+	fallbackTags := getConfiguredTagIDs(config.Default.ValidatorsSettings.CoinInfoFile.Tags)
 	receivedTags, err := s.assetsManager.GetTagValues()
+	var tags []string
 	if err != nil {
-		return fmt.Errorf("failed to get tag values: %w", err)
-	}
-
-	tags := make([]string, len(receivedTags.Tags))
-	for i, t := range receivedTags.Tags {
-		tags[i] = t.ID
+		if len(fallbackTags) == 0 {
+			return fmt.Errorf("failed to get tag values: %w", err)
+		}
+		tags = fallbackTags
+	} else {
+		tags = make([]string, 0, len(receivedTags.Tags)+len(fallbackTags))
+		for _, t := range receivedTags.Tags {
+			if t.ID != "" {
+				tags = append(tags, t.ID)
+			}
+		}
+		tags = mergeTagIDs(tags, fallbackTags)
 	}
 
 	err = info.ValidateCoin(coinInfo, tags)
@@ -345,4 +353,33 @@ func (s *Service) ValidateValidatorsAssetFolder(f *file.AssetFile) error {
 	}
 
 	return nil
+}
+
+func getConfiguredTagIDs(tags []config.Tag) []string {
+	tagIDs := make([]string, 0, len(tags))
+	for _, tag := range tags {
+		if tag.ID != "" {
+			tagIDs = append(tagIDs, tag.ID)
+		}
+	}
+
+	return tagIDs
+}
+
+func mergeTagIDs(primaryTags []string, fallbackTags []string) []string {
+	mergedTags := make([]string, 0, len(primaryTags)+len(fallbackTags))
+	seen := make(map[string]struct{}, len(primaryTags)+len(fallbackTags))
+
+	for _, tag := range append(primaryTags, fallbackTags...) {
+		if tag == "" {
+			continue
+		}
+		if _, exists := seen[tag]; exists {
+			continue
+		}
+		seen[tag] = struct{}{}
+		mergedTags = append(mergedTags, tag)
+	}
+
+	return mergedTags
 }
