@@ -5,8 +5,11 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <title>RAWFOTRA v6.2 — Counsel &amp; Strategic Advice from the Greatest Minds, Past and Present</title>
 <meta name="description" content="Explore 50+ legendary minds, chat 1-on-1 with each, or convene a council: ask one question, pick up to ten experts, and receive their individual answers plus a consolidated view with three recommendations. Expandable with your own modern-day experts." />
-<meta name="theme-color" content="#06141d" />
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%8F%9B%EF%B8%8F%3C/text%3E%3C/svg%3E" />
+<meta name="theme-color" content="#050507" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%23f6e2a4'/%3E%3Cstop offset='1' stop-color='%23a5793a'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='100' height='100' fill='%23050507'/%3E%3Cpath d='M50 12 L92 36 L8 36 Z' fill='url(%23g)'/%3E%3Crect x='12' y='40' width='76' height='6' rx='2' fill='url(%23g)'/%3E%3Crect x='17' y='50' width='11' height='30' rx='3' fill='url(%23g)'/%3E%3Crect x='35' y='50' width='11' height='30' rx='3' fill='url(%23g)'/%3E%3Crect x='53' y='50' width='11' height='30' rx='3' fill='url(%23g)'/%3E%3Crect x='71' y='50' width='11' height='30' rx='3' fill='url(%23g)'/%3E%3Crect x='10' y='84' width='80' height='6' rx='2' fill='url(%23g)'/%3E%3C/svg%3E" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" />
 <link rel="manifest" href="manifest.webmanifest" />
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
 <meta name="mobile-web-app-capable" content="yes" />
@@ -20,10 +23,51 @@
 </head>
 <body>
 
+<!-- ══════════════ COSMOS (background layers) ══════════════ -->
+<div class="cosmos" aria-hidden="true">
+  <canvas id="bgStars"></canvas>
+  <svg class="bg-emblem" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="petalGold" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="#f6e2a4" /><stop offset="1" stop-color="#a5793a" />
+      </linearGradient>
+    </defs>
+    <g fill="url(#petalGold)" opacity="0.9">
+      <path d="M100 34 L112 62 L100 56 L88 62 Z" transform="rotate(0 100 100)" />
+      <path d="M100 34 L112 62 L100 56 L88 62 Z" transform="rotate(30 100 100)" />
+      <path d="M100 34 L112 62 L100 56 L88 62 Z" transform="rotate(60 100 100)" />
+      <path d="M100 34 L112 62 L100 56 L88 62 Z" transform="rotate(90 100 100)" />
+      <path d="M100 34 L112 62 L100 56 L88 62 Z" transform="rotate(120 100 100)" />
+      <path d="M100 34 L112 62 L100 56 L88 62 Z" transform="rotate(150 100 100)" />
+      <path d="M100 34 L112 62 L100 56 L88 62 Z" transform="rotate(180 100 100)" />
+      <path d="M100 34 L112 62 L100 56 L88 62 Z" transform="rotate(210 100 100)" />
+      <path d="M100 34 L112 62 L100 56 L88 62 Z" transform="rotate(240 100 100)" />
+      <path d="M100 34 L112 62 L100 56 L88 62 Z" transform="rotate(270 100 100)" />
+      <path d="M100 34 L112 62 L100 56 L88 62 Z" transform="rotate(300 100 100)" />
+      <path d="M100 34 L112 62 L100 56 L88 62 Z" transform="rotate(330 100 100)" />
+    </g>
+    <circle cx="100" cy="100" r="78" stroke="url(#petalGold)" stroke-width="0.8" fill="none" opacity="0.6" />
+    <circle cx="100" cy="100" r="28" stroke="url(#petalGold)" stroke-width="0.8" fill="none" opacity="0.6" />
+  </svg>
+</div>
+
 <!-- ══════════════ NAV ══════════════ -->
 <header class="nav">
   <a class="brand" href="#" id="brandHome">
-    <span class="brand-mark">🏛️</span>
+    <svg class="brand-mark" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <defs>
+        <linearGradient id="markGold" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0" stop-color="#f6e2a4" /><stop offset="1" stop-color="#a5793a" />
+        </linearGradient>
+      </defs>
+      <path d="M50 10 L94 36 L6 36 Z" fill="url(#markGold)" />
+      <rect x="10" y="40" width="80" height="7" rx="2" fill="url(#markGold)" />
+      <rect x="15" y="51" width="12" height="30" rx="3" fill="url(#markGold)" />
+      <rect x="34" y="51" width="12" height="30" rx="3" fill="url(#markGold)" />
+      <rect x="53" y="51" width="12" height="30" rx="3" fill="url(#markGold)" />
+      <rect x="72" y="51" width="12" height="30" rx="3" fill="url(#markGold)" />
+      <rect x="8" y="85" width="84" height="7" rx="2" fill="url(#markGold)" />
+    </svg>
     <span class="brand-stack">
       <span class="brand-word">RAWFOTRA <b>v6.2</b></span>
       <span class="brand-sub">a Magnetic Glass Initiative</span>
@@ -42,6 +86,9 @@
 </header>
 
 <!-- ══════════════ HERO ══════════════ -->
+<div class="hero-art" aria-hidden="true">
+  <img src="assets/cosmos.webp" alt="" decoding="async" fetchpriority="high" />
+</div>
 <section class="hero">
   <div class="hero-copy">
     <h1>Counsel &amp; strategic advice from<br />the greatest minds <em>that have ever lived — or live</em></h1>
@@ -322,6 +369,7 @@
 <div class="toast" id="toast" hidden></div>
 
 <script src="data/titans.js"></script>
+<script src="bg.js"></script>
 <script src="app.js"></script>
 </body>
 </html>
