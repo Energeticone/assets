@@ -195,9 +195,6 @@ func (s *Service) ValidateChainInfoFile(f *file.AssetFile) error {
 		for _, t := range receivedTags.Tags {
 			tags = append(tags, t.ID)
 		}
-		if len(tags) == 0 {
-			tags = fallbackTags
-		}
 	}
 
 	err = info.ValidateCoin(coinInfo, tags)
