@@ -101,6 +101,12 @@ Home Screen**. It launches fullscreen with its own icon, keeps its own
 settings, memory and chat history, and works offline. On **Android/desktop
 Chrome**, use the install prompt in the address bar.
 
+Note: iOS gives the installed app its **own separate storage** — settings,
+memory, chats and custom experts you created in Safari don't carry over
+automatically. To move custom experts across, use **Export** in Safari and
+**Import** inside the installed app (the export button uses the iOS share
+sheet in the installed app).
+
 For a native App Store build, wrap this folder with
 [Capacitor](https://capacitorjs.com) (`npx cap add ios`) on a Mac with Xcode —
 no code changes are needed; the app is self-contained static files.

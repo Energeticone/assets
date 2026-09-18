@@ -1376,13 +1376,37 @@
 
   function exportExperts() {
     if (!customExperts.length) { toast("No custom experts to export yet."); return; }
-    var blob = new Blob([JSON.stringify(customExperts, null, 2)], { type: "application/json" });
+    var json = JSON.stringify(customExperts, null, 2);
+    var fname = "rawfotra-custom-experts.json";
+    var doneMsg = "Exported " + customExperts.length + " expert(s) — import the file on any device to restore them.";
+
+    // iOS home-screen apps can't do anchor downloads (the tap either dies or
+    // replaces the chromeless view), so use the share sheet there instead.
+    var standalone = navigator.standalone === true ||
+      (window.matchMedia && matchMedia("(display-mode: standalone)").matches);
+    var isIOS = /iP(hone|ad|od)/.test(navigator.userAgent) ||
+      (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+    if (standalone && isIOS && navigator.share && typeof File === "function") {
+      try {
+        var file = new File([json], fname, { type: "application/json" });
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+          navigator.share({ files: [file] })
+            .then(function () { toast(doneMsg); })
+            .catch(function () { /* user closed the share sheet */ });
+          return;
+        }
+      } catch (e) { /* fall through to the anchor download */ }
+    }
+
+    var blob = new Blob([json], { type: "application/json" });
+    var href = URL.createObjectURL(blob);
     var a = document.createElement("a");
-    a.href = URL.createObjectURL(blob);
-    a.download = "rawfotra-custom-experts.json";
+    a.href = href;
+    a.download = fname;
     a.click();
-    URL.revokeObjectURL(a.href);
-    toast("Exported " + customExperts.length + " expert(s) — import the file on any device to restore them.");
+    // Revoking synchronously races the async download on WebKit; give it time.
+    setTimeout(function () { URL.revokeObjectURL(href); }, 60000);
+    toast(doneMsg);
   }
 
   // Imported files are untrusted: coerce every field into the shape the app
