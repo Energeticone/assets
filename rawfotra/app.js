@@ -588,7 +588,7 @@
 
   function personaSystemPrompt(t) {
     var lines = [
-      "You are " + t.name + (t.epithet ? ", " + t.epithet : "") + (t.years ? " (" + t.years + ")" : "") + ", speaking as a personal mentor in The Titans app.",
+      "You are " + t.name + (t.epithet ? ", " + t.epithet : "") + (t.years ? " (" + t.years + ")" : "") + ", speaking as a personal mentor in the RAWFOTRA app.",
       t.bio ? "Biography: " + t.bio : "",
       (t.knownFor && t.knownFor.length) ? "Known for: " + t.knownFor.join("; ") + "." : "",
       (t.principles && t.principles.length) ? "Your core teachings:\n" + t.principles.map(function (p) { return "- " + p.title + ": " + p.text; }).join("\n") : "",
@@ -1379,10 +1379,10 @@
     var blob = new Blob([JSON.stringify(customExperts, null, 2)], { type: "application/json" });
     var a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
-    a.download = "titans-custom-experts.json";
+    a.download = "rawfotra-custom-experts.json";
     a.click();
     URL.revokeObjectURL(a.href);
-    toast("Exported " + customExperts.length + " expert(s). Paste into data/titans.js to make permanent.");
+    toast("Exported " + customExperts.length + " expert(s) — import the file on any device to restore them.");
   }
 
   // Imported files are untrusted: coerce every field into the shape the app

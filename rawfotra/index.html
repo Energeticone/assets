@@ -56,7 +56,7 @@
   <div class="chips" id="categoryChips" role="group" aria-label="Categories"></div>
   <div class="grid" id="titanGrid"></div>
   <div class="empty" id="emptyState" hidden>
-    <p>No titans match that search.</p>
+    <p>No minds match that search.</p>
     <p class="empty-hint">Try a name, an era ("rome"), or a theme ("courage") — or <button class="linklike" data-open="add">add this expert yourself</button>.</p>
   </div>
 </main>
@@ -228,11 +228,11 @@
     <h2 id="settingsTitle">Chat engine</h2>
     <label class="choice">
       <input type="radio" name="engine" value="wisdom" />
-      <div><b>Built-in wisdom engine</b><span>Works offline, instantly. Replies are composed from each titan's curated teachings.</span></div>
+      <div><b>Built-in wisdom engine</b><span>Works offline, instantly. Replies are composed from each mentor's curated teachings.</span></div>
     </label>
     <label class="choice">
       <input type="radio" name="engine" value="claude" />
-      <div><b>Claude AI</b><span>Full conversational AI in each titan's voice, via the Anthropic API. Requires your API key.</span></div>
+      <div><b>Claude AI</b><span>Full conversational AI in each mentor's voice, via the Anthropic API. Requires your API key.</span></div>
     </label>
     <div class="apifields" id="apiFields">
       <label class="field">API key
@@ -275,7 +275,7 @@
     <h2 id="expertTitle">Add a modern expert</h2>
     <p class="fine">Anyone can join the pantheon — a modern scientist, an investor, a coach, your grandmother.
       Fields marked * are required; everything else deepens the persona. Custom experts live in this browser;
-      use <b>Export</b> to share them or make them permanent in <code>data/titans.js</code>.</p>
+      use <b>Export</b> to back them up or share them.</p>
     <form id="expertForm" class="expert-form">
       <div class="frow">
         <label class="field">Name *<input name="name" required placeholder="e.g. Grace Hopper" /></label>

@@ -45,7 +45,7 @@ window.TITANS_DATA = {
     },
     {
       "key": "modern",
-      "label": "Modern Titans"
+      "label": "Modern Minds"
     }
   ],
   codex: [
