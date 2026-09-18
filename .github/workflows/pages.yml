@@ -6,6 +6,7 @@ on:
     paths:
       - "travelnow/**"
       - "rawfotra/**"
+      - "flynow/**"
       - "tipclip/public/**"
       - ".github/workflows/pages.yml"
   workflow_dispatch:
@@ -39,11 +40,13 @@ jobs:
 
       - name: Assemble site
         # TravelNow keeps the site root (existing URLs unchanged);
-        # RAWFOTRA x1 is served under /rawfotra/, TipClip's web prototype under /tipclip/
+        # RAWFOTRA x1 is served under /rawfotra/, FLYNOW under /flynow/,
+        # TipClip's web prototype under /tipclip/
         run: |
           mkdir -p _site
           cp -r travelnow/. _site/
           cp -r rawfotra _site/rawfotra
+          cp -r flynow _site/flynow
           cp -r tipclip/public _site/tipclip
           touch _site/.nojekyll
 
