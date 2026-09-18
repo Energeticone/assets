@@ -3,12 +3,12 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<title>RAWFOTRA x1 — Counsel &amp; Strategic Advice from the Greatest Minds, Past and Present</title>
+<title>RAWFOTRA v6.2 — Counsel &amp; Strategic Advice from the Greatest Minds, Past and Present</title>
 <meta name="description" content="Explore 50+ legendary minds, chat 1-on-1 with each, or convene a council: ask one question, pick up to ten experts, and receive their individual answers plus a consolidated view with three recommendations. Expandable with your own modern-day experts." />
 <meta name="theme-color" content="#06141d" />
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%8F%9B%EF%B8%8F%3C/text%3E%3C/svg%3E" />
 <link rel="stylesheet" href="styles.css" />
-<meta property="og:title" content="RAWFOTRA x1 — Counsel &amp; Strategic Advice from the Greatest Minds, Past and Present" />
+<meta property="og:title" content="RAWFOTRA v6.2 — Counsel &amp; Strategic Advice from the Greatest Minds, Past and Present" />
 <meta property="og:description" content="Chat 1-on-1 with 50+ legendary figures, or convene a council of up to ten minds on one question — individual answers, a consolidated view, three recommendations." />
 <meta property="og:type" content="website" />
 </head>
@@ -18,7 +18,10 @@
 <header class="nav">
   <a class="brand" href="#" id="brandHome">
     <span class="brand-mark">🏛️</span>
-    <span class="brand-word">RAWFOTRA <b>x1</b></span>
+    <span class="brand-stack">
+      <span class="brand-word">RAWFOTRA <b>v6.2</b></span>
+      <span class="brand-sub">a Magnetic Glass Initiative</span>
+    </span>
   </a>
   <div class="nav-search">
     <input id="searchInput" type="search" placeholder="Search minds, ideas, eras…" autocomplete="off" aria-label="Search minds" />
@@ -53,16 +56,14 @@
   <div class="chips" id="categoryChips" role="group" aria-label="Categories"></div>
   <div class="grid" id="titanGrid"></div>
   <div class="empty" id="emptyState" hidden>
-    <p>No titans match that search.</p>
+    <p>No minds match that search.</p>
     <p class="empty-hint">Try a name, an era ("rome"), or a theme ("courage") — or <button class="linklike" data-open="add">add this expert yourself</button>.</p>
   </div>
 </main>
 
 <footer class="foot">
-  <p>RAWFOTRA x1 — every mentor is data, so the roster is yours to grow.</p>
-  <p class="foot-fine">Doctrine &amp; codex derivation method adapted from
-    <a href="https://aifirstprinciples.org" target="_blank" rel="noopener">AI First Principles</a> (CC BY 4.0);
-    all principle content here is original writing distilled from each figure's documented life and work.</p>
+  <p>RAWFOTRA <b>v6.2</b> — a Magnetic Glass Initiative</p>
+  <p class="foot-fine">Every mentor is data, so the roster is yours to grow.</p>
 </footer>
 
 <!-- ══════════════ COUNCIL ══════════════ -->
@@ -129,9 +130,8 @@
   <section class="modal codex" tabindex="-1" role="dialog" aria-modal="true" aria-labelledby="codexTitle">
     <button class="modal-x" data-close aria-label="Close">✕</button>
     <h2 id="codexTitle">The Codex</h2>
-    <p class="fine">First principles of the pantheon — distilled from across the pantheon, each stated as
-      an observation, its consequence, and one imperative. Derived with the method of
-      <a href="https://aifirstprinciples.org" target="_blank" rel="noopener">AI First Principles</a>.</p>
+    <p class="fine">First principles of the pantheon — distilled from across all its minds, each stated as
+      an observation, its consequence, and one imperative.</p>
     <div id="codexList"></div>
   </section>
 </div>
@@ -202,6 +202,25 @@
   </form>
 </div>
 
+<!-- ══════════════ ADMIN GATE ══════════════ -->
+<div class="overlay" id="adminOverlay" hidden>
+  <section class="modal admin" tabindex="-1" role="dialog" aria-modal="true" aria-labelledby="adminTitle">
+    <button class="modal-x" data-close aria-label="Close">✕</button>
+    <h2 id="adminTitle">Admin Settings Restricted</h2>
+    <p class="admin-msg">Contact <b>KA</b> or Enter Admin Password</p>
+    <form id="adminForm" class="admin-form">
+      <label class="field">Admin password
+        <input type="password" id="adminPassword" autocomplete="off" placeholder="••••••••••" />
+      </label>
+      <div class="fine admin-error" id="adminError" hidden>Incorrect password — contact KA for access.</div>
+      <div class="modal-foot">
+        <button type="button" class="btn btn-ghost" data-close>Cancel</button>
+        <button type="submit" class="btn btn-gold" id="adminUnlock">Unlock settings</button>
+      </div>
+    </form>
+  </section>
+</div>
+
 <!-- ══════════════ SETTINGS MODAL ══════════════ -->
 <div class="overlay" id="settingsOverlay" hidden>
   <section class="modal settings" tabindex="-1" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">
@@ -209,11 +228,11 @@
     <h2 id="settingsTitle">Chat engine</h2>
     <label class="choice">
       <input type="radio" name="engine" value="wisdom" />
-      <div><b>Built-in wisdom engine</b><span>Works offline, instantly. Replies are composed from each titan's curated teachings.</span></div>
+      <div><b>Built-in wisdom engine</b><span>Works offline, instantly. Replies are composed from each mentor's curated teachings.</span></div>
     </label>
     <label class="choice">
       <input type="radio" name="engine" value="claude" />
-      <div><b>Claude AI</b><span>Full conversational AI in each titan's voice, via the Anthropic API. Requires your API key.</span></div>
+      <div><b>Claude AI</b><span>Full conversational AI in each mentor's voice, via the Anthropic API. Requires your API key.</span></div>
     </label>
     <div class="apifields" id="apiFields">
       <label class="field">API key
@@ -256,7 +275,7 @@
     <h2 id="expertTitle">Add a modern expert</h2>
     <p class="fine">Anyone can join the pantheon — a modern scientist, an investor, a coach, your grandmother.
       Fields marked * are required; everything else deepens the persona. Custom experts live in this browser;
-      use <b>Export</b> to share them or make them permanent in <code>data/titans.js</code>.</p>
+      use <b>Export</b> to back them up or share them.</p>
     <form id="expertForm" class="expert-form">
       <div class="frow">
         <label class="field">Name *<input name="name" required placeholder="e.g. Grace Hopper" /></label>
