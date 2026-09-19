@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<title>RAWFOTRA v6.6 — Counsel &amp; Strategic Advice from the Greatest Minds, Past and Present</title>
+<title>RAWFOTRA v6.7 — Counsel &amp; Strategic Advice from the Greatest Minds, Past and Present</title>
 <meta name="description" content="Explore 66 legendary minds, chat 1-on-1 with each, or convene your Supreme Council: ask one question, seat up to ten minds, and receive each voice's counsel plus the Consensus of the Supreme Council — a deep analysis with verdict, directives and dissents. Expandable with your own modern-day experts." />
 <meta name="theme-color" content="#06070c" />
 <link rel="icon" href="icons/icon-192.png" type="image/png" />
@@ -17,7 +17,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 <meta name="apple-mobile-web-app-title" content="RAWFOTRA" />
 <link rel="stylesheet" href="styles.css" />
-<meta property="og:title" content="RAWFOTRA v6.6 — Counsel &amp; Strategic Advice from the Greatest Minds, Past and Present" />
+<meta property="og:title" content="RAWFOTRA v6.7 — Counsel &amp; Strategic Advice from the Greatest Minds, Past and Present" />
 <meta property="og:description" content="Chat 1-on-1 with 66 legendary figures, or convene your Supreme Council of up to ten minds on one question — every voice heard, then one deep consensus: verdict, directives, dissents." />
 <meta property="og:type" content="website" />
 </head>
@@ -69,7 +69,7 @@
       <rect x="8" y="85" width="84" height="7" rx="2" fill="url(#markGold)" />
     </svg>
     <span class="brand-stack">
-      <span class="brand-word">RAWFOTRA <b>v6.6</b></span>
+      <span class="brand-word">RAWFOTRA <b>v6.7</b></span>
       <span class="brand-sub">a Magnetic Glass Initiative</span>
     </span>
   </a>
@@ -78,6 +78,7 @@
   </div>
   <nav class="nav-actions">
     <button class="btn btn-gold-outline" id="councilBtn" title="One question before up to ten minds — and their consensus">⚖ Supreme Council</button>
+    <button class="btn btn-live" id="insightBtn" title="A live room of world signals, classified as they break">LIVE: GLOBAL INSIGHT</button>
     <button class="btn btn-ghost" id="aboutBtn" title="The story of the chamber">About</button>
     <button class="btn btn-ghost" id="codexBtn" title="First principles of the pantheon" hidden>Codex</button>
     <button class="btn btn-ghost" id="surpriseBtn" title="Open a random mind">✦ Surprise</button>
@@ -119,7 +120,7 @@
 
 <footer class="foot">
   <p class="foot-dash">— Remember the future. Consult the past.</p>
-  <p>RAWFOTRA <b>v6.6</b> — a Magnetic Glass Initiative</p>
+  <p>RAWFOTRA <b>v6.7</b> — a Magnetic Glass Initiative</p>
   <p class="foot-fine">Every mentor is data, so the roster is yours to grow.</p>
 </footer>
 
@@ -186,6 +187,67 @@
         <button class="btn btn-ghost" id="councilAgain">New question</button>
       </div>
     </section>
+  </div>
+</div>
+
+<!-- ══════════════ LIVE: GLOBAL INSIGHT ══════════════ -->
+<div class="chatwrap" id="insightView" hidden>
+  <header class="chat-head">
+    <button class="btn btn-ghost" id="insightBack">← Explore</button>
+    <div class="chat-id">
+      <div>
+        <div class="chat-name">Global Insight</div>
+        <div class="chat-epithet">world signals · classified as they break · read before you decide</div>
+      </div>
+    </div>
+    <div class="chat-tools">
+      <span class="engine-pill live-pill" id="insightPill">LIVE</span>
+    </div>
+  </header>
+
+  <div class="chat-scroll" id="insightScroll">
+    <div class="insight-wrap" id="insightFeedWrap">
+      <div class="pulse-strip" aria-label="World pulse">
+        <div class="pulse-cell" id="pulseBtc"><span class="pulse-label">Bitcoin</span><span class="pulse-val">…</span><span class="pulse-sub"></span></div>
+        <div class="pulse-cell" id="pulseEth"><span class="pulse-label">Ethereum</span><span class="pulse-val">…</span><span class="pulse-sub"></span></div>
+        <div class="pulse-cell" id="pulseFx"><span class="pulse-label">USD buys</span><span class="pulse-val">…</span><span class="pulse-sub"></span></div>
+        <div class="pulse-cell" id="pulseQuake"><span class="pulse-label">Quakes M2.5+ · 24h</span><span class="pulse-val">…</span><span class="pulse-sub"></span></div>
+      </div>
+
+      <div class="chips insight-chips" id="insightChips" role="group" aria-label="Signal channels"></div>
+
+      <div class="insight-filters">
+        <select id="insightRegion" aria-label="Filter by region">
+          <option value="all">All regions</option>
+          <option>Americas</option>
+          <option>Europe</option>
+          <option>Middle East</option>
+          <option>Africa</option>
+          <option>Asia</option>
+          <option>Oceania</option>
+          <option>Global</option>
+        </select>
+        <input id="insightSearch" type="search" placeholder="Search the signals…" aria-label="Search signals" />
+      </div>
+
+      <div class="fine insight-status" id="insightStatus"></div>
+      <div class="insight-feed" id="insightFeed"></div>
+
+      <p class="fine insight-foot">Signals stream from open public data — the GDELT news index, USGS seismology,
+        CoinGecko and Frankfurter — fetched directly by your browser. Classification (channel, region, sentiment,
+        impact, sectors, assets) is computed on this device; verify against the original reports before acting.</p>
+    </div>
+
+    <div class="insight-wrap" id="briefPanel" hidden>
+      <div class="brief-head">
+        <button class="btn btn-ghost" id="briefBack">← All signals</button>
+        <div class="daily-label">Intelligence brief</div>
+      </div>
+      <div id="briefBody"></div>
+      <div class="council-actions">
+        <button class="btn btn-gold btn-big" id="briefCouncil">Put it before the Supreme Council →</button>
+      </div>
+    </div>
   </div>
 </div>
 

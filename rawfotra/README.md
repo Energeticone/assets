@@ -1,4 +1,4 @@
-# 🏛️ RAWFOTRA v6.6 — a Magnetic Glass Initiative
+# 🏛️ RAWFOTRA v6.7 — a Magnetic Glass Initiative
 
 Counsel from history's greatest minds.
 
@@ -42,6 +42,18 @@ pure data: adding a **modern-day expert** is a form in the app or a few lines of
      a forecast of the world).
   Past consensus reports are kept on this device (last 10) and can be reopened
   from the setup screen; every report copies out as Markdown, trial included.
+- **LIVE: GLOBAL INSIGHT** ⦿ — a live signal room. World events stream straight
+  into the browser from open public data (the GDELT news index, USGS seismology,
+  CoinGecko, Frankfurter FX) with no accounts or keys. Each signal is classified
+  on-device — channel (geopolitics, conflict, finance, politics, business,
+  technology, crypto, commodities, disasters), region, sentiment, impact I–V,
+  sectors and assets in play — behind a world-pulse ticker strip, channel chips,
+  region and search filters, and a 90-second live refresh. Any signal opens a
+  structured **intelligence brief**: situation, classification grid, market
+  read, what to watch next, **related coverage** across other outlets and
+  countries (compare the framings), and source context — plus one tap to put
+  the signal before the Supreme Council. Fails soft: last capture is cached
+  for offline reading.
 - **Admin dashboard** 🛡 — Settings (admin-gated) opens a device-local dashboard:
   queries asked today / week to date / month to date / lifetime (council vs
   chat), most-summoned minds, themes asked about, engine split, average bench

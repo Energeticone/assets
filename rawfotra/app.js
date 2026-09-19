@@ -44,6 +44,7 @@
     history: "freemasonry-circle.council.history",
     bench: "freemasonry-circle.council.bench",
     adminLog: "freemasonry-circle.admin.log",
+    insight: "freemasonry-circle.insight.cache",
     chat: function (id) { return "freemasonry-circle.chat." + id; },
   };
 
@@ -432,6 +433,7 @@
     var t = findMind(id);
     if (!t) return;
     $("aboutView").hidden = true; // chat always takes the room
+    if (GI.open) closeInsight();
     chatMind = t;
     location.hash = "#/chat/" + encodeURIComponent(id);
     paintMedallion($("chatMedallion"), t, "medallion-sm");
@@ -812,6 +814,7 @@
 
   function openCouncil(preselectId) {
     $("aboutView").hidden = true; // the council always takes the room
+    if (GI.open) closeInsight();
     if (!councilSel.length) {
       // A once-assembled Supreme Council keeps its seats between visits.
       councilSel = load(LS.bench, []).filter(function (id) { return !!findMind(id); }).slice(0, COUNCIL_MAX);
@@ -850,6 +853,7 @@
     if (!$("chatView").hidden) closeChat();
     if (!$("councilView").hidden) closeCouncil();
     if (!$("councilView").hidden) return; // user chose to stay with a deliberating council
+    if (GI.open) closeInsight();
     $("aboutView").hidden = false;
     $("aboutScroll").scrollTop = 0;
     updateAboutProgress();
@@ -2058,7 +2062,7 @@
   function copyCouncilReport() {
     var r = load("freemasonry-circle.council.last", null);
     if (!r) return;
-    var md = "# Consensus of the Supreme Council — RAWFOTRA v6.6\n\n**Question:** " + r.question + "\n\n" +
+    var md = "# Consensus of the Supreme Council — RAWFOTRA v6.7\n\n**Question:** " + r.question + "\n\n" +
       (r.answers || []).map(function (a) { return "## " + a.name + "\n\n" + a.text; }).join("\n\n");
     var c = r.consensus;
     if (c) {
@@ -2258,7 +2262,7 @@
     var today = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
     var week = today - ((now.getDay() + 6) % 7) * 86400000; // Monday start
     var month = new Date(now.getFullYear(), now.getMonth(), 1).getTime();
-    var mk = function () { return { total: 0, council: 0, chat: 0 }; };
+    var mk = function () { return { total: 0, council: 0, chat: 0, insight: 0 }; };
     var b = { today: mk(), week: mk(), month: mk(), life: mk() };
     log.forEach(function (e) {
       var t = Date.parse(e.t || "");
@@ -2269,7 +2273,9 @@
       if (t >= today) keys.push("today");
       keys.forEach(function (k) {
         b[k].total++;
-        if (e.kind === "council") b[k].council++; else b[k].chat++;
+        if (e.kind === "council") b[k].council++;
+        else if (e.kind === "insight") b[k].insight++;
+        else b[k].chat++;
       });
     });
     return b;
@@ -2294,7 +2300,7 @@
       var card = el("div", "dash-card");
       card.appendChild(el("div", "dash-num", String(row[1].total)));
       card.appendChild(el("div", "dash-label", row[0]));
-      card.appendChild(el("div", "dash-sub", row[1].council + " council · " + row[1].chat + " chat"));
+      card.appendChild(el("div", "dash-sub", row[1].council + " council · " + row[1].chat + " chat · " + row[1].insight + " insight"));
       stats.appendChild(card);
     });
 
@@ -2353,6 +2359,8 @@
       councils.forEach(function (e) { if (confs[e.conf] !== undefined) confs[e.conf]++; });
       addInsight("Unanimity", confs.unanimous + " unanimous · " + confs["strong consensus"] + " strong · " + confs["a divided bench"] + " divided");
     }
+    var briefs = log.filter(function (e) { return e.kind === "insight"; });
+    addInsight("Signal briefs opened", String(briefs.length));
     var customs = customExperts.length;
     addInsight("Custom experts on this device", String(customs));
 
@@ -2363,7 +2371,10 @@
       var when = "";
       try { when = new Date(e.t).toLocaleString(undefined, { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" }); } catch (err) { /* ignore */ }
       row.appendChild(el("span", "dash-when", when));
-      row.appendChild(el("span", "dash-kind" + (e.kind === "council" ? " is-council" : ""), e.kind === "council" ? "council · " + (e.members || []).length : "chat · " + (e.mind || "")));
+      row.appendChild(el("span", "dash-kind" + (e.kind === "council" ? " is-council" : ""),
+        e.kind === "council" ? "council · " + (e.members || []).length :
+        e.kind === "insight" ? "insight · " + (e.channel || "signal") :
+        "chat · " + (e.mind || "")));
       row.appendChild(el("span", "dash-q", e.q || ""));
       recent.appendChild(row);
     });
@@ -2627,6 +2638,397 @@
     reader.readAsText(file);
   }
 
+  /* ── LIVE: GLOBAL INSIGHT ──────────────────────────────────────
+     A live signal room: world events streamed from open public data
+     (GDELT news index, USGS seismology, CoinGecko, Frankfurter FX),
+     classified on this device — channel, region, sentiment, impact,
+     sectors, assets — with a structured intelligence brief, related
+     coverage across outlets, and a handoff to the Supreme Council.
+     No accounts, no keys: every source is public and fetched directly
+     by the reader's browser. */
+
+  var GI = {
+    open: false,
+    gen: 0,            // bumped per fetch cycle; stale responses drop
+    timer: null,       // countdown interval
+    left: 0,           // seconds to next refresh
+    channel: "all",
+    region: "all",
+    search: "",
+    articles: [],
+    brief: null,       // article currently briefed
+  };
+  var GI_REFRESH = 90;
+
+  var GI_CHANNELS = [
+    { key: "all", label: "All signals", acc: "gold", q: '("breaking news" OR crisis OR "central bank" OR election OR ceasefire OR markets OR earthquake)' },
+    { key: "geopolitics", label: "Geopolitics", acc: "leadership", q: '(sanctions OR treaty OR summit OR nato OR ceasefire OR diplomacy OR "foreign minister" OR "security council")' },
+    { key: "conflict", label: "Conflict", acc: "strategy", q: '(offensive OR airstrike OR missile OR "drone attack" OR troops OR frontline OR insurgent)' },
+    { key: "finance", label: "Finance", acc: "modern", q: '("central bank" OR inflation OR "interest rate" OR "bond yields" OR "stock market" OR earnings OR recession)' },
+    { key: "politics", label: "Politics", acc: "literature", q: '(election OR parliament OR congress OR legislation OR coalition OR referendum OR impeachment)' },
+    { key: "business", label: "Business", acc: "art", q: '(merger OR acquisition OR layoffs OR ipo OR bankruptcy OR antitrust OR "supply chain")' },
+    { key: "technology", label: "Technology", acc: "science", q: '("artificial intelligence" OR semiconductor OR cyberattack OR "data breach" OR startup OR spacecraft)' },
+    { key: "crypto", label: "Crypto", acc: "spirit", q: '(bitcoin OR ethereum OR cryptocurrency OR stablecoin OR "crypto exchange")' },
+    { key: "commodities", label: "Commodities", acc: "innovation", q: '(opec OR "crude oil" OR "natural gas" OR wheat OR copper OR lithium OR "grain exports")' },
+    { key: "disasters", label: "Disasters", acc: "philosophy", q: '(earthquake OR hurricane OR typhoon OR wildfire OR flood OR eruption OR evacuation)' },
+  ];
+  function giChannel(key) {
+    return GI_CHANNELS.filter(function (c) { return c.key === key; })[0] || GI_CHANNELS[0];
+  }
+
+  var GI_REGIONS = {
+    "United States": "Americas", "Canada": "Americas", "Mexico": "Americas", "Brazil": "Americas", "Argentina": "Americas", "Colombia": "Americas", "Chile": "Americas", "Peru": "Americas", "Venezuela": "Americas", "Cuba": "Americas",
+    "United Kingdom": "Europe", "Germany": "Europe", "France": "Europe", "Italy": "Europe", "Spain": "Europe", "Netherlands": "Europe", "Belgium": "Europe", "Poland": "Europe", "Ukraine": "Europe", "Russia": "Europe", "Sweden": "Europe", "Norway": "Europe", "Finland": "Europe", "Denmark": "Europe", "Switzerland": "Europe", "Austria": "Europe", "Greece": "Europe", "Portugal": "Europe", "Ireland": "Europe", "Czechia": "Europe", "Czech Republic": "Europe", "Hungary": "Europe", "Romania": "Europe", "Serbia": "Europe", "Turkey": "Europe",
+    "Israel": "Middle East", "Iran": "Middle East", "Iraq": "Middle East", "Saudi Arabia": "Middle East", "United Arab Emirates": "Middle East", "Qatar": "Middle East", "Kuwait": "Middle East", "Jordan": "Middle East", "Lebanon": "Middle East", "Syria": "Middle East", "Yemen": "Middle East", "Egypt": "Middle East",
+    "China": "Asia", "Japan": "Asia", "India": "Asia", "South Korea": "Asia", "North Korea": "Asia", "Taiwan": "Asia", "Indonesia": "Asia", "Pakistan": "Asia", "Bangladesh": "Asia", "Vietnam": "Asia", "Thailand": "Asia", "Philippines": "Asia", "Malaysia": "Asia", "Singapore": "Asia", "Hong Kong": "Asia", "Afghanistan": "Asia", "Kazakhstan": "Asia",
+    "Nigeria": "Africa", "South Africa": "Africa", "Kenya": "Africa", "Ethiopia": "Africa", "Ghana": "Africa", "Morocco": "Africa", "Algeria": "Africa", "Tunisia": "Africa", "Libya": "Africa", "Sudan": "Africa", "Congo": "Africa", "Tanzania": "Africa",
+    "Australia": "Oceania", "New Zealand": "Oceania",
+  };
+  function giRegionOf(country) { return GI_REGIONS[country] || (country ? "Global" : "Global"); }
+
+  var GI_NEG = ["kill", "dead", "death", "war", "attack", "strike", "crash", "collapse", "crisis", "sanction", "invasion", "missile", "bomb", "fraud", "recession", "default", "outbreak", "hostage", "coup", "escalat", "casualt", "wildfire", "earthquake", "flood", "evacuat", "layoff", "bankrupt", "plunge", "slump", "riot", "shooting", "explosion", "breach", "threat", "emergency", "warns", "warning", "shortage", "stampede"];
+  var GI_POS = ["deal", "peace", "agreement", "breakthrough", "growth", "recovery", "rally", "surge", "record high", "ceasefire", "treaty", "rescue", "cure", "wins", "approval", "expansion", "milestone", "restored"];
+  var GI_IMPACT = { "nuclear": 3, "world war": 3, "invasion": 3, "default": 2, "pandemic": 3, "assassin": 3, "coup": 2, "emergency": 2, "historic": 2, "unprecedented": 2, "global": 1, "billions": 1, "trillion": 2, "collapse": 2, "central bank": 1, "opec": 1, "nato": 1, "white house": 1, "kremlin": 1, "beijing": 1, "ceasefire": 1, "sanctions": 1, "state of emergency": 2 };
+  var GI_SECTORS = { energy: ["oil", "gas", "opec", "pipeline", "refinery", "lng"], defense: ["missile", "weapons", "military", "defense", "arms"], chips: ["semiconductor", "chip", "foundry", "tsmc"], banks: ["bank", "lender", "credit", "bond"], agriculture: ["wheat", "grain", "corn", "harvest", "fertilizer"], shipping: ["port", "shipping", "canal", "freight", "tanker"], tech: ["software", " ai ", "artificial intelligence", "cloud", "cyber"], mining: ["copper", "lithium", "cobalt", "mine", "rare earth"], pharma: ["vaccine", "drug", "fda", "clinical"] };
+  var GI_ASSETS = { energy: "Crude & gas", defense: "Defense", chips: "Semiconductors", banks: "Rates & banks", agriculture: "Grains", shipping: "Freight", tech: "Tech", mining: "Base metals", pharma: "Pharma" };
+
+  function giClassify(a, channelKey) {
+    var hay = " " + String(a.title || "").toLowerCase() + " ";
+    var neg = 0, pos = 0;
+    GI_NEG.forEach(function (w) { if (hay.indexOf(w) !== -1) neg++; });
+    GI_POS.forEach(function (w) { if (hay.indexOf(w) !== -1) pos++; });
+    var senti = neg >= 3 || (neg >= 2 && pos === 0) ? "critical" : neg > pos ? "tense" : pos > neg ? "improving" : "steady";
+    var impact = 1 + Math.min(2, neg > pos ? 1 : 0);
+    Object.keys(GI_IMPACT).forEach(function (w) { if (hay.indexOf(w) !== -1) impact += GI_IMPACT[w]; });
+    impact = Math.max(1, Math.min(5, impact));
+    var sectors = [];
+    Object.keys(GI_SECTORS).forEach(function (s) {
+      if (GI_SECTORS[s].some(function (w) { return hay.indexOf(w) !== -1; })) sectors.push(s);
+    });
+    return {
+      channel: channelKey !== "all" ? channelKey : giGuessChannel(hay),
+      region: giRegionOf(a.sourcecountry),
+      senti: senti,
+      impact: impact,
+      sectors: sectors.slice(0, 3),
+      assets: sectors.slice(0, 3).map(function (s) { return GI_ASSETS[s]; }),
+    };
+  }
+  function giGuessChannel(hay) {
+    var best = "geopolitics", bestN = 0;
+    GI_CHANNELS.slice(1).forEach(function (c) {
+      var n = 0;
+      c.q.toLowerCase().replace(/[()"]/g, "").split(" or ").forEach(function (w) {
+        if (w && hay.indexOf(w.trim()) !== -1) n++;
+      });
+      if (n > bestN) { bestN = n; best = c.key; }
+    });
+    return best;
+  }
+
+  function giAgo(seendate) {
+    // GDELT dates look like 20260919T134500Z
+    var m = String(seendate || "").match(/^(\d{4})(\d{2})(\d{2})T?(\d{2})(\d{2})/);
+    if (!m) return "";
+    var t = Date.UTC(+m[1], +m[2] - 1, +m[3], +m[4], +m[5]);
+    var mins = Math.max(0, Math.round((Date.now() - t) / 60000));
+    if (mins < 60) return mins + "m ago";
+    if (mins < 1440) return Math.round(mins / 60) + "h ago";
+    return Math.round(mins / 1440) + "d ago";
+  }
+
+  function giFetch(url) {
+    return fetch(url).then(function (res) {
+      if (!res.ok) throw new Error("HTTP " + res.status);
+      return res.json();
+    });
+  }
+  function giGdeltUrl(query, maxrecords, timespan) {
+    return "https://api.gdeltproject.org/api/v2/doc/doc?query=" +
+      encodeURIComponent(query + " sourcelang:english") +
+      "&mode=ArtList&format=json&sort=DateDesc&maxrecords=" + maxrecords + "&timespan=" + timespan;
+  }
+
+  /* Pulse strip: a handful of live world numbers, each failing softly. */
+  function giLoadPulse() {
+    var setCell = function (id, text, sub) {
+      var n = $(id);
+      if (!n) return;
+      n.querySelector(".pulse-val").textContent = text;
+      if (sub !== undefined) n.querySelector(".pulse-sub").textContent = sub;
+    };
+    giFetch("https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum&vs_currencies=usd&include_24hr_change=true")
+      .then(function (d) {
+        var f = function (x) { return x >= 1000 ? "$" + Math.round(x).toLocaleString() : "$" + x; };
+        var ch = function (x) { return (x >= 0 ? "+" : "") + x.toFixed(1) + "% 24h"; };
+        if (d.bitcoin) setCell("pulseBtc", f(d.bitcoin.usd), ch(d.bitcoin.usd_24h_change || 0));
+        if (d.ethereum) setCell("pulseEth", f(d.ethereum.usd), ch(d.ethereum.usd_24h_change || 0));
+      }).catch(function () { setCell("pulseBtc", "—", "unavailable"); setCell("pulseEth", "—", "unavailable"); });
+    giFetch("https://api.frankfurter.app/latest?from=USD&to=EUR,GBP,JPY")
+      .then(function (d) {
+        if (d.rates) setCell("pulseFx", "€" + d.rates.EUR.toFixed(3), "£" + d.rates.GBP.toFixed(3) + " · ¥" + Math.round(d.rates.JPY));
+      }).catch(function () { setCell("pulseFx", "—", "unavailable"); });
+    giFetch("https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/2.5_day.geojson")
+      .then(function (d) {
+        var feats = (d.features || []);
+        var big = feats.filter(function (f) { return f.properties && f.properties.mag >= 5; }).length;
+        setCell("pulseQuake", String(feats.length), big + " at M5+");
+      }).catch(function () { setCell("pulseQuake", "—", "unavailable"); });
+  }
+
+  function giVisibleArticles() {
+    return GI.articles.filter(function (a) {
+      if (GI.region !== "all" && a._cls.region !== GI.region) return false;
+      if (GI.search && String(a.title || "").toLowerCase().indexOf(GI.search) === -1) return false;
+      return true;
+    });
+  }
+
+  function giRenderFeed() {
+    var feed = $("insightFeed");
+    feed.innerHTML = "";
+    var list = giVisibleArticles();
+    $("insightStatus").textContent = list.length
+      ? list.length + " live signals · " + giChannel(GI.channel).label.toLowerCase() + (GI.region !== "all" ? " · " + GI.region : "")
+      : "No signals match — widen the channel, region, or search.";
+    list.forEach(function (a) {
+      var card = el("button", "sig-card");
+      card.type = "button";
+      card.setAttribute("data-chan", a._cls.channel);
+      var top = el("div", "sig-top");
+      top.appendChild(el("span", "sig-chan", giChannel(a._cls.channel).label));
+      top.appendChild(el("span", "sig-when", giAgo(a.seendate)));
+      var sent = el("span", "sig-senti is-" + a._cls.senti, a._cls.senti);
+      top.appendChild(sent);
+      var pips = el("span", "sig-impact", "impact " + roman(a._cls.impact));
+      top.appendChild(pips);
+      card.appendChild(top);
+      card.appendChild(el("div", "sig-title", a.title || "(untitled signal)"));
+      var meta = el("div", "sig-meta");
+      meta.appendChild(el("span", null, a.domain || ""));
+      if (a.sourcecountry) meta.appendChild(el("span", null, a.sourcecountry));
+      meta.appendChild(el("span", "sig-region", a._cls.region));
+      (a._cls.assets || []).forEach(function (as) { meta.appendChild(el("span", "sig-asset", as)); });
+      card.appendChild(meta);
+      card.addEventListener("click", function () { giOpenBrief(a); });
+      feed.appendChild(card);
+    });
+  }
+
+  function giLoadFeed(manual) {
+    var gen = ++GI.gen;
+    var ch = giChannel(GI.channel);
+    $("insightStatus").textContent = "Scanning the wire…";
+    giFetch(giGdeltUrl(ch.q, 45, "12h"))
+      .then(function (d) {
+        if (gen !== GI.gen || !GI.open) return;
+        var arts = (d.articles || []).filter(function (a) { return a && a.title; });
+        // De-duplicate near-identical headlines from syndication.
+        var seen = {};
+        arts = arts.filter(function (a) {
+          var k = String(a.title).toLowerCase().replace(/[^a-z]+/g, "").slice(0, 60);
+          if (seen[k]) return false;
+          seen[k] = 1;
+          return true;
+        });
+        arts.forEach(function (a) { a._cls = giClassify(a, ch.key); });
+        GI.articles = arts;
+        giRenderFeed();
+        var cache = load(LS.insight, {});
+        cache[ch.key] = { when: new Date().toISOString(), articles: arts.slice(0, 30) };
+        save(LS.insight, cache);
+      })
+      .catch(function () {
+        if (gen !== GI.gen || !GI.open) return;
+        var cache = load(LS.insight, {})[ch.key];
+        if (cache && cache.articles) {
+          GI.articles = cache.articles;
+          giRenderFeed();
+          var when = "";
+          try { when = new Date(cache.when).toLocaleString(); } catch (e) { /* ignore */ }
+          $("insightStatus").textContent = "Live fetch failed — showing the last capture" + (when ? " from " + when : "") + ".";
+        } else {
+          GI.articles = [];
+          $("insightFeed").innerHTML = "";
+          $("insightStatus").textContent = "The wire is unreachable right now — check your connection and it will retry on the next cycle.";
+        }
+      });
+    GI.left = GI_REFRESH;
+    if (manual) giLoadPulse();
+  }
+
+  var GI_WATCH = {
+    geopolitics: ["Whether allies or rivals issue formal responses within 48 hours.", "Movement in defense postures or emergency sessions of international bodies."],
+    conflict: ["Verified casualty and territory reports from both sides, not one.", "Whether supply lines, ports, or energy infrastructure enter the target set."],
+    finance: ["The next central-bank statement and how bond yields move against it.", "Whether the move is broad across sectors or isolated to one name."],
+    politics: ["Coalition arithmetic: who must now vote with whom.", "Court challenges or procedural blocks filed within the week."],
+    business: ["Regulatory filings that confirm or deny the reporting.", "Competitor and supplier reactions in the same sector."],
+    technology: ["Independent replication or security-researcher confirmation.", "Which incumbents respond with pricing or product moves."],
+    crypto: ["Exchange flows and stablecoin issuance over the next sessions.", "Regulatory statements from major jurisdictions."],
+    commodities: ["Inventory and shipping data confirming a physical, not paper, move.", "Producer-group meetings and export-policy changes."],
+    disasters: ["Official casualty and damage assessments as they stabilize.", "Infrastructure status: power, ports, hospitals, transport corridors."],
+  };
+
+  function giOpenBrief(a) {
+    GI.brief = a;
+    adminLog({ kind: "insight", q: String(a.title || "").slice(0, 120), channel: a._cls.channel });
+    $("insightFeedWrap").hidden = true;
+    $("briefPanel").hidden = false;
+    $("insightScroll").scrollTop = 0;
+    var body = $("briefBody");
+    body.innerHTML = "";
+
+    var mkSec = function (title) {
+      var sec = el("section", "brief-sec");
+      sec.appendChild(el("h4", null, title));
+      body.appendChild(sec);
+      return sec;
+    };
+
+    var s1 = mkSec("Situation");
+    s1.appendChild(el("p", "brief-title", a.title || ""));
+    var sit = el("p", "brief-body-text");
+    sit.textContent = "Reported by " + (a.domain || "an open source") + (a.sourcecountry ? " (" + a.sourcecountry + ")" : "") +
+      " " + (giAgo(a.seendate) || "recently") + ". Classified on this device as a " + a._cls.senti + " " +
+      giChannel(a._cls.channel).label.toLowerCase() + " signal, impact " + roman(a._cls.impact) + " of V, bearing on " + a._cls.region + ".";
+    s1.appendChild(sit);
+    var link = el("a", "brief-link", "Open the original report ↗");
+    link.href = a.url || "#";
+    link.target = "_blank";
+    link.rel = "noopener";
+    s1.appendChild(link);
+
+    var s2 = mkSec("Classification");
+    var grid = el("div", "brief-grid");
+    var cell = function (k, v) {
+      var c = el("div", "brief-cell");
+      c.appendChild(el("b", null, k));
+      c.appendChild(el("span", null, v));
+      grid.appendChild(c);
+    };
+    cell("Channel", giChannel(a._cls.channel).label);
+    cell("Region", a._cls.region);
+    cell("Sentiment", a._cls.senti);
+    cell("Impact", roman(a._cls.impact) + " / V");
+    cell("Sectors", a._cls.sectors.length ? a._cls.sectors.join(", ") : "—");
+    cell("Assets in play", a._cls.assets.length ? a._cls.assets.join(", ") : "—");
+    s2.appendChild(grid);
+
+    if (a._cls.assets.length) {
+      var s3 = mkSec("Market read");
+      var mr = el("p", "brief-body-text");
+      mr.textContent = "Exposure concentrates in " + a._cls.assets.join(", ").toLowerCase() +
+        ". A " + a._cls.senti + " signal here usually moves first through " + (a._cls.assets[0] || "").toLowerCase() +
+        "; watch whether follow-on coverage confirms scale before treating the move as durable. Computed from keyword exposure, not from prices.";
+      s3.appendChild(mr);
+    }
+
+    var s4 = mkSec("What to watch next");
+    var ul = el("ul", "brief-watch");
+    (GI_WATCH[a._cls.channel] || GI_WATCH.geopolitics).forEach(function (w) { ul.appendChild(el("li", null, w)); });
+    s4.appendChild(ul);
+
+    var s5 = mkSec("Related coverage");
+    var rel = el("div", "brief-related");
+    rel.appendChild(el("p", "fine", "Searching other outlets…"));
+    s5.appendChild(rel);
+    var terms = sigWords(a.title).filter(function (w, i, arr) { return arr.indexOf(w) === i; }).slice(0, 4);
+    var relQuery = terms.map(function (t) { return '"' + t + '"'; }).join(" OR ");
+    giFetch(giGdeltUrl(relQuery || '"' + String(a.title || "").slice(0, 40) + '"', 25, "3d"))
+      .then(function (d) {
+        if (GI.brief !== a) return;
+        rel.innerHTML = "";
+        var seenDom = {};
+        seenDom[a.domain] = 1;
+        var rows = (d.articles || []).filter(function (r) {
+          if (!r.title || seenDom[r.domain]) return false;
+          seenDom[r.domain] = 1;
+          return true;
+        }).slice(0, 6);
+        if (!rows.length) {
+          rel.appendChild(el("p", "fine", "No parallel coverage found yet — a single-source story deserves extra caution."));
+          return;
+        }
+        var countries = {};
+        rows.forEach(function (r) { if (r.sourcecountry) countries[r.sourcecountry] = 1; });
+        rel.appendChild(el("p", "brief-body-text", rows.length + " other outlets across " + Object.keys(countries).length + " countries are carrying this story. Compare the framings:"));
+        rows.forEach(function (r) {
+          var row = el("a", "rel-row");
+          row.href = r.url || "#";
+          row.target = "_blank";
+          row.rel = "noopener";
+          row.appendChild(el("span", "rel-outlet", (r.domain || "") + (r.sourcecountry ? " · " + r.sourcecountry : "")));
+          row.appendChild(el("span", "rel-title", r.title));
+          rel.appendChild(row);
+        });
+      })
+      .catch(function () {
+        if (GI.brief !== a) return;
+        rel.innerHTML = "";
+        rel.appendChild(el("p", "fine", "Related-coverage search unavailable right now."));
+      });
+
+    var s6 = mkSec("Source context");
+    var sc = el("p", "brief-body-text");
+    var wire = /reuters|apnews|afp|bloomberg|upi\./.test(String(a.domain || ""));
+    sc.textContent = (a.domain || "This outlet") + (a.sourcecountry ? " publishes from " + a.sourcecountry + "." : ".") +
+      (wire ? " It is a wire service: fast, broadly syndicated, usually first but thin on analysis." :
+        " Weigh its national vantage point — the same facts read differently from different capitals.") +
+      " Cross-check against the related coverage above before acting on a single framing.";
+    s6.appendChild(sc);
+  }
+
+  function giCloseBrief() {
+    GI.brief = null;
+    $("briefPanel").hidden = true;
+    $("insightFeedWrap").hidden = false;
+  }
+
+  function giRenderChips() {
+    var wrap = $("insightChips");
+    wrap.innerHTML = "";
+    GI_CHANNELS.forEach(function (c) {
+      var chip = el("button", "chip" + (GI.channel === c.key ? " active" : ""));
+      chip.type = "button";
+      chip.textContent = c.label;
+      chip.setAttribute("data-chan", c.key);
+      chip.addEventListener("click", function () {
+        GI.channel = c.key;
+        giRenderChips();
+        giCloseBrief();
+        giLoadFeed(true);
+      });
+      wrap.appendChild(chip);
+    });
+  }
+
+  function openInsight() {
+    if (!$("chatView").hidden) closeChat();
+    if (!$("councilView").hidden) closeCouncil();
+    if (!$("councilView").hidden) return; // user chose to stay with a deliberating council
+    $("aboutView").hidden = true;
+    GI.open = true;
+    $("insightView").hidden = false;
+    giCloseBrief();
+    giRenderChips();
+    giLoadFeed(true);
+    if (GI.timer) clearInterval(GI.timer);
+    GI.timer = setInterval(function () {
+      if (!GI.open) return;
+      if (document.hidden || GI.brief) return; // hold the clock while reading or away
+      GI.left--;
+      var pill = $("insightPill");
+      if (pill) pill.textContent = "LIVE · " + Math.max(0, GI.left) + "s";
+      if (GI.left <= 0) giLoadFeed(false);
+    }, 1000);
+  }
+  function closeInsight() {
+    GI.open = false;
+    GI.gen++;
+    if (GI.timer) { clearInterval(GI.timer); GI.timer = null; }
+    $("insightView").hidden = true;
+  }
+
   /* ── Overlay & routing plumbing ────────────────────────────── */
 
   function closeOverlays() {
@@ -2671,6 +3073,7 @@
     $("brandHome").addEventListener("click", function (e) {
       e.preventDefault();
       closeChat();
+      if (GI.open) closeInsight();
       closeOverlays();
       window.scrollTo({ top: 0, behavior: "smooth" });
     });
@@ -2683,6 +3086,25 @@
     $("heroAddExpert").addEventListener("click", function () { openExpertForm(null); });
     $("councilBtn").addEventListener("click", function () { openCouncil(); });
     $("heroCouncil").addEventListener("click", function () { openCouncil(); });
+    $("insightBtn").addEventListener("click", openInsight);
+    $("insightBack").addEventListener("click", closeInsight);
+    $("briefBack").addEventListener("click", giCloseBrief);
+    $("insightRegion").addEventListener("change", function (e) {
+      GI.region = e.target.value;
+      giRenderFeed();
+    });
+    $("insightSearch").addEventListener("input", function (e) {
+      GI.search = e.target.value.trim().toLowerCase();
+      giRenderFeed();
+    });
+    $("briefCouncil").addEventListener("click", function () {
+      var a = GI.brief;
+      if (!a) return;
+      closeInsight();
+      openCouncil();
+      $("councilQuestion").value = 'The council weighs a live signal: "' + String(a.title || "").slice(0, 160) +
+        '" — how should a decision-maker read it, and what should they do about it?';
+    });
     $("codexBtn").addEventListener("click", function () { openOverlay("codexOverlay"); });
     $("councilBack").addEventListener("click", closeCouncil);
     $("councilFilter").addEventListener("input", renderCouncilPicker);
@@ -2722,6 +3144,7 @@
         var anyOverlay = ["profileOverlay", "settingsOverlay", "expertOverlay", "codexOverlay", "adminOverlay", "dashOverlay"].some(function (id) { return !$(id).hidden; });
         if (anyOverlay) dismissOverlays();
         else if (!$("aboutView").hidden) closeAbout();
+        else if (!$("insightView").hidden) { if (!$("briefPanel").hidden) giCloseBrief(); else closeInsight(); }
         else if (!$("chatView").hidden) closeChat();
         else if (!$("councilView").hidden) closeCouncil();
       }
