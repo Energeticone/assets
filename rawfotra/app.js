@@ -804,6 +804,7 @@
   var COUNCIL_MAX = 10;
   var councilSel = [];        // selected mentor ids, in pick order
   var councilBusy = false;
+  var councilGen = 0;         // bumped on convene/close so an abandoned run's callbacks die quietly
 
   function usingClaude() { return settings.engine === "claude" && !!settings.apiKey; }
 
@@ -838,6 +839,7 @@
   function closeCouncil() {
     if (councilBusy && !confirm("The council is still deliberating. Leave anyway?")) return;
     councilBusy = false;
+    councilGen++; // an abandoned run must never write into a later one
     stopMC();
     $("councilView").hidden = true;
   }
@@ -943,6 +945,8 @@
     if (!members.length) { toast("Choose at least one mind for the council."); return; }
 
     councilBusy = true;
+    councilGen++;
+    var gen = councilGen;
     recordQuery(null, q);
     $("councilSetup").hidden = true;
     $("councilReport").hidden = false;
@@ -972,6 +976,7 @@
     var report = { question: q, when: new Date().toISOString(), engine: usingClaude() ? "claude" : "wisdom", answers: [], consensus: null };
 
     var finishAll = function () {
+      if (gen !== councilGen) return;
       councilBusy = false;
       $("councilStatus").textContent = report.engine === "claude"
         ? "The consensus of the Supreme Council is drafted."
@@ -998,6 +1003,7 @@
       });
     };
     var showConsensus = function (c) {
+      if (gen !== councilGen) return;
       report.consensus = c;
       (c.directives || []).slice(0, 3).forEach(function (d) {
         recordInsight(d.imperative + " — " + (d.reasoning || "").slice(0, 160), d.drawnFrom);
@@ -1026,6 +1032,7 @@
       var per = reduced ? 0 : Math.min(350, Math.ceil(4000 / members.length));
       members.forEach(function (t, i) {
         setTimeout(function () {
+          if (gen !== councilGen) return;
           var a = offlineCouncilAnswer(t, q);
           cards[t.id].classList.remove("pending");
           cards[t.id].textContent = a;
@@ -1033,6 +1040,7 @@
           if (report.answers.length === members.length) {
             $("councilStatus").textContent = "The council withdraws to draft its consensus…";
             setTimeout(function () {
+              if (gen !== councilGen) return;
               showConsensus(buildOfflineConsensus(q, members));
               finishAll();
             }, reduced ? 0 : 900);
@@ -1595,7 +1603,9 @@
         counter.textContent = m.trials.toLocaleString() + " trials complete";
         mcNode.appendChild(el("p", "mc-verdict", mcVerdictLine(m)));
         mcNode.appendChild(el("p", "fine", MC_DISCLAIMER));
-        if (onSettled) onSettled(m);
+        // Deferred so a synchronous run (reduced motion) still settles AFTER
+        // the convene flow has finished saving and logging the report.
+        if (onSettled) setTimeout(function () { onSettled(m); }, 0);
       },
     });
   }
@@ -1825,6 +1835,14 @@
     if (r.consensus) {
       renderConsensus(r.consensus);
       tagVotes(r.consensus);
+      if (!r.consensus.monteCarlo) {
+        // A trial interrupted mid-run (or a pre-trial report) completes on recall.
+        renderMCLive(r.consensus, r.question + "|" + (r.answers || []).map(function (a) { return a.id; }).join(",") + "|mc", function (m) {
+          if (!m) return;
+          r.consensus.monteCarlo = m;
+          updateSavedReport(r);
+        });
+      }
       $("councilProvenance").textContent = r.engine === "claude"
         ? "Deliberated and drafted by Claude from the " + (r.answers || []).length + " voices above."
         : "Composed on-device from the assembled minds' own teachings.";
