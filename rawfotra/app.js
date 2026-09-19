@@ -44,6 +44,7 @@
     history: "freemasonry-circle.council.history",
     bench: "freemasonry-circle.council.bench",
     adminLog: "freemasonry-circle.admin.log",
+    adminTotals: "freemasonry-circle.admin.totals",
     insight: "freemasonry-circle.insight.cache",
     chat: function (id) { return "freemasonry-circle.chat." + id; },
   };
@@ -1265,6 +1266,7 @@
       return n;
     };
     var dissents = [];
+    var dissentPairs = []; // member OBJECT pairs — the debate must never re-resolve by display name
     if (members.length >= 2) {
       var axisSpreads = AXES.map(function (ax) {
         var rows = members.map(function (t) {
@@ -1275,6 +1277,7 @@
       }).filter(function (r) { return r.hi.v >= 2 && r.lo.v <= -2; })
         .sort(function (a, b) { return b.spread - a.spread; });
       axisSpreads.slice(0, 2).forEach(function (r) {
+        dissentPairs.push({ hi: r.hi.t, lo: r.lo.t, ax: r.ax });
         var pickSide = function (t, words) {
           var best = null, bestN = -1;
           (t.principles || []).forEach(function (p) {
@@ -1307,28 +1310,31 @@
     var debPrinciple = function (t, words, avoid) {
       var best = null, bestN = -1;
       (t.principles || []).forEach(function (p) {
-        if (avoid[p.title]) return;
+        if (avoid[t.id + "|" + p.title]) return;
         var n = axisCount((p.title + " " + p.text).toLowerCase(), words);
         if (n > bestN) { bestN = n; best = p; }
       });
       return best;
     };
-    if (dissents.length) {
+    if (dissentPairs.length) {
       var used1 = {};
-      dissents.slice(0, 2).forEach(function (d, di) {
-        var hiT = members.filter(function (t) { return t.name === d.between[0]; })[0];
-        var loT = members.filter(function (t) { return t.name === d.between[1]; })[0];
-        if (!hiT || !loT) return;
-        var ax = AXES[hashCode(d.tension) % AXES.length]; // display only; words below re-derive
-        var hiP = debPrinciple(hiT, (AXES.filter(function (a) { return d.tension.indexOf(a.aName) !== -1; })[0] || ax).a, used1);
-        var loP = debPrinciple(loT, (AXES.filter(function (a) { return d.tension.indexOf(a.bName) !== -1; })[0] || ax).b, used1);
-        if (hiP) { used1[hiP.title] = 1; debate.push({ speaker: hiT.name, line: firstSentence(hiP.text, 190) }); }
-        if (loP) { used1[loP.title] = 1; debate.push({ speaker: loT.name, line: firstSentence(loP.text, 190) }); }
+      // A member without principles (a sparse custom expert) still speaks —
+      // from their theme essay or bio — so a debate is never one-sided.
+      var debFallback = function (t) {
+        return firstSentence((theme && (t.wisdom || {})[theme]) || t.bio || t.voice || "", 180);
+      };
+      dissentPairs.slice(0, 2).forEach(function (pr, di) {
+        var hiP = debPrinciple(pr.hi, pr.ax.a, used1);
+        var loP = debPrinciple(pr.lo, pr.ax.b, used1);
+        if (hiP) { used1[pr.hi.id + "|" + hiP.title] = 1; debate.push({ speaker: pr.hi.name, line: firstSentence(hiP.text, 190) }); }
+        else if (debFallback(pr.hi)) debate.push({ speaker: pr.hi.name, line: debFallback(pr.hi) });
+        if (loP) { used1[pr.lo.id + "|" + loP.title] = 1; debate.push({ speaker: pr.lo.name, line: firstSentence(loP.text, 190) }); }
+        else if (debFallback(pr.lo)) debate.push({ speaker: pr.lo.name, line: debFallback(pr.lo) });
         if (di === 0) {
-          var hiD = (hiT.doctrine || [])[hashCode(hiT.id + q) % Math.max(1, (hiT.doctrine || []).length)];
-          var loD = (loT.doctrine || [])[hashCode(loT.id + q) % Math.max(1, (loT.doctrine || []).length)];
-          if (hiD) debate.push({ speaker: hiT.name, line: "And I hold to this: " + hiD.imperative });
-          if (loD) debate.push({ speaker: loT.name, line: "Then hold mine beside it: " + loD.imperative });
+          var hiD = (pr.hi.doctrine || [])[hashCode(pr.hi.id + q) % Math.max(1, (pr.hi.doctrine || []).length)];
+          var loD = (pr.lo.doctrine || [])[hashCode(pr.lo.id + q) % Math.max(1, (pr.lo.doctrine || []).length)];
+          if (hiD) debate.push({ speaker: pr.hi.name, line: "And I hold to this: " + hiD.imperative });
+          if (loD) debate.push({ speaker: pr.lo.name, line: "Then hold mine beside it: " + loD.imperative });
         }
       });
     } else if (members.length >= 2) {
@@ -1770,6 +1776,12 @@
       log.splice(0, log.length - 100);
       save(LS.adminLog, log);
     }
+    // Lifetime totals live apart from the capped log, so trims never shrink them.
+    var tot = load(LS.adminTotals, { life: 0, council: 0, chat: 0, insight: 0 });
+    tot.life = (tot.life || 0) + 1;
+    var k = entry.kind === "council" ? "council" : entry.kind === "insight" ? "insight" : "chat";
+    tot[k] = (tot[k] || 0) + 1;
+    save(LS.adminTotals, tot);
   }
   function adminLogPatch(t, patch) {
     var log = load(LS.adminLog, []);
@@ -2036,7 +2048,9 @@
       }).then(function (r) {
         var parsed;
         try { parsed = JSON.parse(textOf(r)); } catch (e) { throw new Error("could not parse the consensus draft"); }
-        if (parsed.minority && !parsed.minority.voice) parsed.minority = null;
+        // Only a genuinely seated voice can file the minority opinion — an empty
+        // string or a sentinel like "None" both mean there is none.
+        if (parsed.minority && !members.some(function (t) { return t.name === parsed.minority.voice; })) parsed.minority = null;
         showConsensus(parsed);
       }).catch(function (e) {
         if (/no answers could be gathered/.test(String(e.message))) throw e;
@@ -2156,6 +2170,7 @@
   function requireAdmin(next) {
     if (adminUnlocked()) { next(); return; }
     requireAdmin._next = next;
+    closeOverlays(); // an open modal (e.g. Settings) would otherwise sit above the prompt
     $("adminError").hidden = true;
     $("adminPassword").value = "";
     openOverlay("adminOverlay");
@@ -2260,7 +2275,8 @@
   function dashBuckets(log) {
     var now = new Date();
     var today = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
-    var week = today - ((now.getDay() + 6) % 7) * 86400000; // Monday start
+    // Monday start via calendar arithmetic, so a DST change mid-week can't shift the boundary.
+    var week = new Date(now.getFullYear(), now.getMonth(), now.getDate() - ((now.getDay() + 6) % 7)).getTime();
     var month = new Date(now.getFullYear(), now.getMonth(), 1).getTime();
     var mk = function () { return { total: 0, council: 0, chat: 0, insight: 0 }; };
     var b = { today: mk(), week: mk(), month: mk(), life: mk() };
@@ -2282,7 +2298,8 @@
   }
 
   function topCounts(pairs, n) {
-    var counts = {};
+    // Null-prototype map: a mind named "constructor" or "__proto__" must count cleanly.
+    var counts = Object.create(null);
     pairs.forEach(function (name) { if (name) counts[name] = (counts[name] || 0) + 1; });
     return Object.keys(counts)
       .sort(function (a, b2) { return counts[b2] - counts[a]; })
@@ -2294,9 +2311,17 @@
     var log = load(LS.adminLog, []);
     var b = dashBuckets(log);
 
+    // Lifetime comes from the standalone totals, which outlive log trimming.
+    var tot = load(LS.adminTotals, { life: 0, council: 0, chat: 0, insight: 0 });
+    var life = {
+      total: Math.max(tot.life || 0, b.life.total),
+      council: Math.max(tot.council || 0, b.life.council),
+      chat: Math.max(tot.chat || 0, b.life.chat),
+      insight: Math.max(tot.insight || 0, b.life.insight),
+    };
     var stats = $("dashStats");
     stats.innerHTML = "";
-    [["Today", b.today], ["Week to date", b.week], ["Month to date", b.month], ["Lifetime", b.life]].forEach(function (row) {
+    [["Today", b.today], ["Week to date", b.week], ["Month to date", b.month], ["Lifetime", life]].forEach(function (row) {
       var card = el("div", "dash-card");
       card.appendChild(el("div", "dash-num", String(row[1].total)));
       card.appendChild(el("div", "dash-label", row[0]));
