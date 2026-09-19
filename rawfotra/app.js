@@ -243,6 +243,7 @@
     var mk = function (key, label, count) {
       var chip = el("button", "chip" + (activeCategory === key ? " active" : ""));
       chip.setAttribute("aria-pressed", activeCategory === key ? "true" : "false");
+      if (key !== "all" && key !== "__custom") chip.setAttribute("data-cat", key);
       chip.appendChild(document.createTextNode(label));
       chip.appendChild(el("span", "count", String(count)));
       chip.addEventListener("click", function () {
@@ -284,8 +285,9 @@
     var list = visibleTitans();
     $("emptyState").hidden = list.length > 0;
     list.forEach(function (t, i) {
-      var card = el("button", "titan-card");
+      var card = el("button", "titan-card reveal");
       card.setAttribute("aria-label", "Open " + t.name);
+      card.setAttribute("data-cat", t.category);
       card.appendChild(el("span", "tc-num", ("00" + (i + 1)).slice(-3)));
 
       var top = el("div", "tc-top");
@@ -317,6 +319,7 @@
     var t = titans[seed % titans.length];
     var ps = t.principles || [];
     var p = ps.length ? ps[seed % ps.length] : null;
+    $("dailyWisdom").setAttribute("data-cat", t.category);
     $("dailyText").textContent = p ? p.text : t.bio;
     $("dailyFrom").textContent = "— " + t.name + (p ? ", on " + p.title.toLowerCase() : "");
     $("dailyFrom").onclick = function () { openProfile(t.id); };
@@ -329,6 +332,7 @@
     if (!t) return;
     currentTitan = t;
     paintMedallion($("profileMedallion"), t, "medallion-lg");
+    $("profileOverlay").querySelector(".modal").setAttribute("data-cat", t.category);
     $("profileCat").textContent = categoryLabel(t.category);
     $("profileName").textContent = t.name;
     $("profileEpithet").textContent = t.epithet;
@@ -394,6 +398,7 @@
     chatTitan = t;
     location.hash = "#/chat/" + encodeURIComponent(id);
     paintMedallion($("chatMedallion"), t, "medallion-sm");
+    $("chatView").setAttribute("data-cat", t.category);
     $("chatName").textContent = t.name;
     $("chatEpithet").textContent = t.epithet;
     renderEnginePill();
@@ -797,6 +802,7 @@
       if (filter && !matchesSearch(t, filter)) return;
       var b = el("button", "pick" + (councilSel.indexOf(t.id) !== -1 ? " selected" : ""));
       b.type = "button";
+      b.setAttribute("data-cat", t.category);
       var med = el("div");
       paintMedallion(med, t, "medallion-sm");
       b.appendChild(med);
@@ -837,6 +843,7 @@
     var cards = {};
     members.forEach(function (t) {
       var card = el("div", "voice-card");
+      card.setAttribute("data-cat", t.category);
       var med = el("div");
       paintMedallion(med, t, "medallion-md");
       card.appendChild(med);
@@ -1107,7 +1114,7 @@
   function copyCouncilReport() {
     var r = load("titans.council.last", null);
     if (!r) return;
-    var md = "# Council report — RAWFOTRA v6.2\n\n**Question:** " + r.question + "\n\n" +
+    var md = "# Council report — RAWFOTRA v6.3\n\n**Question:** " + r.question + "\n\n" +
       r.answers.map(function (a) { return "## " + a.name + "\n\n" + a.text; }).join("\n\n") +
       "\n\n## Consolidated counsel\n\n" + r.summary + "\n\n### Three recommendations\n\n" +
       r.recommendations.map(function (rec, i) {
@@ -1649,6 +1656,29 @@
   renderCodex();
   wire();
   handleHash();
+
+  // VM-style scroll reveal: fade-up any .reveal element once, on first viewport entry.
+  (function initReveal() {
+    if (!("IntersectionObserver" in window)) {
+      document.querySelectorAll(".reveal").forEach(function (n) { n.classList.add("in-view"); });
+      return;
+    }
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("in-view");
+          io.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.08, rootMargin: "0px 0px -8% 0px" });
+    var observeAll = function () { document.querySelectorAll(".reveal:not(.in-view)").forEach(function (n) { io.observe(n); }); };
+    observeAll();
+    // Re-scan after grid re-renders (filter/search change new cards in).
+    var grid = $("titanGrid");
+    if (grid && "MutationObserver" in window) {
+      new MutationObserver(observeAll).observe(grid, { childList: true });
+    }
+  })();
 
   // Installable app: register the service worker (relative path keeps the
   // scope correct under /assets/rawfotra/ on GitHub Pages). file:// and

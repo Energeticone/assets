@@ -1,4 +1,4 @@
-# 🏛️ RAWFOTRA v6.2 — a Magnetic Glass Initiative
+# 🏛️ RAWFOTRA v6.3 — a Magnetic Glass Initiative
 
 Counsel from history's greatest minds.
 
