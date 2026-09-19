@@ -90,21 +90,12 @@ class RunRecord:
         (self.run_dir / name).write_text(content, encoding="utf-8")
 
     def save_json(self, name: str, data) -> None:
-        self.save(name, json.dumps(data, indent=2, default=str))
+        def default(obj):
+            if hasattr(obj, "to_dict"):
+                return obj.to_dict()
+            return str(obj)
+
+        self.save(name, json.dumps(data, indent=2, default=default))
 
     def save_transcript(self, agent: str, cycle: int, messages: list) -> None:
-        def serialize(msg):
-            content = msg.get("content")
-            if isinstance(content, str):
-                return {"role": msg["role"], "content": content}
-            blocks = []
-            for block in content:
-                if isinstance(block, dict):
-                    blocks.append(block)
-                else:  # SDK content block object
-                    blocks.append(block.to_dict() if hasattr(block, "to_dict") else str(block))
-            return {"role": msg["role"], "content": blocks}
-
-        self.save_json(
-            f"transcript-{agent}-cycle{cycle}.json", [serialize(m) for m in messages]
-        )
+        self.save_json(f"transcript-{agent}-cycle{cycle}.json", messages)

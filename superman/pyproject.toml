@@ -9,6 +9,9 @@ description = "Orchestrate AI agents that plan, implement, review and test — y
 requires-python = ">=3.10"
 dependencies = ["anthropic>=0.68"]
 
+[project.optional-dependencies]
+openai = ["requests>=2.31"]  # for OpenAI-compatible backends such as Kimi K3
+
 [project.scripts]
 superman = "superman.cli:main"
 
