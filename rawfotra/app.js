@@ -42,6 +42,7 @@
     experts: "freemasonry-circle.customExperts",
     memory: "freemasonry-circle.memory",
     history: "freemasonry-circle.council.history",
+    bench: "freemasonry-circle.council.bench",
     chat: function (id) { return "freemasonry-circle.chat." + id; },
   };
 
@@ -804,10 +805,17 @@
 
   function usingClaude() { return settings.engine === "claude" && !!settings.apiKey; }
 
+  function saveBench() { save(LS.bench, councilSel); }
+
   function openCouncil(preselectId) {
     $("aboutView").hidden = true; // the council always takes the room
+    if (!councilSel.length) {
+      // A once-assembled Supreme Council keeps its seats between visits.
+      councilSel = load(LS.bench, []).filter(function (id) { return !!findMind(id); }).slice(0, COUNCIL_MAX);
+    }
     if (preselectId && councilSel.indexOf(preselectId) === -1 && councilSel.length < COUNCIL_MAX) {
       councilSel.push(preselectId);
+      saveBench();
     }
     $("councilView").hidden = false;
     $("councilSetup").hidden = false;
@@ -915,6 +923,7 @@
         if (i !== -1) councilSel.splice(i, 1);
         else if (councilSel.length < COUNCIL_MAX) councilSel.push(t.id);
         else { toast("The Supreme Council seats " + COUNCIL_MAX + " at most — remove someone first."); return; }
+        saveBench();
         renderCouncilPicker();
       });
       wrap.appendChild(b);
@@ -972,6 +981,7 @@
         // Storage is tight: keep the freshest few rather than silently losing all.
         hist.length = 4;
         save(LS.history, hist);
+        toast("Browser storage is tight — keeping only the freshest consensus reports.");
       }
     };
     var showConsensus = function (c) {
@@ -990,7 +1000,10 @@
     if (usingClaude()) {
       runClaudeCouncil(q, members, cards, report, showConsensus, finishAll);
     } else {
-      // Offline: stagger the reveals slightly so the council feels alive.
+      // Offline: stagger the reveals so the council feels alive — but cap the
+      // total theater at ~4s, and skip it entirely for reduced-motion users.
+      var reduced = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+      var per = reduced ? 0 : Math.min(350, Math.ceil(4000 / members.length));
       members.forEach(function (t, i) {
         setTimeout(function () {
           var a = offlineCouncilAnswer(t, q);
@@ -1002,9 +1015,9 @@
             setTimeout(function () {
               showConsensus(buildOfflineConsensus(q, members));
               finishAll();
-            }, 900);
+            }, reduced ? 0 : 900);
           }
-        }, 350 * (i + 1));
+        }, per * (i + 1));
       });
       $("councilStatus").textContent = "The council considers your question…";
     }
@@ -1362,7 +1375,7 @@
     vparts.push("So concludes the Supreme Council — " + members.length + (members.length > 1 ? " voices" : " voice") + " concurring" + (minority ? ", one caution filed" : "") + ".");
 
     return {
-      preamble: 'The council heard the question — "' + firstSentence(q, 180) + '" — ' + kindVerb + ", and read it as a matter of " + (themes.length ? listNames(themes) : "judgment under uncertainty") + ".",
+      preamble: 'The council heard the question — "' + (q.length > 180 ? q.slice(0, 179).replace(/\s+\S*$/, "") + "…" : q) + '" — ' + kindVerb + ", and read it as a matter of " + (themes.length ? listNames(themes) : "judgment under uncertainty") + ".",
       themes: themes,
       convergence: convergence,
       dissents: dissents,
@@ -2059,7 +2072,7 @@
     if (!confirm("Remove " + t.name + " and their conversation history?")) return;
     customExperts = customExperts.filter(function (e) { return e.id !== id; });
     var ci = councilSel.indexOf(id);
-    if (ci !== -1) councilSel.splice(ci, 1);
+    if (ci !== -1) { councilSel.splice(ci, 1); saveBench(); }
     save(LS.experts, customExperts);
     try { localStorage.removeItem(LS.chat(id)); } catch (e) { /* ignore */ }
     closeOverlays();
