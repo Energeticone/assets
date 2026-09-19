@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<title>RAWFOTRA v6.4 — Counsel &amp; Strategic Advice from the Greatest Minds, Past and Present</title>
-<meta name="description" content="Explore 66 legendary minds, chat 1-on-1 with each, or convene a council: ask one question, pick up to ten experts, and receive their individual answers plus a consolidated view with three recommendations. Expandable with your own modern-day experts." />
+<title>RAWFOTRA v6.5 — Counsel &amp; Strategic Advice from the Greatest Minds, Past and Present</title>
+<meta name="description" content="Explore 66 legendary minds, chat 1-on-1 with each, or convene your Supreme Council: ask one question, seat up to thirteen minds, and receive each voice's counsel plus the Consensus of the Supreme Council — a deep analysis with verdict, directives and dissents. Expandable with your own modern-day experts." />
 <meta name="theme-color" content="#06070c" />
 <link rel="icon" href="icons/icon-192.png" type="image/png" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -17,8 +17,8 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 <meta name="apple-mobile-web-app-title" content="RAWFOTRA" />
 <link rel="stylesheet" href="styles.css" />
-<meta property="og:title" content="RAWFOTRA v6.4 — Counsel &amp; Strategic Advice from the Greatest Minds, Past and Present" />
-<meta property="og:description" content="Chat 1-on-1 with 66 legendary figures, or convene a council of up to ten minds on one question — individual answers, a consolidated view, three recommendations." />
+<meta property="og:title" content="RAWFOTRA v6.5 — Counsel &amp; Strategic Advice from the Greatest Minds, Past and Present" />
+<meta property="og:description" content="Chat 1-on-1 with 66 legendary figures, or convene your Supreme Council of up to thirteen minds on one question — every voice heard, then one deep consensus: verdict, directives, dissents." />
 <meta property="og:type" content="website" />
 </head>
 <body>
@@ -69,7 +69,7 @@
       <rect x="8" y="85" width="84" height="7" rx="2" fill="url(#markGold)" />
     </svg>
     <span class="brand-stack">
-      <span class="brand-word">RAWFOTRA <b>v6.4</b></span>
+      <span class="brand-word">RAWFOTRA <b>v6.5</b></span>
       <span class="brand-sub">a Magnetic Glass Initiative</span>
     </span>
   </a>
@@ -77,7 +77,7 @@
     <input id="searchInput" type="search" placeholder="Search minds, ideas, eras…" autocomplete="off" aria-label="Search minds" />
   </div>
   <nav class="nav-actions">
-    <button class="btn btn-gold-outline" id="councilBtn" title="Ask one question to up to ten minds">⚖ Council</button>
+    <button class="btn btn-gold-outline" id="councilBtn" title="One question before up to thirteen minds — and their consensus">⚖ Supreme Council</button>
     <button class="btn btn-ghost" id="aboutBtn" title="The story of the chamber">About</button>
     <button class="btn btn-ghost" id="codexBtn" title="First principles of the pantheon" hidden>Codex</button>
     <button class="btn btn-ghost" id="surpriseBtn" title="Open a random mind">✦ Surprise</button>
@@ -95,8 +95,8 @@
     <p class="hero-kicker"><span id="heroIndex">Indexing the pantheon</span> <span class="kick-dot">·</span> <span id="utcClock"></span></p>
     <h1>Counsel &amp; strategic advice from<br />the greatest minds <em>that have ever lived — or live</em></h1>
     <p class="hero-sub">Choose a mentor and ask anything — or put one question to a
-      <button class="linklike" id="heroCouncil">council of up to ten minds</button> and receive each expert's
-      considered answer plus a consolidated view with three recommendations.
+      <button class="linklike" id="heroCouncil">Supreme Council of up to thirteen minds</button> and receive each
+      voice's counsel plus the council's consensus: a deep analysis with verdict, directives and dissents.
       And when you're ready, <button class="linklike" id="heroAddExpert">add your own modern-day experts</button>.</p>
   </div>
   <aside class="daily card" id="dailyWisdom" aria-label="Daily wisdom">
@@ -119,7 +119,7 @@
 
 <footer class="foot">
   <p class="foot-dash">— Remember the future. Consult the past.</p>
-  <p>RAWFOTRA <b>v6.4</b> — a Magnetic Glass Initiative</p>
+  <p>RAWFOTRA <b>v6.5</b> — a Magnetic Glass Initiative</p>
   <p class="foot-fine">Every mentor is data, so the roster is yours to grow.</p>
 </footer>
 
@@ -132,8 +132,8 @@
     <button class="btn btn-ghost" id="councilBack">← Explore</button>
     <div class="chat-id">
       <div>
-        <div class="chat-name">The Council</div>
-        <div class="chat-epithet">one question · many minds · three recommendations</div>
+        <div class="chat-name">The Supreme Council</div>
+        <div class="chat-epithet">one question · many minds · one consensus</div>
       </div>
     </div>
     <div class="chat-tools">
@@ -148,7 +148,7 @@
         <textarea id="councilQuestion" rows="3" placeholder="e.g. Should I leave my stable job to start a company in a downturn?"></textarea>
       </label>
       <div class="council-pickhead">
-        <h3>Choose your council <span id="councilCount" class="council-count">0 / 10</span></h3>
+        <h3>Assemble your Supreme Council <span id="councilCount" class="council-count">0 / 13</span></h3>
         <input id="councilFilter" type="search" placeholder="Filter minds…" aria-label="Filter minds" />
       </div>
       <div class="council-picker" id="councilPicker"></div>
@@ -158,7 +158,11 @@
       </label>
       <div class="council-actions">
         <span class="fine" id="councilEngineNote"></span>
-        <button class="btn btn-gold btn-big" id="councilConvene">Convene the council →</button>
+        <button class="btn btn-gold btn-big" id="councilConvene">Convene the Supreme Council →</button>
+      </div>
+      <div class="council-history" id="councilHistoryWrap" hidden>
+        <h3>Past consensus</h3>
+        <div id="councilHistory"></div>
       </div>
     </section>
 
@@ -171,14 +175,14 @@
       </div>
       <div id="councilAnswers"></div>
       <div class="council-consolidated card" id="councilConsolidated" hidden>
-        <h3>Consolidated counsel</h3>
-        <p id="councilSummary"></p>
-        <h3>Three recommendations</h3>
-        <ol class="recs" id="councilRecs"></ol>
+        <div class="cons-banner">
+          <div class="daily-label">Consensus of the Supreme Council</div>
+        </div>
+        <div id="consensusDoc"></div>
         <div class="fine" id="councilProvenance"></div>
       </div>
       <div class="council-actions">
-        <button class="btn btn-ghost" id="councilCopy" hidden>Copy report</button>
+        <button class="btn btn-ghost" id="councilCopy" hidden>Copy consensus</button>
         <button class="btn btn-ghost" id="councilAgain">New question</button>
       </div>
     </section>

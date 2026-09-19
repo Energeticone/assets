@@ -495,6 +495,81 @@ a { color: var(--gold); }
 .recs span { color: var(--ink-dim); font-size: 14px; }
 .recs .rec-from { display: block; margin-top: 3px; font-size: 12px; color: var(--ink-faint); font-style: italic; }
 
+/* ── Consensus of the Supreme Council ── */
+.cons-banner { margin-bottom: 6px; }
+.cons-sec { margin-top: 24px; }
+.cons-sec h4 {
+  font-family: var(--mono); font-size: 11.5px; letter-spacing: 0.24em; text-transform: uppercase;
+  color: var(--gold); font-weight: 500; margin-bottom: 12px; display: flex; align-items: baseline; gap: 10px;
+}
+.cons-numeral { color: var(--ink-faint); min-width: 2.4em; }
+.cons-preamble { color: var(--ink); font-family: var(--serif); font-size: 17.5px; line-height: 1.55; }
+.cons-themes { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+.cons-chip {
+  font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--gold-soft); border: 1px solid var(--gold-dim); border-radius: 999px; padding: 4px 12px;
+  background: var(--gold-dim);
+}
+.cons-conv { margin-bottom: 14px; padding-left: 14px; border-left: 2px solid var(--line); }
+.cons-conv p { color: var(--ink); line-height: 1.55; }
+.cons-holders { margin-top: 5px; font-size: 12.5px; color: var(--gold-soft); font-style: italic; }
+.cons-dissent { margin-bottom: 16px; padding: 14px 16px; border: 1px solid var(--line-soft); border-radius: 12px; background: rgba(224, 100, 95, 0.05); }
+.cons-between { font-family: var(--mono); font-size: 11px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--danger); margin-bottom: 8px; opacity: 0.85; }
+.cons-dissent p { color: var(--ink-dim); line-height: 1.55; font-size: 14.5px; }
+.cons-resolution { margin-top: 8px; color: var(--ink) !important; }
+.cons-resolution::before { content: "⚖ "; color: var(--gold); }
+.cons-risk { margin-bottom: 12px; padding-left: 14px; border-left: 2px solid rgba(255, 122, 110, 0.4); }
+.cons-risk p { color: var(--ink-dim); font-size: 14.5px; line-height: 1.5; }
+.cons-risk-counsel { margin-top: 4px; font-size: 13px; color: var(--ink); font-weight: 600; }
+.cons-verdict {
+  font-family: var(--serif); font-size: 18.5px; line-height: 1.62; color: var(--ink); white-space: pre-wrap;
+  padding: 4px 0 4px 18px; border-left: 2px solid var(--gold-soft);
+}
+.cons-verdict::first-letter { font-size: 220%; line-height: 0.9; color: var(--gold); padding-right: 2px; }
+.cons-horizon {
+  margin-left: 10px; font-family: var(--mono); font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--ink-faint); border: 1px solid var(--line-soft); border-radius: 999px; padding: 2px 9px;
+  font-style: normal; font-weight: 400; vertical-align: 2px; white-space: nowrap;
+}
+.cons-minority { padding: 14px 16px; border-left: 2px solid var(--gold-soft); background: var(--gold-dim); border-radius: 0 12px 12px 0; }
+.cons-minority p { font-style: italic; color: var(--ink-dim); line-height: 1.55; }
+.cons-conditions { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+.cons-conditions li { color: var(--ink-dim); font-size: 14.5px; line-height: 1.5; padding-left: 18px; position: relative; }
+.cons-conditions li::before { content: "◆"; position: absolute; left: 0; top: 1px; color: var(--gold-soft); font-size: 10px; }
+.cons-meta { margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--line-soft); display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.cons-level {
+  font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--bg); background: var(--gold); border-radius: 999px; padding: 5px 13px; font-weight: 600; white-space: nowrap;
+}
+.cons-meta span:last-child { color: var(--ink-faint); font-size: 13px; font-style: italic; }
+
+.vote-tag {
+  margin-left: 9px; font-family: var(--mono); font-size: 9.5px; letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--gold-soft); border: 1px solid var(--gold-dim); border-radius: 999px; padding: 2px 8px;
+  vertical-align: 2px; white-space: nowrap; font-weight: 400;
+}
+.vote-tag.vote-caution { color: var(--danger); border-color: rgba(255, 122, 110, 0.25); }
+
+/* Past consensus history on the setup screen */
+.council-history { margin-top: 34px; border-top: 1px solid var(--line-soft); padding-top: 22px; }
+.council-history h3 {
+  font-family: var(--mono); font-size: 11.5px; letter-spacing: 0.24em; text-transform: uppercase;
+  color: var(--gold); font-weight: 500; margin-bottom: 12px;
+}
+.hist-row { display: flex; align-items: stretch; gap: 8px; margin-bottom: 8px; }
+.hist-open {
+  flex: 1; text-align: left; background: var(--bg-card); border: 1px solid var(--line-soft); border-radius: 12px;
+  padding: 11px 14px; cursor: pointer; color: inherit; display: flex; flex-direction: column; gap: 3px; min-width: 0;
+}
+.hist-open:hover { background: var(--bg-card-hover); border-color: var(--line); }
+.hist-q { font-size: 14px; color: var(--ink); line-height: 1.35; overflow: hidden; text-overflow: ellipsis; }
+.hist-sub { font-size: 11.5px; color: var(--ink-faint); font-family: var(--mono); letter-spacing: 0.04em; }
+.hist-del {
+  background: none; border: 1px solid var(--line-soft); border-radius: 12px; color: var(--ink-faint);
+  width: 38px; cursor: pointer; font-size: 13px; flex: none;
+}
+.hist-del:hover { color: var(--danger); border-color: var(--danger); }
+
 /* ── Codex & doctrine ── */
 .codex-item { border-top: 1px solid var(--line-soft); padding: 16px 0; }
 .codex-item:first-child { border-top: none; }

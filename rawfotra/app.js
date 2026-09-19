@@ -41,6 +41,7 @@
     settings: "freemasonry-circle.settings",
     experts: "freemasonry-circle.customExperts",
     memory: "freemasonry-circle.memory",
+    history: "freemasonry-circle.council.history",
     chat: function (id) { return "freemasonry-circle.chat." + id; },
   };
 
@@ -797,7 +798,7 @@
 
   /* ── Council: one question, up to ten minds ────────────────── */
 
-  var COUNCIL_MAX = 10;
+  var COUNCIL_MAX = 13;
   var councilSel = [];        // selected mentor ids, in pick order
   var councilBusy = false;
 
@@ -821,6 +822,7 @@
       ? "Each mind deliberates through Claude (" + (settings.model || "claude-opus-5") + ")."
       : "Offline mode: answers are composed from each mind's curated teachings. Add a Claude API key in Settings for deep AI deliberation.";
     renderCouncilPicker();
+    renderCouncilHistory();
     $("councilQuestion").focus();
   }
   function closeCouncil() {
@@ -912,7 +914,7 @@
         var i = councilSel.indexOf(t.id);
         if (i !== -1) councilSel.splice(i, 1);
         else if (councilSel.length < COUNCIL_MAX) councilSel.push(t.id);
-        else { toast("The council seats " + COUNCIL_MAX + " at most — remove someone first."); return; }
+        else { toast("The Supreme Council seats " + COUNCIL_MAX + " at most — remove someone first."); return; }
         renderCouncilPicker();
       });
       wrap.appendChild(b);
@@ -954,42 +956,39 @@
       cards[t.id] = text;
     });
 
-    var report = { question: q, when: new Date().toISOString(), engine: usingClaude() ? "claude" : "wisdom", answers: [], summary: "", recommendations: [] };
+    var report = { question: q, when: new Date().toISOString(), engine: usingClaude() ? "claude" : "wisdom", answers: [], consensus: null };
 
     var finishAll = function () {
       councilBusy = false;
       $("councilStatus").textContent = report.engine === "claude"
-        ? "Deliberation complete."
-        : "Composed offline from the council's curated teachings — add a Claude API key in Settings for deep AI deliberation.";
+        ? "The consensus of the Supreme Council is drafted."
+        : "Consensus composed offline from the council's own teachings — add a Claude API key in Settings for deep AI deliberation.";
       $("councilCopy").hidden = false;
       save("freemasonry-circle.council.last", report);
+      var hist = load(LS.history, []);
+      hist.unshift(report);
+      if (hist.length > 10) hist.length = 10;
+      if (!save(LS.history, hist) && hist.length > 4) {
+        // Storage is tight: keep the freshest few rather than silently losing all.
+        hist.length = 4;
+        save(LS.history, hist);
+      }
     };
-    var showConsolidated = function (summary, recs) {
-      report.summary = summary;
-      report.recommendations = recs;
-      recs.slice(0, 3).forEach(function (r) {
-        recordInsight(r.imperative + " — " + (r.reasoning || "").slice(0, 160), r.drawnFrom);
+    var showConsensus = function (c) {
+      report.consensus = c;
+      (c.directives || []).slice(0, 3).forEach(function (d) {
+        recordInsight(d.imperative + " — " + (d.reasoning || "").slice(0, 160), d.drawnFrom);
       });
-      $("councilSummary").textContent = summary;
-      var ol = $("councilRecs");
-      ol.innerHTML = "";
-      recs.slice(0, 3).forEach(function (r) {
-        var li = el("li");
-        var box = el("div");
-        box.appendChild(el("b", null, r.imperative));
-        box.appendChild(el("span", null, r.reasoning));
-        if (r.drawnFrom) box.appendChild(el("i", "rec-from", "Drawn from " + r.drawnFrom));
-        li.appendChild(box);
-        ol.appendChild(li);
-      });
+      renderConsensus(c);
+      tagVotes(c);
       $("councilProvenance").textContent = report.engine === "claude"
-        ? "Synthesized by " + (settings.model || "claude-opus-5") + " from the " + members.length + " answers above."
-        : "Selected from the most question-relevant teachings across the council.";
+        ? "Deliberated and drafted by " + (settings.model || "claude-opus-5") + " from the " + members.length + " voices above."
+        : "Composed on-device from the assembled minds' own teachings — every line traces to a member's corpus.";
       $("councilConsolidated").hidden = false;
     };
 
     if (usingClaude()) {
-      runClaudeCouncil(q, members, cards, report, showConsolidated, finishAll);
+      runClaudeCouncil(q, members, cards, report, showConsensus, finishAll);
     } else {
       // Offline: stagger the reveals slightly so the council feels alive.
       members.forEach(function (t, i) {
@@ -999,9 +998,11 @@
           cards[t.id].textContent = a;
           report.answers.push({ id: t.id, name: t.name, text: a });
           if (report.answers.length === members.length) {
-            var syn = offlineSynthesis(q, members);
-            showConsolidated(syn.summary, syn.recs);
-            finishAll();
+            $("councilStatus").textContent = "The council withdraws to draft its consensus…";
+            setTimeout(function () {
+              showConsensus(buildOfflineConsensus(q, members));
+              finishAll();
+            }, 900);
           }
         }, 350 * (i + 1));
       });
@@ -1024,32 +1025,536 @@
     return parts.join("\n\n");
   }
 
-  function offlineSynthesis(q, members) {
-    var qWords = q.toLowerCase().split(/\W+/).filter(function (w) { return w.length > 3; });
+  /* ── The Consensus of the Supreme Council (offline engine) ────
+     A full deliberation synthesis composed on-device from each member's
+     corpus: theme decomposition, convergence clustering, tension axes,
+     risk register, verdict, directives, minority opinion. Deterministic
+     for a given question + bench, so a recalled report re-reads true. */
+
+  var STOP_WORDS = {};
+  ("the and for you your with that this from what should when where will would could into about have has had been being does doing they them then than very much more most some such only just like also over under after before because while against between himself herself itself" +
+    " ourselves myself yourself their there these those upon unto shall might must each every other another again still even ever never here how why who whom whose which whether during without within toward towards").split(" ")
+    .forEach(function (w) { if (w) STOP_WORDS[w] = 1; });
+
+  function sigWords(s) {
+    return String(s || "").toLowerCase().split(/[^a-z]+/).filter(function (w) {
+      return w.length > 3 && !STOP_WORDS[w];
+    }).map(function (w) {
+      return w.replace(/(ational|iveness|fulness|ously|ation|ition|ment|ness|ance|ence|able|ible|ally|ings|ing|ers|ies|ied|es|ed|ly|s)$/, "");
+    }).filter(function (w) { return w.length > 2; });
+  }
+  function overlapCount(a, b) {
+    var set = {}, n = 0, seen = {};
+    a.forEach(function (w) { set[w] = 1; });
+    b.forEach(function (w) { if (set[w] && !seen[w]) { n++; seen[w] = 1; } });
+    return n;
+  }
+  function memberCorpus(t) {
+    var bits = [t.bio || "", t.voice || ""];
+    (t.tags || []).forEach(function (x) { bits.push(x); });
+    (t.principles || []).forEach(function (p) { bits.push(p.title + " " + p.text); });
+    (t.doctrine || []).forEach(function (d) { bits.push(d.name + " " + d.reasoning + " " + d.imperative); });
+    Object.keys(t.wisdom || {}).forEach(function (k) { bits.push(t.wisdom[k]); });
+    return bits.join(" ").toLowerCase();
+  }
+  function firstSentence(s, max) {
+    s = String(s || "").trim();
+    var m = s.match(/^.*?[.!?](\s|$)/);
+    var out = m ? m[0].trim() : s;
+    if (out.length > max) out = out.slice(0, max - 1).replace(/\s+\S*$/, "") + "…";
+    return out;
+  }
+  function listNames(names) {
+    if (names.length <= 1) return names[0] || "";
+    return names.slice(0, -1).join(", ") + " and " + names[names.length - 1];
+  }
+
+  // Tension axes the bench can divide along. Each member is scored on each
+  // axis from their own corpus; a wide, opposite-signed spread is a dissent.
+  var AXES = [
+    { key: "tempo", aName: "striking now", bName: "preparing first",
+      a: ["act", "strike", "seize", "swift", "speed", "bold", "dare", "attack", "momentum", "decisive", "immediat", "audac"],
+      b: ["patien", "wait", "slow", "prepare", "study", "reserve", "margin", "caution", "endur", "survive", "season", "ripen"] },
+    { key: "scale", aName: "the self", bName: "the institution",
+      a: ["soul", "character", "virtue", "inner", "conscience", "self", "mind", "spirit", "own"],
+      b: ["institution", "system", "order", "structure", "organiz", "nation", "state", "law", "process", "team", "machine"] },
+    { key: "method", aName: "principle", bName: "consequence",
+      a: ["principle", "truth", "ideal", "moral", "right", "virtue", "honest", "integrity", "duty"],
+      b: ["result", "outcome", "power", "advantage", "interest", "practical", "effect", "leverage", "win", "works"] },
+    { key: "risk", aName: "daring the upside", bName: "refusing ruin",
+      a: ["venture", "gamble", "fortune", "opportun", "upside", "bet", "leap", "risk"],
+      b: ["ruin", "loss", "downside", "irrevers", "protect", "preserve", "insur", "collapse", "surviv", "reversib"] },
+  ];
+  var RISK_WORDS = ["ruin", "fail", "collapse", "danger", "cost", "irrevers", "blind", "hubris", "overreach", "decay", "corrupt", "fragil", "expos", "betray", "exhaust"];
+
+  function detectThemes(text) {
+    var lower = " " + text.toLowerCase() + " ";
+    var scored = [];
+    TOPICS.forEach(function (topic) {
+      var score = 0;
+      topic.words.forEach(function (w) { if (lower.indexOf(w) !== -1) score += w.length > 6 ? 2 : 1; });
+      if (score > 0) scored.push({ key: topic.key, score: score });
+    });
+    scored.sort(function (a, b) { return b.score - a.score; });
+    return scored.slice(0, 3).map(function (s) { return s.key; });
+  }
+
+  function buildOfflineConsensus(q, members) {
+    var seed = hashCode(q + "|" + members.map(function (t) { return t.id; }).join(","));
+    var qStems = sigWords(q);
+    var themes = detectThemes(q);
+    // Bare questions ("Is it time?") hit no keywords: let the bench itself
+    // say what the question is about — the wisdom key it best overlaps.
+    if (!themes.length) {
+      var bestK = null, bestKScore = 0;
+      TOPICS.forEach(function (topic) {
+        var s = 0;
+        members.forEach(function (t) {
+          if ((t.wisdom || {})[topic.key]) s += overlapCount(qStems, sigWords(t.wisdom[topic.key]));
+        });
+        if (s > bestKScore) { bestKScore = s; bestK = topic.key; }
+      });
+      themes = [bestK || "purpose"];
+    }
+    var theme = themes[0] || null;
+
+    // How the question is shaped steers the council's register.
+    var qLower = q.toLowerCase();
+    var qKind = /\b(should|whether|choose|quit|leave|accept|sell|start|take|stay)\b/.test(qLower) ? "decision"
+      : /\bhow (do|can|should|to|might)\b/.test(qLower) ? "howto"
+      : /\b(why|worth|meaning|point of)\b/.test(qLower) ? "meaning"
+      : /\b(partner|cofounder|boss|team|board|family|spouse|rival|colleague|investor)\b/.test(qLower) ? "conflict"
+      : "open";
+    var kindVerb = {
+      decision: "weighed the choice before it",
+      howto: "traced the path asked of it",
+      meaning: "searched the ground beneath it",
+      conflict: "sat between the parties named in it",
+      open: "turned the question in open session",
+    }[qKind];
+
+    // Bench corpora, built once; stems every single member shares are noise
+    // ("life", "power") and never count as a point of accord.
+    var corpora = {};
+    members.forEach(function (t) { corpora[t.id] = memberCorpus(t); });
+    var commonStems = {};
+    if (members.length >= 3) {
+      var df = {};
+      members.forEach(function (t) {
+        var seenStem = {};
+        sigWords(corpora[t.id]).forEach(function (w) {
+          if (!seenStem[w]) { seenStem[w] = 1; df[w] = (df[w] || 0) + 1; }
+        });
+      });
+      Object.keys(df).forEach(function (w) { if (df[w] === members.length) commonStems[w] = 1; });
+    }
+
+    // Score every principle of every member against the question + themes.
     var scored = [];
     members.forEach(function (t) {
       (t.principles || []).forEach(function (p) {
-        var hay = (p.title + " " + p.text).toLowerCase();
-        var score = 0;
-        qWords.forEach(function (w) { if (hay.indexOf(w) !== -1) score += 2; });
-        scored.push({ t: t, p: p, score: score + (hashCode(t.id + p.title) % 3) });
+        var stems = sigWords(p.title + " " + p.text);
+        var score = overlapCount(qStems, stems) * 3;
+        themes.forEach(function (k, ti) {
+          if ((t.wisdom || {})[k] && overlapCount(sigWords(t.wisdom[k]), stems) > 1) score += 2 - ti;
+        });
+        scored.push({ t: t, p: p, stems: stems, score: score + (hashCode(t.id + p.title + q) % 3) });
       });
     });
     scored.sort(function (a, b) { return b.score - a.score; });
-    var recs = [], usedMinds = {}, usedTitles = {};
-    for (var i = 0; i < scored.length && recs.length < 3; i++) {
-      var s = scored[i];
-      if (usedMinds[s.t.id] || usedTitles[s.p.title]) continue;
-      usedMinds[s.t.id] = usedTitles[s.p.title] = true;
-      recs.push({ imperative: s.p.title + ".", reasoning: s.p.text, drawnFrom: s.t.name });
+
+    // Convergence: cluster the strongest principles across DIFFERENT members
+    // by shared stems — each cluster of 2+ minds is a point of agreement.
+    var top = scored.slice(0, Math.min(scored.length, members.length * 4));
+    var used = {};
+    var convergence = [];
+    top.forEach(function (s, i) {
+      if (used[i] || convergence.length >= 4) return;
+      var holders = [s.t.name], holderIds = {}, texts = [s.p.text];
+      holderIds[s.t.id] = true;
+      for (var j = i + 1; j < top.length; j++) {
+        if (used[j] || holderIds[top[j].t.id]) continue;
+        // Kinship: two distinctive stems in common, or one the question itself uses.
+        var shared = [];
+        var seen = {};
+        s.stems.forEach(function (w) { seen[w] = 1; });
+        top[j].stems.forEach(function (w) {
+          if (seen[w] === 1 && !commonStems[w]) { shared.push(w); seen[w] = 2; }
+        });
+        var topical = shared.some(function (w) { return qStems.indexOf(w) !== -1; });
+        if (shared.length >= 2 || (shared.length === 1 && topical)) {
+          used[j] = true;
+          holderIds[top[j].t.id] = true;
+          holders.push(top[j].t.name);
+          texts.push(top[j].p.text);
+        }
+      }
+      if (holders.length >= 2) {
+        used[i] = true;
+        convergence.push({ point: firstSentence(texts[0], 220) + " " + firstSentence(texts[1], 160), holders: holders });
+      }
+    });
+    // Theme-level accords: for each detected theme most of the bench teaches on,
+    // the shared treatment of that theme is itself a point of agreement.
+    themes.forEach(function (tk, ti) {
+      var teachers = members.filter(function (t) { return (t.wisdom || {})[tk]; });
+      var quorum = ti === 0 ? Math.max(2, Math.ceil(members.length * 0.6)) : Math.max(2, Math.ceil(members.length * 0.8));
+      if (teachers.length < quorum) return;
+      var sampleA = teachers[seed % teachers.length];
+      var sampleB = teachers[(seed + 1 + ti) % teachers.length];
+      var point = ti === 0
+        ? "The bench treats " + tk + " not as a verdict on the asker but as raw material to be worked. As one voice puts it: " + firstSentence(sampleA.wisdom[tk], 200)
+        : "On " + tk + " the bench also speaks with one accord. " + firstSentence(sampleB.wisdom[tk], 180);
+      convergence[ti === 0 ? "unshift" : "push"]({ point: point, holders: teachers.map(function (t) { return t.name; }) });
+    });
+    if (convergence.length > 4) convergence.length = 4;
+
+    // Dissent: score each member on each axis; wide opposite spreads divide the bench.
+    var axisCount = function (corpus, words) {
+      var n = 0;
+      words.forEach(function (w) {
+        var idx = -1, c = 0;
+        while ((idx = corpus.indexOf(w, idx + 1)) !== -1 && c < 6) c++;
+        n += c;
+      });
+      return n;
+    };
+    var dissents = [];
+    if (members.length >= 2) {
+      var axisSpreads = AXES.map(function (ax) {
+        var rows = members.map(function (t) {
+          return { t: t, v: axisCount(corpora[t.id], ax.a) - axisCount(corpora[t.id], ax.b) };
+        }).sort(function (a, b) { return b.v - a.v; });
+        var hi = rows[0], lo = rows[rows.length - 1];
+        return { ax: ax, hi: hi, lo: lo, spread: hi.v - lo.v };
+      }).filter(function (r) { return r.hi.v >= 2 && r.lo.v <= -2; })
+        .sort(function (a, b) { return b.spread - a.spread; });
+      axisSpreads.slice(0, 2).forEach(function (r) {
+        var pickSide = function (t, words) {
+          var best = null, bestN = -1;
+          (t.principles || []).forEach(function (p) {
+            var n = axisCount((p.title + " " + p.text).toLowerCase(), words);
+            if (n > bestN) { bestN = n; best = p; }
+          });
+          return best ? firstSentence(best.text, 170) : firstSentence((t.doctrine && t.doctrine[0] ? t.doctrine[0].reasoning : t.bio), 170);
+        };
+        // Four resolution forms — sequence, jurisdiction, trigger, synthesis —
+        // seeded so different questions resolve their tensions differently.
+        var forms = [
+          "The council keeps both: let " + r.ax.bName + " set the boundary, and " + r.ax.aName + " set the pace within it.",
+          "The council resolves it by sequence: " + r.lo.t.name + "'s caution governs the first move, and " + r.hi.t.name + "'s fire governs every move after the ground is proven.",
+          "The council divides the jurisdiction: where a loss could not be recovered, " + r.lo.t.name + " rules; everywhere else, " + r.hi.t.name + " does.",
+          "The council sets a tripwire: hold " + r.lo.t.name + "'s course until the facts turn — and the moment they do, " + r.hi.t.name + "'s counsel takes command without a second meeting.",
+        ];
+        dissents.push({
+          between: [r.hi.t.name, r.lo.t.name],
+          tension: r.hi.t.name + " weighs toward " + r.ax.aName + " — " + pickSide(r.hi.t, r.ax.a) +
+            " " + r.lo.t.name + " counters from " + r.ax.bName + ": " + pickSide(r.lo.t, r.ax.b),
+          resolution: forms[hashCode(q + "|" + r.ax.key) % forms.length],
+        });
+      });
     }
-    var names = members.map(function (t) { return t.name; });
-    var nameStr = names.length > 1 ? names.slice(0, -1).join(", ") + " and " + names[names.length - 1] : names[0];
-    var topicKey = detectTopic(q);
-    var summary = "On this question, " + nameStr + " speak from very different lives yet converge on a common ground: " +
-      (topicKey ? "each treats " + topicKey + " not as a verdict on you but as material to work with. " : "each begins from what is within your power and builds outward. ") +
-      "Where they differ is emphasis — read each voice above for the tension worth keeping. The three imperatives below are the teachings from this council that bear most directly on your question.";
-    return { summary: summary, recs: recs };
+
+    // Risk register: doctrine entries whose reasoning names a failure mode.
+    var risks = [];
+    var riskScored = [];
+    members.forEach(function (t) {
+      (t.doctrine || []).forEach(function (d) {
+        var hay = (d.name + " " + d.reasoning).toLowerCase();
+        var rs = 0;
+        RISK_WORDS.forEach(function (w) { if (hay.indexOf(w) !== -1) rs += 2; });
+        rs += overlapCount(qStems, sigWords(d.reasoning));
+        if (rs > 1) riskScored.push({ t: t, d: d, score: rs + (hashCode(t.id + d.name) % 2) });
+      });
+    });
+    riskScored.sort(function (a, b) { return b.score - a.score; });
+    var riskMinds = {};
+    riskScored.forEach(function (r) {
+      if (risks.length >= 3 || riskMinds[r.t.id]) return;
+      riskMinds[r.t.id] = true;
+      risks.push({ risk: firstSentence(r.d.reasoning, 220), raisedBy: r.t.name, counsel: r.d.imperative });
+    });
+
+    // Directives: the five strongest teachings, one per mind, horizon-tagged.
+    var directives = [];
+    var dMinds = {}, dTitles = {};
+    var horizonOf = function (text) {
+      var lower = text.toLowerCase();
+      if (/\b(now|today|immediat|at once|this week|decide|act|stop|begin)\b/.test(lower)) return "at once";
+      if (/\b(habit|daily|always|character|life|every|practice|remain|keep)\b/.test(lower)) return "for life";
+      return "this season";
+    };
+    for (var di = 0; di < scored.length && directives.length < 5; di++) {
+      var sd = scored[di];
+      if (dMinds[sd.t.id] || dTitles[sd.p.title]) continue;
+      dMinds[sd.t.id] = dTitles[sd.p.title] = true;
+      directives.push({
+        imperative: sd.p.title.replace(/\.*$/, "") + ".",
+        reasoning: sd.p.text,
+        drawnFrom: sd.t.name,
+        horizon: horizonOf(sd.p.title + " " + sd.p.text),
+      });
+    }
+
+    // Minority opinion: the mind least aligned with the rest of the bench.
+    var minority = null;
+    if (members.length >= 3) {
+      var loneliest = null, lowest = Infinity;
+      members.forEach(function (t) {
+        var mine = sigWords(corpora[t.id]).slice(0, 400);
+        var kinship = 0;
+        members.forEach(function (o) {
+          if (o.id === t.id) return;
+          kinship += overlapCount(mine, sigWords(corpora[o.id]).slice(0, 400));
+        });
+        kinship = kinship / (members.length - 1);
+        if (kinship < lowest) { lowest = kinship; loneliest = t; }
+      });
+      if (loneliest) {
+        var mv = theme && (loneliest.wisdom || {})[theme]
+          ? firstSentence(loneliest.wisdom[theme], 240)
+          : firstSentence((loneliest.principles && loneliest.principles[0] ? loneliest.principles[0].text : loneliest.bio), 240);
+        minority = {
+          voice: loneliest.name,
+          position: loneliest.name + " signs the verdict but files a caution the bench should keep in view: " + mv,
+        };
+      }
+    }
+
+    // Conditions under which the council would reconvene.
+    var conditions = [];
+    if (dissents.length) {
+      conditions.push("Should events prove " + dissents[0].between[1] + " right — should " + dissents[0].between[0].split(" ")[0] + "'s pace outrun the ground gained — the weight of the bench shifts, and the cautious course governs.");
+    }
+    conditions.push("Act on the first directive, then return with what actually happened; a council re-reads its verdict in the light of consequences, never of moods.");
+    if (theme) conditions.push("If the question beneath this question is not " + theme + " but something you have not yet said aloud, the council asks you to bring that question instead.");
+
+    // Confidence: how unified the bench actually is.
+    var level, note;
+    if (!dissents.length && convergence.length >= 2) {
+      level = "unanimous";
+      note = "Every voice heard reaches the same ground by a different road.";
+    } else if (dissents.length <= 1) {
+      level = "strong consensus";
+      note = "The bench concurs on the essentials; one tension is preserved deliberately rather than resolved.";
+    } else {
+      level = "a divided bench";
+      note = "The council issues a verdict, but the divisions above are real — treat the directives as a sequence, not a chorus.";
+    }
+
+    // The verdict: composed from the actual material above.
+    var catKeys = {}, catList = [];
+    members.forEach(function (t) { if (!catKeys[t.category]) { catKeys[t.category] = 1; catList.push(categoryLabel(t.category).toLowerCase()); } });
+    var vparts = [];
+    vparts.push("A Supreme Council of " + members.length + (members.length > 1 ? " minds" : " mind") + ", drawn from " + listNames(catList) + ", was convened on this question and heard it as a matter of " + (themes.length ? listNames(themes) : "judgment under uncertainty") + ".");
+    if (convergence.length) {
+      vparts.push("On the essentials the bench is of one mind. " + firstSentence(convergence[0].point, 240) + (convergence[1] ? " And again, from another quarter: " + firstSentence(convergence[1].point, 200) : ""));
+    }
+    if (dissents.length) {
+      vparts.push("The bench divides once, and the division is worth keeping: " + firstSentence(dissents[0].tension, 260) + " " + dissents[0].resolution);
+    }
+    if (risks.length) {
+      vparts.push("Before any course is set, the council names the failure it fears most — " + risks[0].risk.replace(/\.$/, "") + " (" + risks[0].raisedBy + ") — and charges: " + risks[0].counsel);
+    }
+    if (directives.length) {
+      vparts.push("Weighing every voice, the council's judgment settles here: " + directives[0].imperative + " " + firstSentence(directives[0].reasoning, 220) + " The remaining directives follow in order of weight, each credited to the mind that carries it.");
+    }
+    vparts.push("So concludes the Supreme Council — " + members.length + (members.length > 1 ? " voices" : " voice") + " concurring" + (minority ? ", one caution filed" : "") + ".");
+
+    return {
+      preamble: 'The council heard the question — "' + firstSentence(q, 180) + '" — ' + kindVerb + ", and read it as a matter of " + (themes.length ? listNames(themes) : "judgment under uncertainty") + ".",
+      themes: themes,
+      convergence: convergence,
+      dissents: dissents,
+      risks: risks,
+      verdict: vparts.join("\n\n"),
+      directives: directives,
+      minority: minority,
+      conditions: conditions.slice(0, 3),
+      confidence: { level: level, note: note },
+    };
+  }
+
+  /* ── Consensus rendering & history ─────────────────────────── */
+
+  function consSection(doc, numeral, title) {
+    var sec = el("section", "cons-sec");
+    var head = el("h4");
+    head.appendChild(el("span", "cons-numeral", numeral));
+    head.appendChild(document.createTextNode(title));
+    sec.appendChild(head);
+    doc.appendChild(sec);
+    return sec;
+  }
+
+  function renderConsensus(c) {
+    var doc = $("consensusDoc");
+    doc.innerHTML = "";
+    var n = 0;
+    var next = function () { n++; return roman(n) + "."; };
+
+    var s1 = consSection(doc, next(), "The question as heard");
+    s1.appendChild(el("p", "cons-preamble", c.preamble || ""));
+    if (c.themes && c.themes.length) {
+      var chips = el("div", "cons-themes");
+      c.themes.forEach(function (t) { chips.appendChild(el("span", "cons-chip", t)); });
+      s1.appendChild(chips);
+    }
+
+    if (c.convergence && c.convergence.length) {
+      var s2 = consSection(doc, next(), "Where the council converges");
+      c.convergence.forEach(function (cv) {
+        var item = el("div", "cons-conv");
+        item.appendChild(el("p", null, cv.point));
+        if (cv.holders && cv.holders.length) item.appendChild(el("div", "cons-holders", "— held by " + listNames(cv.holders)));
+        s2.appendChild(item);
+      });
+    }
+
+    if (c.dissents && c.dissents.length) {
+      var s3 = consSection(doc, next(), "Where the council divides");
+      c.dissents.forEach(function (d) {
+        var item = el("div", "cons-dissent");
+        if (d.between && d.between.length === 2) item.appendChild(el("div", "cons-between", d.between[0] + "  ⚔  " + d.between[1]));
+        item.appendChild(el("p", null, d.tension));
+        if (d.resolution) item.appendChild(el("p", "cons-resolution", d.resolution));
+        s3.appendChild(item);
+      });
+    }
+
+    if (c.risks && c.risks.length) {
+      var s4 = consSection(doc, next(), "Risks the council names");
+      c.risks.forEach(function (r) {
+        var item = el("div", "cons-risk");
+        item.appendChild(el("p", null, r.risk));
+        item.appendChild(el("div", "cons-risk-counsel", r.counsel + (r.raisedBy ? "  — " + r.raisedBy : "")));
+        s4.appendChild(item);
+      });
+    }
+
+    var s5 = consSection(doc, next(), "The verdict of the Supreme Council");
+    s5.appendChild(el("div", "cons-verdict", c.verdict || ""));
+
+    if (c.directives && c.directives.length) {
+      var s6 = consSection(doc, next(), "Directives");
+      var ol = el("ol", "recs cons-directives");
+      c.directives.forEach(function (d) {
+        var li = el("li");
+        var box = el("div");
+        var b = el("b", null, d.imperative);
+        if (d.horizon) b.appendChild(el("i", "cons-horizon", d.horizon));
+        box.appendChild(b);
+        box.appendChild(el("span", null, d.reasoning));
+        if (d.drawnFrom) box.appendChild(el("i", "rec-from", "Drawn from " + d.drawnFrom));
+        li.appendChild(box);
+        ol.appendChild(li);
+      });
+      s6.appendChild(ol);
+    }
+
+    if (c.minority && c.minority.voice) {
+      var s7 = consSection(doc, next(), "The minority opinion");
+      var mi = el("div", "cons-minority");
+      mi.appendChild(el("p", null, c.minority.position));
+      s7.appendChild(mi);
+    }
+
+    if (c.conditions && c.conditions.length) {
+      var s8 = consSection(doc, next(), "Conditions to reconvene");
+      var ul = el("ul", "cons-conditions");
+      c.conditions.forEach(function (cond) { ul.appendChild(el("li", null, cond)); });
+      s8.appendChild(ul);
+    }
+
+    if (c.confidence && c.confidence.level) {
+      var meta = el("div", "cons-meta");
+      meta.appendChild(el("span", "cons-level", c.confidence.level));
+      meta.appendChild(el("span", null, c.confidence.note || ""));
+      doc.appendChild(meta);
+    }
+  }
+
+  // After the consensus is drafted, each voice card carries the member's vote.
+  function tagVotes(c) {
+    document.querySelectorAll("#councilAnswers .voice-card").forEach(function (card) {
+      var nameNode = card.querySelector(".voice-name");
+      if (!nameNode) return;
+      var old = nameNode.querySelector(".vote-tag");
+      if (old) old.remove();
+      var name = nameNode.textContent.trim();
+      var vote = "concurs";
+      if (c.minority && c.minority.voice === name) vote = "dissents in part";
+      else if ((c.dissents || []).some(function (d) { return (d.between || []).indexOf(name) !== -1; })) vote = "concurs with caution";
+      nameNode.appendChild(el("span", "vote-tag" + (vote === "concurs" ? "" : " vote-caution"), vote));
+    });
+  }
+
+  function renderCouncilHistory() {
+    var wrap = $("councilHistoryWrap");
+    var list = $("councilHistory");
+    var hist = load(LS.history, []);
+    wrap.hidden = hist.length === 0;
+    list.innerHTML = "";
+    hist.slice(0, 5).forEach(function (r, i) {
+      var row = el("div", "hist-row");
+      var open = el("button", "hist-open");
+      open.type = "button";
+      open.appendChild(el("span", "hist-q", r.question.length > 90 ? r.question.slice(0, 89) + "…" : r.question));
+      var when = "";
+      try { when = new Date(r.when).toLocaleDateString(undefined, { month: "short", day: "numeric" }); } catch (e) { /* ignore */ }
+      open.appendChild(el("span", "hist-sub", (r.answers || []).length + " minds · " + (r.engine === "claude" ? "Claude AI" : "wisdom engine") + (when ? " · " + when : "")));
+      open.addEventListener("click", function () { showSavedReport(r); });
+      row.appendChild(open);
+      var del = el("button", "hist-del", "✕");
+      del.type = "button";
+      del.setAttribute("aria-label", "Forget this consensus");
+      del.addEventListener("click", function () {
+        var h = load(LS.history, []);
+        h.splice(i, 1);
+        save(LS.history, h);
+        renderCouncilHistory();
+      });
+      row.appendChild(del);
+      list.appendChild(row);
+    });
+  }
+
+  function showSavedReport(r) {
+    $("councilSetup").hidden = true;
+    $("councilReport").hidden = false;
+    $("councilReportQ").textContent = r.question;
+    var when = "";
+    try { when = new Date(r.when).toLocaleString(); } catch (e) { /* ignore */ }
+    $("councilStatus").textContent = "Recalled" + (when ? " from " + when : "") + " · " + (r.engine === "claude" ? "Claude AI" : "wisdom engine");
+    var answers = $("councilAnswers");
+    answers.innerHTML = "";
+    (r.answers || []).forEach(function (a) {
+      var t = findMind(a.id);
+      var card = el("div", "voice-card");
+      if (t) card.setAttribute("data-cat", t.category);
+      var med = el("div");
+      paintMedallion(med, t || { name: a.name, monogram: (a.name || "?").split(/\s+/).map(function (w) { return w[0]; }).join("").slice(0, 2).toUpperCase(), palette: { a: "#155e75", b: "#2dd4bf" } }, "medallion-md");
+      card.appendChild(med);
+      var body = el("div", "voice-body");
+      body.appendChild(el("div", "voice-name", a.name));
+      body.appendChild(el("div", "voice-epithet", t ? (t.epithet || "") : ""));
+      body.appendChild(el("div", "voice-text", a.text));
+      card.appendChild(body);
+      answers.appendChild(card);
+    });
+    if (r.consensus) {
+      renderConsensus(r.consensus);
+      tagVotes(r.consensus);
+      $("councilProvenance").textContent = r.engine === "claude"
+        ? "Deliberated and drafted by Claude from the " + (r.answers || []).length + " voices above."
+        : "Composed on-device from the assembled minds' own teachings.";
+      $("councilConsolidated").hidden = false;
+    } else {
+      $("councilConsolidated").hidden = true;
+    }
+    save("freemasonry-circle.council.last", r);
+    $("councilCopy").hidden = false;
+    $("councilScroll").scrollTop = 0;
   }
 
   /* Claude council: optional research pass → parallel expert calls → structured synthesis. */
@@ -1083,7 +1588,7 @@
       .join("");
   }
 
-  function runClaudeCouncil(q, members, cards, report, showConsolidated, finishAll) {
+  function runClaudeCouncil(q, members, cards, report, showConsensus, finishAll) {
     var model = settings.model || "claude-opus-5";
     var doResearch = $("councilResearch").checked;
     var brief = "";
@@ -1155,43 +1660,80 @@
         // Throw so the terminal catch handles it and finishAll never declares success.
         throw new Error("no answers could be gathered — check your API key or try the offline engine");
       }
-      setStatus("Consolidating the council's counsel…");
+      setStatus("The council withdraws to draft its consensus…");
+      var strArr = { type: "array", items: { type: "string" } };
       var schema = {
         type: "object", additionalProperties: false,
-        required: ["consolidated", "recommendations"],
+        required: ["preamble", "themes", "convergence", "dissents", "risks", "verdict", "directives", "minority", "conditions", "confidence"],
         properties: {
-          consolidated: { type: "string", description: "Consolidated view: where the council converges, where it split, and the overall reading. 150-250 words." },
-          recommendations: {
-            type: "array",
+          preamble: { type: "string", description: "The question as the council understood it, restated with its real stakes surfaced. 2-4 sentences." },
+          themes: { type: "array", items: { type: "string" }, description: "1-3 single-word themes the question turns on (e.g. fear, ambition, leadership)." },
+          convergence: {
+            type: "array", description: "3-5 points where the voices genuinely align. Each point is a substantive claim (2-3 sentences), not a platitude, and names its holders.",
             items: {
-              type: "object", additionalProperties: false,
-              required: ["imperative", "reasoning", "drawnFrom"],
+              type: "object", additionalProperties: false, required: ["point", "holders"],
+              properties: { point: { type: "string" }, holders: strArr },
+            },
+          },
+          dissents: {
+            type: "array", description: "0-3 REAL tensions between named members — only where their answers actually pull in different directions. Quote or closely paraphrase each side.",
+            items: {
+              type: "object", additionalProperties: false, required: ["between", "tension", "resolution"],
               properties: {
-                imperative: { type: "string", description: "Short bold command, e.g. 'Decide by irreversibility.'" },
-                reasoning: { type: "string", description: "2-3 sentences: the observation and its consequence for the asker." },
-                drawnFrom: { type: "string", description: "Which council voices this draws on, e.g. 'Marcus Aurelius and Charlie Munger'" },
+                between: { type: "array", items: { type: "string" }, description: "Exactly two member names." },
+                tension: { type: "string", description: "Both sides stated fairly, 2-4 sentences." },
+                resolution: { type: "string", description: "How the council holds both truths — a synthesis, a sequencing, or a boundary." },
               },
             },
-            description: "Exactly 3 recommendations, in priority order.",
+          },
+          risks: {
+            type: "array", description: "2-4 failure modes the council names for the asker's situation, each credited to the voice that raised or best embodies it.",
+            items: {
+              type: "object", additionalProperties: false, required: ["risk", "raisedBy", "counsel"],
+              properties: { risk: { type: "string" }, raisedBy: { type: "string" }, counsel: { type: "string", description: "One imperative sentence." } },
+            },
+          },
+          verdict: { type: "string", description: "The consensus of the Supreme Council: a deep, unified judgment of 250-400 words that weighs every voice, acknowledges the dissents, and lands on a clear conclusion. Written as the council speaking with one measured voice. Separate paragraphs with blank lines." },
+          directives: {
+            type: "array", description: "5-7 directives in priority order — the council's orders to the asker.",
+            items: {
+              type: "object", additionalProperties: false, required: ["imperative", "reasoning", "drawnFrom", "horizon"],
+              properties: {
+                imperative: { type: "string", description: "Short bold command, e.g. 'Decide by irreversibility.'" },
+                reasoning: { type: "string", description: "2-3 sentences: observation, consequence, application to the asker." },
+                drawnFrom: { type: "string", description: "The member voice(s) this draws on." },
+                horizon: { type: "string", enum: ["at once", "this season", "for life"] },
+              },
+            },
+          },
+          minority: {
+            type: "object", additionalProperties: false, required: ["voice", "position"],
+            description: "If one member fundamentally departs from the verdict, record it. Otherwise set voice to an empty string.",
+            properties: { voice: { type: "string" }, position: { type: "string" } },
+          },
+          conditions: { type: "array", items: { type: "string" }, description: "2-3 conditions under which the council would reverse or revisit this verdict." },
+          confidence: {
+            type: "object", additionalProperties: false, required: ["level", "note"],
+            properties: { level: { type: "string", enum: ["unanimous", "strong consensus", "a divided bench"] }, note: { type: "string" } },
           },
         },
       };
       var transcript = report.answers.map(function (a) { return "── " + a.name + " ──\n" + a.text; }).join("\n\n");
       return apiCall({
-        model: model, max_tokens: 2500,
-        system: "You are the recorder of a council of great minds. Consolidate their individual answers faithfully — first principles method: for each recommendation state one imperative, then the observation and consequence that justify it, crediting the voices it draws from. Do not invent positions no member expressed.",
-        messages: [{ role: "user", content: "The question:\n\n" + q + (brief ? "\n\nResearch brief the council received:\n\n" + brief : "") + "\n\nThe council's answers:\n\n" + transcript + "\n\nProduce the consolidated view and exactly three recommendations." }],
+        model: model, max_tokens: 9000,
+        system: "You are the Recorder of the Supreme Council — a council of history's great minds convened on one question. From their individual counsel you draft the council's formal consensus. Rules: work only from positions the members actually expressed in their answers (you may sharpen, never invent); name members exactly as given; surface genuine convergence and genuine tension rather than forcing false harmony; make the verdict specific to the asker's situation, not generic wisdom; keep every member's voice recognizable in what you credit to them. The result should read like the finding of a real deliberative body: grave, precise, useful.",
+        messages: [{ role: "user", content: "The question before the Supreme Council:\n\n" + q + (brief ? "\n\nResearch brief the council received:\n\n" + brief : "") + "\n\nThe members' individual counsel:\n\n" + transcript + "\n\nDraft the Consensus of the Supreme Council." }],
         output_config: { format: { type: "json_schema", schema: schema } },
       }).then(function (r) {
         var parsed;
-        try { parsed = JSON.parse(textOf(r)); } catch (e) { throw new Error("could not parse synthesis"); }
-        showConsolidated(parsed.consolidated, (parsed.recommendations || []).slice(0, 3));
+        try { parsed = JSON.parse(textOf(r)); } catch (e) { throw new Error("could not parse the consensus draft"); }
+        if (parsed.minority && !parsed.minority.voice) parsed.minority = null;
+        showConsensus(parsed);
       }).catch(function (e) {
         if (/no answers could be gathered/.test(String(e.message))) throw e;
-        // Fall back to the mechanical synthesis rather than losing the session.
-        var syn = offlineSynthesis(q, members);
-        showConsolidated(syn.summary, syn.recs);
-        toast("AI synthesis failed (" + e.message + ") — showing teaching-based synthesis.");
+        // Fall back to the on-device synthesis rather than losing the session.
+        showConsensus(buildOfflineConsensus(q, members));
+        toast("AI consensus failed (" + e.message + ") — showing the on-device consensus instead.");
       });
     };
 
@@ -1211,14 +1753,44 @@
   function copyCouncilReport() {
     var r = load("freemasonry-circle.council.last", null);
     if (!r) return;
-    var md = "# Council report — RAWFOTRA v6.4\n\n**Question:** " + r.question + "\n\n" +
-      r.answers.map(function (a) { return "## " + a.name + "\n\n" + a.text; }).join("\n\n") +
-      "\n\n## Consolidated counsel\n\n" + r.summary + "\n\n### Three recommendations\n\n" +
-      r.recommendations.map(function (rec, i) {
-        return (i + 1) + ". **" + rec.imperative + "** " + rec.reasoning + (rec.drawnFrom ? " _(drawn from " + rec.drawnFrom + ")_" : "");
-      }).join("\n");
+    var md = "# Consensus of the Supreme Council — RAWFOTRA v6.5\n\n**Question:** " + r.question + "\n\n" +
+      (r.answers || []).map(function (a) { return "## " + a.name + "\n\n" + a.text; }).join("\n\n");
+    var c = r.consensus;
+    if (c) {
+      md += "\n\n---\n\n# The Consensus\n\n" + (c.preamble || "");
+      if (c.convergence && c.convergence.length) {
+        md += "\n\n## Where the council converges\n\n" + c.convergence.map(function (cv) {
+          return "- " + cv.point + (cv.holders && cv.holders.length ? " _(held by " + listNames(cv.holders) + ")_" : "");
+        }).join("\n");
+      }
+      if (c.dissents && c.dissents.length) {
+        md += "\n\n## Where the council divides\n\n" + c.dissents.map(function (d) {
+          return "**" + (d.between || []).join(" vs ") + "** — " + d.tension + (d.resolution ? "\n\n_Resolution:_ " + d.resolution : "");
+        }).join("\n\n");
+      }
+      if (c.risks && c.risks.length) {
+        md += "\n\n## Risks the council names\n\n" + c.risks.map(function (k) {
+          return "- " + k.risk + " — **" + k.counsel + "** _(" + k.raisedBy + ")_";
+        }).join("\n");
+      }
+      md += "\n\n## The verdict of the Supreme Council\n\n" + (c.verdict || "");
+      if (c.directives && c.directives.length) {
+        md += "\n\n## Directives\n\n" + c.directives.map(function (d, i) {
+          return (i + 1) + ". **" + d.imperative + "**" + (d.horizon ? " _[" + d.horizon + "]_" : "") + " " + d.reasoning + (d.drawnFrom ? " _(drawn from " + d.drawnFrom + ")_" : "");
+        }).join("\n");
+      }
+      if (c.minority && c.minority.voice) md += "\n\n## Minority opinion\n\n" + c.minority.position;
+      if (c.conditions && c.conditions.length) md += "\n\n## Conditions to reconvene\n\n" + c.conditions.map(function (x) { return "- " + x; }).join("\n");
+      if (c.confidence && c.confidence.level) md += "\n\n**Confidence:** " + c.confidence.level + " — " + (c.confidence.note || "");
+    } else if (r.summary) {
+      // Report saved by an earlier version of the app.
+      md += "\n\n## Consolidated counsel\n\n" + r.summary + "\n\n### Recommendations\n\n" +
+        (r.recommendations || []).map(function (rec, i) {
+          return (i + 1) + ". **" + rec.imperative + "** " + rec.reasoning + (rec.drawnFrom ? " _(drawn from " + rec.drawnFrom + ")_" : "");
+        }).join("\n");
+    }
     (navigator.clipboard ? navigator.clipboard.writeText(md) : Promise.reject())
-      .then(function () { toast("Report copied as Markdown."); })
+      .then(function () { toast("Consensus copied as Markdown."); })
       .catch(function () { toast("Could not copy — clipboard unavailable."); });
   }
 
@@ -1654,6 +2226,7 @@
       if (councilBusy) { toast("The council is still deliberating."); return; }
       $("councilReport").hidden = true;
       $("councilSetup").hidden = false;
+      renderCouncilHistory();
       $("councilScroll").scrollTop = 0;
     });
     $("profileCouncilBtn").addEventListener("click", function () {

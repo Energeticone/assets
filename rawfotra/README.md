@@ -1,11 +1,13 @@
-# 🏛️ RAWFOTRA v6.4 — a Magnetic Glass Initiative
+# 🏛️ RAWFOTRA v6.5 — a Magnetic Glass Initiative
 
 Counsel from history's greatest minds.
 
 A self-contained counsel experience: browse **66 legendary minds — historic and living** — philosophers, strategists,
-scientists, artists, writers — chat 1-on-1 with any of them, or **convene a council**:
-ask one question, choose up to ten experts, and receive each expert's considered
-answer plus a **consolidated view with three recommendations**. Built so the roster is
+scientists, artists, writers — chat 1-on-1 with any of them, or **convene your Supreme Council**:
+ask one question, seat up to thirteen minds, and receive each voice's considered
+answer plus the **Consensus of the Supreme Council** — a deep, sectioned ruling with
+convergence, dissents, risks, verdict, directives, a minority opinion and the
+conditions to reconvene. Built so the roster is
 pure data: adding a **modern-day expert** is a form in the app or a few lines of JSON.
 
 ## Features
@@ -16,16 +18,21 @@ pure data: adding a **modern-day expert** is a form in the app or a few lines of
   gradient medallion, epithet, and era.
 - **Rich profiles** — biography, five core teachings, distilled **first principles**
   (see *The doctrine layer* below), notable works, and starter questions.
-- **The Council** ⚖ — the centerpiece. Ask one question, seat up to **10 minds**, and:
+- **The Supreme Council** ⚖ — the centerpiece. Ask one question, seat up to **13 minds**, and:
   1. *(optional, Claude engine)* a **deep research pass** runs live web research on
      the question and briefs every council member;
-  2. each expert deliberates **individually** — reasoning as if they were alive
-     today, from their own documented principles and lived experience;
-  3. a synthesis pass produces a **consolidated view** (where the council converges
-     and where it splits) and **exactly three recommendations**, each stated first-principles
-     style: a bold imperative, the observation and consequence behind it, and the
-     council voices it draws from.
-  The report can be copied out as Markdown.
+  2. each mind deliberates **individually** — reasoning as if they were alive
+     today, from their own documented principles and lived experience — and each
+     voice card carries the member's **vote** (concurs / concurs with caution /
+     dissents in part);
+  3. a synthesis pass drafts the **Consensus of the Supreme Council** — a formal,
+     sectioned ruling: the question as heard (with detected themes), points of
+     convergence (credited to their holders), genuine dissents with a resolution,
+     a risk register, a 200–400-word verdict, five to seven horizon-tagged
+     directives, a minority opinion, conditions to reconvene, and a confidence
+     seal (unanimous / strong consensus / a divided bench).
+  Past consensus reports are kept on this device (last 10) and can be reopened
+  from the setup screen; every report copies out as Markdown.
 - **1-on-1 chat, two engines:**
   - **Built-in wisdom engine** (default, offline, zero setup) — replies composed from
     each mind's curated, in-voice wisdom bank: ten themes matched to your message by
@@ -164,8 +171,12 @@ To add a category, append `{ key, label }` to the `categories` array in the same
 **Wisdom engine** (`app.js`): scores your message against per-theme keyword lists,
 returns the mind's curated paragraph for the best-matching theme, and otherwise
 improvises around one of their principles (rotating by a message hash). The offline
-council picks each member's most relevant teachings and selects the three
-question-relevant imperatives across the council.
+Supreme Council goes further: it decomposes the question into themes, clusters
+members' principles into convergence points (rare-stem weighted), scores every
+member along four tension axes (tempo, self/institution, principle/consequence,
+risk) to surface genuine dissents, mines doctrine for a risk register, composes a
+verdict from the assembled material, and issues horizon-tagged directives — all
+deterministic for a given question and bench, all traceable to member corpora.
 
 **Claude engine** (`app.js`): builds a system prompt from the mind's data (identity,
 era, bio, teachings, voice, mentoring guidelines) and calls
@@ -173,8 +184,11 @@ era, bio, teachings, voice, mentoring guidelines) and calls
 `anthropic-dangerous-direct-browser-access` header. 1-on-1 chat streams tokens into
 the reply bubble. The Council additionally: runs the optional research pass with the
 `web_search` server tool, fans out one deliberation call per member (three at a
-time), and finishes with a synthesis call using a structured-output JSON schema so
-the three recommendations always parse.
+time), and finishes with a synthesis call using a deep structured-output JSON schema
+(preamble, convergence, dissents, risks, verdict, directives, minority opinion,
+conditions, confidence) so the Consensus of the Supreme Council always parses;
+any failure falls back to the on-device consensus engine so a full document is
+always delivered.
 
 ## Deployment
 

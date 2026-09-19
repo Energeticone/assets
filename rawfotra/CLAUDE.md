@@ -4,6 +4,17 @@ App root: `rawfotra/`
 Live: https://rawfotra.vercel.app
 Pantheon file: `rawfotra/data/freemasonry-circle.js` (`window.FREEMASONRY_CIRCLE_DATA`)
 
+## Supreme Council consensus (v6.5)
+
+The Council view produces the "Consensus of the Supreme Council": a sectioned
+ruling (preamble/themes, convergence, dissents, risks, verdict, directives,
+minority, conditions, confidence). Both engines fill the SAME report shape —
+`buildOfflineConsensus()` on-device, or the structured-output synthesis in
+`runClaudeCouncil()` with the offline builder as its fallback. New sections or
+engines must keep filling that shape; `renderConsensus()` and the Markdown
+export consume only the report object. History: last 10 reports in
+`localStorage` key `freemasonry-circle.council.history`.
+
 ## Locked built-in seats (v6.4)
 
 These 13 are permanent members of `rawfotra/data/freemasonry-circle.js`.
