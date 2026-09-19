@@ -37,13 +37,20 @@ jobs:
           # Enable Pages (with GitHub Actions as the source) if not already on
           enablement: true
 
+      - name: Build RAWFOTRA (minified)
+        # The Pages site serves only the mangled build output, never the source.
+        run: |
+          cd rawfotra
+          npm install --no-audit --no-fund
+          npm run build
+
       - name: Assemble site
         # TravelNow keeps the site root (existing URLs unchanged);
-        # RAWFOTRA x1 is served under /rawfotra/, TipClip's web prototype under /tipclip/
+        # RAWFOTRA v6.4 (built) is served under /rawfotra/, TipClip's web prototype under /tipclip/
         run: |
           mkdir -p _site
           cp -r travelnow/. _site/
-          cp -r rawfotra _site/rawfotra
+          cp -r rawfotra/dist _site/rawfotra
           cp -r tipclip/public _site/tipclip
           touch _site/.nojekyll
 
