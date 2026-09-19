@@ -1,17 +1,50 @@
-/* The Titans — explore, profiles, chat (offline wisdom engine + Claude API), custom experts. */
+/* The Freemasonry Circle — explore, profiles, chat (offline wisdom engine + Claude API), custom experts. */
 (function () {
   "use strict";
+
+  // One-time storage migration from the retired key prefix (assembled so the
+  // old product name appears nowhere in this codebase). Copies every legacy
+  // entry to the freemasonry-circle.* keys, rewrites the stored chat role to
+  // "mentor", then removes the originals. No-ops once migrated.
+  (function migrateStorage() {
+    try {
+      var OLD = ["ti", "tans", "."].join("");
+      var NEW = "freemasonry-circle.";
+      var legacy = [];
+      for (var i = 0; i < localStorage.length; i++) {
+        var k = localStorage.key(i);
+        if (k && k.indexOf(OLD) === 0) legacy.push(k);
+      }
+      legacy.forEach(function (k) {
+        var nk = NEW + k.slice(OLD.length);
+        if (localStorage.getItem(nk) === null) {
+          var v = localStorage.getItem(k);
+          if (v && k.indexOf(OLD + "chat.") === 0) {
+            v = v.split('"role":"' + OLD.slice(0, -2) + '"').join('"role":"mentor"');
+          }
+          localStorage.setItem(nk, v);
+        }
+        localStorage.removeItem(k);
+      });
+      var adminOld = OLD + "adminOk";
+      var admin = sessionStorage.getItem(adminOld);
+      if (admin !== null) {
+        sessionStorage.setItem(NEW + "adminOk", admin);
+        sessionStorage.removeItem(adminOld);
+      }
+    } catch (e) { /* storage unavailable — nothing to migrate */ }
+  })();
 
   /* ── Constants ─────────────────────────────────────────────── */
 
   var LS = {
-    settings: "titans.settings",
-    experts: "titans.customExperts",
-    memory: "titans.memory",
-    chat: function (id) { return "titans.chat." + id; },
+    settings: "freemasonry-circle.settings",
+    experts: "freemasonry-circle.customExperts",
+    memory: "freemasonry-circle.memory",
+    chat: function (id) { return "freemasonry-circle.chat." + id; },
   };
 
-  // Global topic keywords for the offline wisdom engine. Each titan's data
+  // Global topic keywords for the offline wisdom engine. Each mentor's data
   // provides one in-voice reply per topic key.
   var TOPICS = [
     { key: "adversity", words: ["adversity", "hardship", "struggle", "suffering", "pain", "difficult", "hard time", "tough", "crisis", "loss", "grief", "sick", "illness", "setback", "obstacle", "unfair", "stuck"] },
@@ -36,22 +69,22 @@
 
   /* ── State ─────────────────────────────────────────────────── */
 
-  var base = window.TITANS_DATA || { titans: [], categories: [] };
+  var base = window.FREEMASONRY_CIRCLE_DATA || { minds: [], categories: [] };
   var settings = load(LS.settings, { engine: "wisdom", apiKey: "", model: "claude-opus-5" });
   var customExperts = load(LS.experts, []);
   var activeCategory = "all";
   var searchQuery = "";
-  var currentTitan = null;     // titan open in profile modal
-  var chatTitan = null;        // titan open in chat
+  var currentMind = null;     // mentor open in profile modal
+  var chatMind = null;        // mentor open in chat
   var editingId = null;        // expert being edited
-  var pendingReplies = {};     // titan id -> reply in flight
-  var chatGen = {};            // titan id -> generation, bumped on Clear to drop late replies
+  var pendingReplies = {};     // mentor id -> reply in flight
+  var chatGen = {};            // mentor id -> generation, bumped on Clear to drop late replies
   var expertDirty = false;     // unsaved edits in the expert form
   var lastFocus = null;        // element to restore focus to when a modal closes
 
-  function allTitans() { return base.titans.concat(customExperts); }
-  function findTitan(id) {
-    for (var i = 0, list = allTitans(); i < list.length; i++) if (list[i].id === id) return list[i];
+  function allMinds() { return base.members.concat(customExperts); }
+  function findMind(id) {
+    for (var i = 0, list = allMinds(); i < list.length; i++) if (list[i].id === id) return list[i];
     return null;
   }
   function isCustom(id) { return customExperts.some(function (e) { return e.id === id; }); }
@@ -114,13 +147,13 @@
     clearTimeout(toast._timer);
     toast._timer = setTimeout(function () { t.hidden = true; }, 2600);
   }
-  function paintMedallion(node, titan, sizeCls) {
+  function paintMedallion(node, mentor, sizeCls) {
     node.className = "medallion " + sizeCls;
-    node.textContent = titan.monogram || (titan.name || "?").slice(0, 1).toUpperCase();
+    node.textContent = mentor.monogram || (mentor.name || "?").slice(0, 1).toUpperCase();
     // Only hex colors reach CSS — anything else (e.g. url() from an imported file) is discarded.
     var ok = function (c) { return (typeof c === "string" && /^#[0-9a-fA-F]{3,8}$/.test(c)) ? c : null; };
-    var a = ok(titan.palette && titan.palette.a) || "#155e75";
-    var b = ok(titan.palette && titan.palette.b) || "#2dd4bf";
+    var a = ok(mentor.palette && mentor.palette.a) || "#155e75";
+    var b = ok(mentor.palette && mentor.palette.b) || "#2dd4bf";
     node.style.background = "linear-gradient(145deg, " + a + ", " + b + ")";
   }
 
@@ -149,12 +182,12 @@
     save(LS.memory, mem);
   }
 
-  // Record a question asked of a mentor (or of the council, titanId = null).
-  function recordQuery(titanId, text) {
+  // Record a question asked of a mentor (or of the council, mindId = null).
+  function recordQuery(mindId, text) {
     if (!memoryOn() || !text) return;
     var mem = memLoad();
     mem.queries = mem.queries || [];
-    mem.queries.push({ q: text.slice(0, 300), t: titanId, topic: detectTopic(text), ts: Date.now() });
+    mem.queries.push({ q: text.slice(0, 300), t: mindId, topic: detectTopic(text), ts: Date.now() });
     memSave(mem);
   }
 
@@ -167,16 +200,16 @@
     memSave(mem);
   }
 
-  function markServed(titanId, topic) {
+  function markServed(mindId, topic) {
     if (!memoryOn()) return;
     var mem = memLoad();
     mem.served = mem.served || {};
-    mem.served[titanId + "|" + topic] = (mem.served[titanId + "|" + topic] || 0) + 1;
+    mem.served[mindId + "|" + topic] = (mem.served[mindId + "|" + topic] || 0) + 1;
     memSave(mem);
   }
-  function timesServed(titanId, topic) {
+  function timesServed(mindId, topic) {
     if (!memoryOn()) return 0;
-    return (memLoad().served || {})[titanId + "|" + topic] || 0;
+    return (memLoad().served || {})[mindId + "|" + topic] || 0;
   }
 
   function topTopics(mem, n) {
@@ -234,11 +267,11 @@
   function renderChips() {
     var wrap = $("categoryChips");
     wrap.innerHTML = "";
-    var titans = allTitans();
+    var minds = allMinds();
     // Self-heal a filter whose chip no longer exists (last custom expert deleted, etc.).
     var valid = activeCategory === "all" ||
       (activeCategory === "__custom" && customExperts.length > 0) ||
-      titans.some(function (t) { return t.category === activeCategory; });
+      minds.some(function (t) { return t.category === activeCategory; });
     if (!valid) activeCategory = "all";
     var mk = function (key, label, count) {
       var chip = el("button", "chip" + (activeCategory === key ? " active" : ""));
@@ -253,15 +286,15 @@
       });
       wrap.appendChild(chip);
     };
-    mk("all", "All", titans.length);
+    mk("all", "All", minds.length);
     var chipNo = 0;
     categories().forEach(function (c) {
-      var count = titans.filter(function (t) { return t.category === c.key; }).length;
+      var count = minds.filter(function (t) { return t.category === c.key; }).length;
       if (count > 0) { chipNo++; mk(c.key, roman(chipNo) + ". " + c.label, count); }
     });
     if (customExperts.length > 0) { chipNo++; mk("__custom", roman(chipNo) + ". Yours", customExperts.length); }
     var hi = $("heroIndex");
-    if (hi) hi.textContent = "Indexing " + titans.length + " minds — " + chipNo + " categories";
+    if (hi) hi.textContent = "Indexing " + minds.length + " minds — " + chipNo + " categories";
   }
 
   function matchesSearch(t, q) {
@@ -270,9 +303,9 @@
     return q.split(/\s+/).every(function (word) { return hay.indexOf(word) !== -1; });
   }
 
-  function visibleTitans() {
+  function visibleMinds() {
     var q = searchQuery.trim().toLowerCase();
-    return allTitans().filter(function (t) {
+    return allMinds().filter(function (t) {
       if (activeCategory === "__custom" && !isCustom(t.id)) return false;
       if (activeCategory !== "all" && activeCategory !== "__custom" && t.category !== activeCategory) return false;
       return matchesSearch(t, q);
@@ -280,12 +313,12 @@
   }
 
   function renderGrid() {
-    var grid = $("titanGrid");
+    var grid = $("mindGrid");
     grid.innerHTML = "";
-    var list = visibleTitans();
+    var list = visibleMinds();
     $("emptyState").hidden = list.length > 0;
     list.forEach(function (t, i) {
-      var card = el("button", "titan-card reveal");
+      var card = el("button", "mind-card reveal");
       card.setAttribute("aria-label", "Open " + t.name);
       card.setAttribute("data-cat", t.category);
       card.appendChild(el("span", "tc-num", ("00" + (i + 1)).slice(-3)));
@@ -312,11 +345,11 @@
   }
 
   function renderDaily() {
-    var titans = base.titans;
-    if (!titans.length) { $("dailyWisdom").hidden = true; return; }
+    var minds = base.members;
+    if (!minds.length) { $("dailyWisdom").hidden = true; return; }
     var today = new Date();
     var seed = today.getFullYear() * 372 + (today.getMonth() + 1) * 31 + today.getDate();
-    var t = titans[seed % titans.length];
+    var t = minds[seed % minds.length];
     var ps = t.principles || [];
     var p = ps.length ? ps[seed % ps.length] : null;
     $("dailyWisdom").setAttribute("data-cat", t.category);
@@ -328,9 +361,9 @@
   /* ── Profile modal ─────────────────────────────────────────── */
 
   function openProfile(id) {
-    var t = findTitan(id);
+    var t = findMind(id);
     if (!t) return;
-    currentTitan = t;
+    currentMind = t;
     paintMedallion($("profileMedallion"), t, "medallion-lg");
     $("profileOverlay").querySelector(".modal").setAttribute("data-cat", t.category);
     $("profileCat").textContent = categoryLabel(t.category);
@@ -393,9 +426,9 @@
   function saveChat(id, history) { save(LS.chat(id), history); }
 
   function openChat(id, prefill) {
-    var t = findTitan(id);
+    var t = findMind(id);
     if (!t) return;
-    chatTitan = t;
+    chatMind = t;
     location.hash = "#/chat/" + encodeURIComponent(id);
     paintMedallion($("chatMedallion"), t, "medallion-sm");
     $("chatView").setAttribute("data-cat", t.category);
@@ -412,7 +445,7 @@
   }
 
   function closeChat() {
-    chatTitan = null;
+    chatMind = null;
     $("chatView").hidden = true;
     if (location.hash) history.replaceState(null, "", location.pathname + location.search);
   }
@@ -431,11 +464,11 @@
   function renderChatLog() {
     var log = $("chatLog");
     log.innerHTML = "";
-    if (!chatTitan) return;
-    var history = chatHistory(chatTitan.id);
-    if (history.length === 0 && chatTitan.greeting) {
-      history = [{ role: "titan", text: chatTitan.greeting }];
-      saveChat(chatTitan.id, history);
+    if (!chatMind) return;
+    var history = chatHistory(chatMind.id);
+    if (history.length === 0 && chatMind.greeting) {
+      history = [{ role: "mentor", text: chatMind.greeting }];
+      saveChat(chatMind.id, history);
     }
     history.forEach(function (m) { log.appendChild(msgNode(m.role, m.text)); });
     renderChatStarters(history);
@@ -446,8 +479,8 @@
     var wrap = $("chatStarters");
     wrap.innerHTML = "";
     var showStarters = history.filter(function (m) { return m.role === "user"; }).length === 0;
-    if (!showStarters || !chatTitan) return;
-    (chatTitan.starters || []).forEach(function (q) {
+    if (!showStarters || !chatMind) return;
+    (chatMind.starters || []).forEach(function (q) {
       var b = el("button", "starter", q);
       b.addEventListener("click", function () {
         $("chatInput").value = q;
@@ -467,14 +500,14 @@
   }
 
   function sendMessage() {
-    if (!chatTitan || pendingReplies[chatTitan.id]) return;
+    if (!chatMind || pendingReplies[chatMind.id]) return;
     var input = $("chatInput");
     var text = input.value.trim();
     if (!text) return;
     input.value = "";
     autoGrow(input);
 
-    var id = chatTitan.id;
+    var id = chatMind.id;
     var gen = chatGen[id] || 0;
     var history = chatHistory(id);
     history.push({ role: "user", text: text });
@@ -484,26 +517,26 @@
     scrollChat();
 
     pendingReplies[id] = true;
-    var bubble = msgNode("titan thinking", "");
+    var bubble = msgNode("mentor thinking", "");
     var dots = el("span", "dots");
     bubble.appendChild(dots);
     $("chatLog").appendChild(bubble);
     scrollChat();
 
-    // History-first completion: the reply always lands in the right titan's
+    // History-first completion: the reply always lands in the right mentor's
     // saved history, even if this chat was closed or another one opened
     // meanwhile; the DOM is only touched when the bubble is still live.
     var finish = function (replyText) {
       delete pendingReplies[id];
       if ((chatGen[id] || 0) !== gen) return; // conversation was cleared mid-flight
       var h = chatHistory(id);
-      h.push({ role: "titan", text: replyText });
+      h.push({ role: "mentor", text: replyText });
       saveChat(id, h);
       if (bubble.isConnected) {
         bubble.classList.remove("thinking");
         bubble.textContent = replyText;
         scrollChat();
-      } else if (chatTitan && chatTitan.id === id && !$("chatView").hidden) {
+      } else if (chatMind && chatMind.id === id && !$("chatView").hidden) {
         renderChatLog();
       }
     };
@@ -519,11 +552,11 @@
     recordQuery(id, text);
 
     if (settings.engine === "claude" && settings.apiKey) {
-      if (settings.insightOn) insightReply(chatTitan, history, bubble, finish, fail);
-      else claudeReply(chatTitan, history, bubble, finish, fail);
+      if (settings.insightOn) insightReply(chatMind, history, bubble, finish, fail);
+      else claudeReply(chatMind, history, bubble, finish, fail);
     } else {
       // Simulated contemplation delay keeps the offline engine feeling conversational.
-      var reply = wisdomReply(chatTitan, text, history);
+      var reply = wisdomReply(chatMind, text, history);
       setTimeout(function () { finish(reply); }, 500 + Math.random() * 700);
     }
   }
@@ -628,7 +661,7 @@
   function insightReply(t, history, bubble, finish, fail) {
     var messages = [];
     history
-      .filter(function (m) { return m.role === "user" || m.role === "titan"; })
+      .filter(function (m) { return m.role === "user" || m.role === "mentor"; })
       .slice(-24)
       .forEach(function (m) {
         var role = m.role === "user" ? "user" : "assistant";
@@ -671,7 +704,7 @@
     // reply otherwise leaves an unpaired user turn that poisons the thread).
     var messages = [];
     history
-      .filter(function (m) { return m.role === "user" || m.role === "titan"; })
+      .filter(function (m) { return m.role === "user" || m.role === "mentor"; })
       .slice(-24)
       .forEach(function (m) {
         var role = m.role === "user" ? "user" : "assistant";
@@ -764,7 +797,7 @@
   /* ── Council: one question, up to ten minds ────────────────── */
 
   var COUNCIL_MAX = 10;
-  var councilSel = [];        // selected titan ids, in pick order
+  var councilSel = [];        // selected mentor ids, in pick order
   var councilBusy = false;
 
   function usingClaude() { return settings.engine === "claude" && !!settings.apiKey; }
@@ -798,7 +831,7 @@
     var wrap = $("councilPicker");
     var filter = $("councilFilter").value.trim().toLowerCase();
     wrap.innerHTML = "";
-    allTitans().forEach(function (t) {
+    allMinds().forEach(function (t) {
       if (filter && !matchesSearch(t, filter)) return;
       var b = el("button", "pick" + (councilSel.indexOf(t.id) !== -1 ? " selected" : ""));
       b.type = "button";
@@ -827,7 +860,7 @@
     if (councilBusy) return;
     var q = $("councilQuestion").value.trim();
     if (!q) { toast("Write the question first."); $("councilQuestion").focus(); return; }
-    var members = councilSel.map(findTitan).filter(Boolean);
+    var members = councilSel.map(findMind).filter(Boolean);
     if (!members.length) { toast("Choose at least one mind for the council."); return; }
 
     councilBusy = true;
@@ -865,7 +898,7 @@
         ? "Deliberation complete."
         : "Composed offline from the council's curated teachings — add a Claude API key in Settings for deep AI deliberation.";
       $("councilCopy").hidden = false;
-      save("titans.council.last", report);
+      save("freemasonry-circle.council.last", report);
     };
     var showConsolidated = function (summary, recs) {
       report.summary = summary;
@@ -939,11 +972,11 @@
       });
     });
     scored.sort(function (a, b) { return b.score - a.score; });
-    var recs = [], usedTitans = {}, usedTitles = {};
+    var recs = [], usedMinds = {}, usedTitles = {};
     for (var i = 0; i < scored.length && recs.length < 3; i++) {
       var s = scored[i];
-      if (usedTitans[s.t.id] || usedTitles[s.p.title]) continue;
-      usedTitans[s.t.id] = usedTitles[s.p.title] = true;
+      if (usedMinds[s.t.id] || usedTitles[s.p.title]) continue;
+      usedMinds[s.t.id] = usedTitles[s.p.title] = true;
       recs.push({ imperative: s.p.title + ".", reasoning: s.p.text, drawnFrom: s.t.name });
     }
     var names = members.map(function (t) { return t.name; });
@@ -1112,7 +1145,7 @@
   }
 
   function copyCouncilReport() {
-    var r = load("titans.council.last", null);
+    var r = load("freemasonry-circle.council.last", null);
     if (!r) return;
     var md = "# Council report — RAWFOTRA v6.4\n\n**Question:** " + r.question + "\n\n" +
       r.answers.map(function (a) { return "## " + a.name + "\n\n" + a.text; }).join("\n\n") +
@@ -1141,7 +1174,7 @@
       if (c.exemplars && c.exemplars.length) {
         var ex = el("div", "codex-ex");
         c.exemplars.forEach(function (id) {
-          var t = findTitan(id);
+          var t = findMind(id);
           if (!t) return;
           var b = el("button", null, t.name);
           b.addEventListener("click", function () {
@@ -1163,7 +1196,7 @@
   var ADMIN_FALLBACK = 755144483; // hashCode digest, used only where Web Crypto is unavailable
 
   function adminUnlocked() {
-    try { return sessionStorage.getItem("titans.adminOk") === "1"; } catch (e) { return false; }
+    try { return sessionStorage.getItem("freemasonry-circle.adminOk") === "1"; } catch (e) { return false; }
   }
   function requireAdmin(next) {
     if (adminUnlocked()) { next(); return; }
@@ -1188,7 +1221,7 @@
     evt.preventDefault();
     checkAdminPassword($("adminPassword").value).then(function (ok) {
       if (ok) {
-        try { sessionStorage.setItem("titans.adminOk", "1"); } catch (e) { /* ignore */ }
+        try { sessionStorage.setItem("freemasonry-circle.adminOk", "1"); } catch (e) { /* ignore */ }
         closeOverlays();
         var next = requireAdmin._next;
         requireAdmin._next = null;
@@ -1313,7 +1346,7 @@
   function slugify(name) {
     var slug = name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "") || "expert";
     var unique = slug, i = 2;
-    while (findTitan(unique) && unique !== editingId) { unique = slug + "-" + i; i++; }
+    while (findMind(unique) && unique !== editingId) { unique = slug + "-" + i; i++; }
     return unique;
   }
 
@@ -1345,7 +1378,7 @@
     });
     var name = f.name.value.trim();
     var color = f.color.value || "#18b2a6";
-    var prev = editingId ? findTitan(editingId) : null;
+    var prev = editingId ? findMind(editingId) : null;
     var expert = {
       id: editingId || slugify(name),
       name: name,
@@ -1385,7 +1418,7 @@
   }
 
   function deleteExpert(id) {
-    var t = findTitan(id);
+    var t = findMind(id);
     if (!t || !isCustom(id)) return;
     if (!confirm("Remove " + t.name + " and their conversation history?")) return;
     customExperts = customExperts.filter(function (e) { return e.id !== id; });
@@ -1515,13 +1548,13 @@
   }
 
   function handleHash() {
-    var m = location.hash.match(/^#\/(chat|titan)\/(.+)$/);
+    var m = location.hash.match(/^#\/(chat|mind)\/(.+)$/);
     if (!m) { if (!$("chatView").hidden) closeChat(); return; }
     var id = decodeURIComponent(m[2]);
     if (m[1] === "chat") {
       // Ignore the echo of openChat's own hash write — re-opening would
       // rebuild the log and orphan an in-flight reply bubble.
-      if (chatTitan && chatTitan.id === id && !$("chatView").hidden) return;
+      if (chatMind && chatMind.id === id && !$("chatView").hidden) return;
       openChat(id);
     } else {
       openProfile(id);
@@ -1540,7 +1573,7 @@
       window.scrollTo({ top: 0, behavior: "smooth" });
     });
     $("surpriseBtn").addEventListener("click", function () {
-      var list = allTitans();
+      var list = allMinds();
       if (list.length) openProfile(list[Math.floor(Math.random() * list.length)].id);
     });
     $("settingsBtn").addEventListener("click", function () { requireAdmin(openSettings); });
@@ -1560,11 +1593,11 @@
       $("councilScroll").scrollTop = 0;
     });
     $("profileCouncilBtn").addEventListener("click", function () {
-      if (!currentTitan) return;
-      var id = currentTitan.id;
+      if (!currentMind) return;
+      var id = currentMind.id;
       closeOverlays();
       openCouncil(id);
-      toast(findTitan(id).name + " takes a council seat.");
+      toast(findMind(id).name + " takes a council seat.");
     });
     document.querySelectorAll("[data-open=add]").forEach(function (b) {
       b.addEventListener("click", function () { openExpertForm(null); });
@@ -1591,27 +1624,27 @@
 
     // Profile actions
     $("profileChatBtn").addEventListener("click", function () {
-      if (!currentTitan) return;
+      if (!currentMind) return;
       closeOverlays();
-      openChat(currentTitan.id);
+      openChat(currentMind.id);
     });
     $("profileEditBtn").addEventListener("click", function () {
-      if (!currentTitan) return;
+      if (!currentMind) return;
       closeOverlays();
-      openExpertForm(currentTitan);
+      openExpertForm(currentMind);
     });
     $("profileDeleteBtn").addEventListener("click", function () {
-      if (currentTitan) deleteExpert(currentTitan.id);
+      if (currentMind) deleteExpert(currentMind.id);
     });
 
     // Chat
     $("chatBack").addEventListener("click", closeChat);
     $("chatClear").addEventListener("click", function () {
-      if (!chatTitan) return;
+      if (!chatMind) return;
       // Bump the generation so an in-flight reply for this chat is dropped.
-      chatGen[chatTitan.id] = (chatGen[chatTitan.id] || 0) + 1;
-      delete pendingReplies[chatTitan.id];
-      try { localStorage.removeItem(LS.chat(chatTitan.id)); } catch (e) { /* ignore */ }
+      chatGen[chatMind.id] = (chatGen[chatMind.id] || 0) + 1;
+      delete pendingReplies[chatMind.id];
+      try { localStorage.removeItem(LS.chat(chatMind.id)); } catch (e) { /* ignore */ }
       renderChatLog();
     });
     $("chatForm").addEventListener("submit", function (e) {
@@ -1674,7 +1707,7 @@
     var observeAll = function () { document.querySelectorAll(".reveal:not(.in-view)").forEach(function (n) { io.observe(n); }); };
     observeAll();
     // Re-scan after grid re-renders (filter/search change new cards in).
-    var grid = $("titanGrid");
+    var grid = $("mindGrid");
     if (grid && "MutationObserver" in window) {
       new MutationObserver(observeAll).observe(grid, { childList: true });
     }

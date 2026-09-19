@@ -2,11 +2,11 @@
 
 App root: `rawfotra/`
 Live: https://rawfotra.vercel.app
-Pantheon file: `rawfotra/data/titans.js` (`window.TITANS_DATA`)
+Pantheon file: `rawfotra/data/freemasonry-circle.js` (`window.FREEMASONRY_CIRCLE_DATA`)
 
 ## Locked built-in seats (v6.4)
 
-These 13 are permanent members of `rawfotra/data/titans.js`.
+These 13 are permanent members of `rawfotra/data/freemasonry-circle.js`.
 Do not remove. Do not rename ids. Do not duplicate via Import / `customExperts`.
 Do not overwrite `kerry-adler` or `charlie-munger`.
 
@@ -28,18 +28,18 @@ Do not overwrite `kerry-adler` or `charlie-munger`.
 
 If asked to add an expert who matches one of these names, deepen the existing object — do not create a second id.
 If asked to reset the pantheon, keep these 13 and the original 53.
-Custom experts belong only in `localStorage` key `titans.customExperts` via the in-app form / Import. Built-in seats do not go there.
+Custom experts belong only in `localStorage` key `freemasonry-circle.customExperts` via the in-app form / Import. Built-in seats do not go there.
 
 ## How to add a *new* permanent seat later
 
 1. Research with the RAWFOTRA Council Member protocol (paraphrase only, 5 principles, 10 wisdom keys, failure signature, 3–5 doctrine).
-2. Append to `TITANS_DATA.titans` in `data/titans.js`.
+2. Append to `FREEMASONRY_CIRCLE_DATA.members` in `data/freemasonry-circle.js`.
 3. Add Codex exemplars only if the new mind teaches a first principle the Codex does not already carry.
 4. Bump the public count and `sw.js` cache name.
 5. Add the id to this table.
 
 ## House rules
 
-- Original paraphrase. No verbatim quotations in titan objects.
+- Original paraphrase. No verbatim quotations in member objects.
 - Category keys only: philosophy, strategy, leadership, science, innovation, art, literature, spirit, modern.
 - Wisdom keys exact: adversity, purpose, fear, ambition, discipline, leadership, relationships, creativity, failure, happiness.

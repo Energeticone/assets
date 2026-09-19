@@ -10,7 +10,7 @@
  * ever touched: CacheStorage is shared origin-wide with the other apps on
  * this Pages site.
  */
-var CACHE = "rawfotra-shell-v4";
+var CACHE = "rawfotra-shell-v5";
 var NETWORK_HEAD_START_MS = 3500;
 var SHELL = [
   "./",
@@ -18,7 +18,7 @@ var SHELL = [
   "styles.css",
   "app.js",
   "bg.js",
-  "data/titans.js",
+  "data/freemasonry-circle.js",
   "manifest.webmanifest",
   "assets/cosmos.webp",
   "assets/council.webp",

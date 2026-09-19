@@ -2,8 +2,7 @@
 
 Counsel from history's greatest minds.
 
-An expanded, self-contained replica of the [thetitans.app](https://thetitans.app/explore)
-explore experience: browse **66 legendary minds — historic and living** — philosophers, strategists,
+A self-contained counsel experience: browse **66 legendary minds — historic and living** — philosophers, strategists,
 scientists, artists, writers — chat 1-on-1 with any of them, or **convene a council**:
 ask one question, choose up to ten experts, and receive each expert's considered
 answer plus a **consolidated view with three recommendations**. Built so the roster is
@@ -13,7 +12,7 @@ pure data: adding a **modern-day expert** is a form in the app or a few lines of
 
 - **Explore page** — searchable, filterable grid of 66 minds across 9 categories
   (Philosophy, Strategy & Command, Leadership & Statecraft, Science, Innovation &
-  Enterprise, Art & Music, Literature, Spirit & Wisdom, Modern Titans), each with a
+  Enterprise, Art & Music, Literature, Spirit & Wisdom, Modern Minds), each with a
   gradient medallion, epithet, and era.
 - **Rich profiles** — biography, five core teachings, distilled **first principles**
   (see *The doctrine layer* below), notable works, and starter questions.
@@ -56,7 +55,7 @@ pure data: adding a **modern-day expert** is a form in the app or a few lines of
   bio, teachings, voice, greeting, starters, optional wisdom bank). Custom experts
   live in your browser, are fully chat- and council-capable with both engines, can be
   edited or removed, and can be **exported/imported as JSON**.
-- **Deep links** — `#/titan/<id>` opens a profile, `#/chat/<id>` opens a conversation.
+- **Deep links** — `#/mind/<id>` opens a profile, `#/chat/<id>` opens a conversation.
 - **Zero dependencies** — vanilla HTML/CSS/JS, no build step, no external requests
   (except the optional Claude API calls you configure).
 
@@ -111,11 +110,11 @@ For a native App Store build, wrap this folder with
 [Capacitor](https://capacitorjs.com) (`npx cap add ios`) on a Mac with Xcode —
 no code changes are needed; the app is self-contained static files.
 
-## Adding experts permanently (`data/titans.js`)
+## Adding experts permanently (`data/freemasonry-circle.js`)
 
-Everything comes from `window.TITANS_DATA` in [`data/titans.js`](data/titans.js). To
+Everything comes from `window.FREEMASONRY_CIRCLE_DATA` in [`data/freemasonry-circle.js`](data/freemasonry-circle.js). To
 add an expert for every visitor (rather than just your browser), append an object to
-the `titans` array:
+the `members` array:
 
 ```js
 {

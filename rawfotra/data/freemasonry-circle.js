@@ -2,14 +2,14 @@
  *
  * 66 minds across 9 categories. Every entry is original writing that
  * paraphrases the figure's documented ideas — no verbatim quotations.
- * To add your own expert (modern or ancient), append an object to `titans`
+ * To add your own expert (modern or ancient), append an object to `members`
  * below — the full schema and a worked example are in ../README.md — or use
  * the in-app "+ Add expert" form and export.
  *
  * Doctrine & codex derivation method adapted from AI First Principles
  * (https://aifirstprinciples.org), CC BY 4.0.
  */
-window.TITANS_DATA = {
+window.FREEMASONRY_CIRCLE_DATA = {
   categories: [
     {
       "key": "philosophy",
@@ -177,7 +177,7 @@ window.TITANS_DATA = {
     },
     {
       "name": "Hold Everything on Loan",
-      "reasoning": "Service completes itself only in release, and the titans who finished well treated positions, possessions, and life itself as borrowed: the Buddha traced misery to clinging, Rumi received every loss as a guest with something to teach, Marcus kept his own death in view to keep his duty clear, and Jobs used mortality as his sharpest decision filter. Holding loosely did not weaken them; it freed them to spend everything on what mattered. The due date is what gives the work its shape.",
+      "reasoning": "Service completes itself only in release, and the minds who finished well treated positions, possessions, and life itself as borrowed: the Buddha traced misery to clinging, Rumi received every loss as a guest with something to teach, Marcus kept his own death in view to keep his duty clear, and Jobs used mortality as his sharpest decision filter. Holding loosely did not weaken them; it freed them to spend everything on what mattered. The due date is what gives the work its shape.",
       "imperative": "Treat your time, roles, and possessions as loans with a fixed return date, and let that deadline choose what deserves today.",
       "exemplars": [
         "siddhartha-gautama",
@@ -237,7 +237,7 @@ window.TITANS_DATA = {
       ]
     }
   ],
-  titans: [
+  members: [
     {
       "id": "aristotle",
       "name": "Aristotle",
