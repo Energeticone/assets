@@ -1,10 +1,10 @@
-# 🏛️ RAWFOTRA v6.5 — a Magnetic Glass Initiative
+# 🏛️ RAWFOTRA v6.6 — a Magnetic Glass Initiative
 
 Counsel from history's greatest minds.
 
 A self-contained counsel experience: browse **66 legendary minds — historic and living** — philosophers, strategists,
 scientists, artists, writers — chat 1-on-1 with any of them, or **convene your Supreme Council**:
-ask one question, seat up to thirteen minds, and receive each voice's considered
+ask one question, seat up to ten minds, and receive each voice's considered
 answer plus the **Consensus of the Supreme Council** — a deep, sectioned ruling with
 convergence, dissents, risks, verdict, directives, a minority opinion and the
 conditions to reconvene. Built so the roster is
@@ -18,21 +18,36 @@ pure data: adding a **modern-day expert** is a form in the app or a few lines of
   gradient medallion, epithet, and era.
 - **Rich profiles** — biography, five core teachings, distilled **first principles**
   (see *The doctrine layer* below), notable works, and starter questions.
-- **The Supreme Council** ⚖ — the centerpiece. Ask one question, seat up to **13 minds**, and:
+- **The Supreme Council** ⚖ — the centerpiece. Ask one question, seat up to **10 minds**, and:
   1. *(optional, Claude engine)* a **deep research pass** runs live web research on
      the question and briefs every council member;
   2. each mind deliberates **individually** — reasoning as if they were alive
      today, from their own documented principles and lived experience — and each
      voice card carries the member's **vote** (concurs / concurs with caution /
      dissents in part);
-  3. a synthesis pass drafts the **Consensus of the Supreme Council** — a formal,
-     sectioned ruling: the question as heard (with detected themes), points of
-     convergence (credited to their holders), genuine dissents with a resolution,
-     a risk register, a 200–400-word verdict, five to seven horizon-tagged
-     directives, a minority opinion, conditions to reconvene, and a confidence
-     seal (unanimous / strong consensus / a divided bench).
+  3. the members **debate**: a staged call-and-response between the chosen
+     minds along the real tension lines in their teachings (Claude engine:
+     reconstructed strictly from their answers);
+  4. a synthesis pass drafts the **Consensus of the Supreme Council** — a formal,
+     sectioned ruling: the question as heard (with detected themes), the debate,
+     points of convergence (credited to their holders), genuine dissents with a
+     resolution, a risk register, a 200–400-word verdict, five to seven
+     horizon-tagged directives, a minority opinion, conditions to reconvene, and
+     a confidence seal (unanimous / strong consensus / a divided bench);
+  5. the verdict then goes to **the trial of ten thousand futures** — a Monte
+     Carlo simulation, shown running live, that perturbs the council's own
+     weighting across 10,000 seeded trials and attributes the probability that
+     the consensus is the optimal course against the bench's own counter-course
+     and deliberate delay (a sensitivity trial of the council's conviction, not
+     a forecast of the world).
   Past consensus reports are kept on this device (last 10) and can be reopened
-  from the setup screen; every report copies out as Markdown.
+  from the setup screen; every report copies out as Markdown, trial included.
+- **Admin dashboard** 🛡 — Settings (admin-gated) opens a device-local dashboard:
+  queries asked today / week to date / month to date / lifetime (council vs
+  chat), most-summoned minds, themes asked about, engine split, average bench
+  size, average consensus optimality, unanimity distribution, recent activity,
+  and an ongoing activity log exportable as a JSON file. Recorded on the
+  device only — the app has no server.
 - **1-on-1 chat, two engines:**
   - **Built-in wisdom engine** (default, offline, zero setup) — replies composed from
     each mind's curated, in-voice wisdom bank: ten themes matched to your message by

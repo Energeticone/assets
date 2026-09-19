@@ -4,16 +4,21 @@ App root: `rawfotra/`
 Live: https://rawfotra.vercel.app
 Pantheon file: `rawfotra/data/freemasonry-circle.js` (`window.FREEMASONRY_CIRCLE_DATA`)
 
-## Supreme Council consensus (v6.5)
+## Supreme Council consensus (v6.5+, extended v6.6)
 
 The Council view produces the "Consensus of the Supreme Council": a sectioned
-ruling (preamble/themes, convergence, dissents, risks, verdict, directives,
-minority, conditions, confidence). Both engines fill the SAME report shape —
-`buildOfflineConsensus()` on-device, or the structured-output synthesis in
-`runClaudeCouncil()` with the offline builder as its fallback. New sections or
-engines must keep filling that shape; `renderConsensus()` and the Markdown
-export consume only the report object. History: last 10 reports in
-`localStorage` key `freemasonry-circle.council.history`.
+ruling (preamble/themes, debate, convergence, dissents, risks, verdict,
+directives, minority, conditions, Monte Carlo trial, confidence). Both engines
+fill the SAME report shape — `buildOfflineConsensus()` on-device, or the
+structured-output synthesis in `runClaudeCouncil()` with the offline builder
+as its fallback. New sections or engines must keep filling that shape;
+`renderConsensus()` and the Markdown export consume only the report object.
+The Monte Carlo trial (`runMonteCarlo`) is engine-independent, seeded and
+deterministic; it perturbs the report's own weights — never present it as a
+forecast of the world. History: last 10 reports in `localStorage` key
+`freemasonry-circle.council.history`; admin activity log in
+`freemasonry-circle.admin.log` (device-local, exportable from the admin
+dashboard in Settings). Selection cap is 10 seats; all 66 members permanent.
 
 ## Locked built-in seats (v6.4)
 

@@ -43,6 +43,7 @@
     memory: "freemasonry-circle.memory",
     history: "freemasonry-circle.council.history",
     bench: "freemasonry-circle.council.bench",
+    adminLog: "freemasonry-circle.admin.log",
     chat: function (id) { return "freemasonry-circle.chat." + id; },
   };
 
@@ -553,6 +554,7 @@
     };
 
     recordQuery(id, text);
+    adminLog({ kind: "chat", mind: chatMind.name, q: text.slice(0, 120) });
 
     if (settings.engine === "claude" && settings.apiKey) {
       if (settings.insightOn) insightReply(chatMind, history, bubble, finish, fail);
@@ -799,7 +801,7 @@
 
   /* ── Council: one question, up to ten minds ────────────────── */
 
-  var COUNCIL_MAX = 13;
+  var COUNCIL_MAX = 10;
   var councilSel = [];        // selected mentor ids, in pick order
   var councilBusy = false;
 
@@ -836,6 +838,7 @@
   function closeCouncil() {
     if (councilBusy && !confirm("The council is still deliberating. Leave anyway?")) return;
     councilBusy = false;
+    stopMC();
     $("councilView").hidden = true;
   }
 
@@ -933,6 +936,7 @@
 
   function conveneCouncil() {
     if (councilBusy) return;
+    stopMC();
     var q = $("councilQuestion").value.trim();
     if (!q) { toast("Write the question first."); $("councilQuestion").focus(); return; }
     var members = councilSel.map(findMind).filter(Boolean);
@@ -983,6 +987,15 @@
         save(LS.history, hist);
         toast("Browser storage is tight — keeping only the freshest consensus reports.");
       }
+      adminLog({
+        t: report.when, kind: "council",
+        q: q.slice(0, 140),
+        members: members.map(function (t) { return t.name; }),
+        engine: report.engine,
+        themes: (report.consensus && report.consensus.themes) || [],
+        conf: report.consensus && report.consensus.confidence ? report.consensus.confidence.level : "",
+        summary: report.consensus ? String(report.consensus.verdict || "").slice(0, 180) : "",
+      });
     };
     var showConsensus = function (c) {
       report.consensus = c;
@@ -995,6 +1008,13 @@
         ? "Deliberated and drafted by " + (settings.model || "claude-opus-5") + " from the " + members.length + " voices above."
         : "Composed on-device from the assembled minds' own teachings — every line traces to a member's corpus.";
       $("councilConsolidated").hidden = false;
+      // The verdict goes to trial: the Monte Carlo runs live in the document.
+      renderMCLive(c, q + "|" + members.map(function (t) { return t.id; }).join(",") + "|mc", function (m) {
+        if (!m) return;
+        c.monteCarlo = m;
+        updateSavedReport(report);
+        adminLogPatch(report.when, { p: m.courses[0] ? m.courses[0].p : null });
+      });
     };
 
     if (usingClaude()) {
@@ -1268,6 +1288,47 @@
       });
     }
 
+    // The debate: the chamber's exchange, reconstructed from the members'
+    // own teachings along the live tension lines. Every line is the speaker's
+    // real corpus material — the debate stages it as call and response.
+    var debate = [];
+    var debPrinciple = function (t, words, avoid) {
+      var best = null, bestN = -1;
+      (t.principles || []).forEach(function (p) {
+        if (avoid[p.title]) return;
+        var n = axisCount((p.title + " " + p.text).toLowerCase(), words);
+        if (n > bestN) { bestN = n; best = p; }
+      });
+      return best;
+    };
+    if (dissents.length) {
+      var used1 = {};
+      dissents.slice(0, 2).forEach(function (d, di) {
+        var hiT = members.filter(function (t) { return t.name === d.between[0]; })[0];
+        var loT = members.filter(function (t) { return t.name === d.between[1]; })[0];
+        if (!hiT || !loT) return;
+        var ax = AXES[hashCode(d.tension) % AXES.length]; // display only; words below re-derive
+        var hiP = debPrinciple(hiT, (AXES.filter(function (a) { return d.tension.indexOf(a.aName) !== -1; })[0] || ax).a, used1);
+        var loP = debPrinciple(loT, (AXES.filter(function (a) { return d.tension.indexOf(a.bName) !== -1; })[0] || ax).b, used1);
+        if (hiP) { used1[hiP.title] = 1; debate.push({ speaker: hiT.name, line: firstSentence(hiP.text, 190) }); }
+        if (loP) { used1[loP.title] = 1; debate.push({ speaker: loT.name, line: firstSentence(loP.text, 190) }); }
+        if (di === 0) {
+          var hiD = (hiT.doctrine || [])[hashCode(hiT.id + q) % Math.max(1, (hiT.doctrine || []).length)];
+          var loD = (loT.doctrine || [])[hashCode(loT.id + q) % Math.max(1, (loT.doctrine || []).length)];
+          if (hiD) debate.push({ speaker: hiT.name, line: "And I hold to this: " + hiD.imperative });
+          if (loD) debate.push({ speaker: loT.name, line: "Then hold mine beside it: " + loD.imperative });
+        }
+      });
+    } else if (members.length >= 2) {
+      // A unanimous bench still deliberates: two voices test the same ground.
+      var a0 = members[seed % members.length];
+      var b0 = members[(seed + 1) % members.length];
+      var pa = (a0.principles || [])[seed % Math.max(1, (a0.principles || []).length)];
+      var pb = (b0.principles || [])[(seed + 1) % Math.max(1, (b0.principles || []).length)];
+      if (pa) debate.push({ speaker: a0.name, line: firstSentence(pa.text, 190) });
+      if (pb) debate.push({ speaker: b0.name, line: "I reach the same shore by another sea: " + firstSentence(pb.text, 170) });
+    }
+
     // Risk register: doctrine entries whose reasoning names a failure mode.
     var risks = [];
     var riskScored = [];
@@ -1331,6 +1392,7 @@
           voice: loneliest.name,
           position: loneliest.name + " signs the verdict but files a caution the bench should keep in view: " + mv,
         };
+        if (debate.length) debate.push({ speaker: loneliest.name, line: "Before the vote is sealed, let the record hold my reservation: " + firstSentence(mv, 170) });
       }
     }
 
@@ -1377,6 +1439,7 @@
     return {
       preamble: 'The council heard the question — "' + (q.length > 180 ? q.slice(0, 179).replace(/\s+\S*$/, "") + "…" : q) + '" — ' + kindVerb + ", and read it as a matter of " + (themes.length ? listNames(themes) : "judgment under uncertainty") + ".",
       themes: themes,
+      debate: debate,
       convergence: convergence,
       dissents: dissents,
       risks: risks,
@@ -1386,6 +1449,155 @@
       conditions: conditions.slice(0, 3),
       confidence: { level: level, note: note },
     };
+  }
+
+  /* ── The trial of ten thousand futures (Monte Carlo) ─────────
+     After the verdict, the consensus is stress-tested live: ten thousand
+     seeded trials perturb the council's own weighting and count how often
+     the consensus course still outranks the alternatives the bench itself
+     raised. A sensitivity trial of the council's conviction — shown running. */
+
+  var mcTimer = null;
+  function stopMC() { if (mcTimer) { clearTimeout(mcTimer); mcTimer = null; } }
+
+  function mulberry32(a) {
+    return function () {
+      a |= 0; a = (a + 0x6D2B79F5) | 0;
+      var t = Math.imul(a ^ (a >>> 15), 1 | a);
+      t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+      return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+  }
+
+  // The courses on trial: the consensus, the strongest counter-voice the
+  // bench itself produced, and deliberate delay. Base weights derive from
+  // the report's real structure (accords strengthen, dissents erode).
+  function mcCourses(c) {
+    var courses = [];
+    var d0 = (c.directives || [])[0];
+    courses.push({
+      name: "The consensus course",
+      detail: d0 ? d0.imperative : "The council's verdict as delivered.",
+      base: 0.92 + 0.03 * Math.min(3, (c.convergence || []).length) - 0.07 * Math.min(3, (c.dissents || []).length),
+    });
+    if (c.dissents && c.dissents.length) {
+      courses.push({
+        name: (c.dissents[0].between || [])[1] ? c.dissents[0].between[1] + "'s counter-course" : "The counter-course",
+        detail: firstSentence(c.dissents[0].tension, 140),
+        base: 0.58 + 0.06 * Math.min(3, c.dissents.length),
+      });
+    } else if (c.minority && c.minority.voice) {
+      courses.push({
+        name: c.minority.voice + "'s reservation as the course",
+        detail: firstSentence(c.minority.position, 140),
+        base: 0.52,
+      });
+    }
+    courses.push({
+      name: "Hold and gather",
+      detail: "Deliberate delay — act on nothing, watch the ground, reconvene.",
+      base: 0.44 + 0.03 * Math.min(4, (c.risks || []).length),
+    });
+    return courses;
+  }
+
+  function runMonteCarlo(courses, seedStr, hooks) {
+    var TRIALS = 10000;
+    var rand = mulberry32(hashCode(seedStr) || 1);
+    var wins = courses.map(function () { return 0; });
+    var done = 0;
+    var reduced = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+    var BATCH = (reduced || hooks.instant) ? TRIALS : 160;
+    var step = function () {
+      mcTimer = null;
+      if (hooks.alive && !hooks.alive()) return;
+      var n = Math.min(BATCH, TRIALS - done);
+      for (var i = 0; i < n; i++) {
+        var bestJ = 0, bestU = -Infinity;
+        for (var j = 0; j < courses.length; j++) {
+          var noise = (rand() + rand() + rand() - 1.5) * 0.3;
+          var u = courses[j].base + noise;
+          if (u > bestU) { bestU = u; bestJ = j; }
+        }
+        wins[bestJ]++;
+      }
+      done += n;
+      if (hooks.tick) hooks.tick(done, TRIALS, wins);
+      if (done < TRIALS) { mcTimer = setTimeout(step, 28); return; }
+      var ps = wins.map(function (w) { return w / TRIALS; });
+      var ci = 1.96 * Math.sqrt(Math.max(ps[0] * (1 - ps[0]), 1e-9) / TRIALS);
+      hooks.done({
+        trials: TRIALS,
+        courses: courses.map(function (co, k) { return { name: co.name, detail: co.detail, p: Math.round(ps[k] * 1000) / 1000 }; }),
+        ci: Math.round(ci * 1000) / 1000,
+      });
+    };
+    step();
+  }
+
+  function mcRows(mcNode, courses) {
+    return courses.map(function (co) {
+      var row = el("div", "mc-row");
+      var head = el("div", "mc-row-head");
+      head.appendChild(el("span", "mc-name", co.name));
+      var pct = el("span", "mc-pct", "—");
+      head.appendChild(pct);
+      row.appendChild(head);
+      var track = el("div", "mc-track");
+      var bar = el("div", "mc-bar");
+      track.appendChild(bar);
+      row.appendChild(track);
+      row.appendChild(el("div", "mc-detail", co.detail || ""));
+      mcNode.appendChild(row);
+      return { bar: bar, pct: pct };
+    });
+  }
+
+  function mcVerdictLine(m) {
+    var p0 = m.courses[0] ? m.courses[0].p : 0;
+    return "Across " + m.trials.toLocaleString() + " simulated futures, the consensus holds as the optimal course in " +
+      (p0 * 100).toFixed(1) + "% ± " + (m.ci * 100).toFixed(1) + "% of trials.";
+  }
+  var MC_DISCLAIMER = "A sensitivity trial of the council's own weighting under random perturbation — a measure of how firmly this bench holds its verdict, not a forecast of the world.";
+
+  function renderMCStatic(mcNode, m) {
+    mcNode.innerHTML = "";
+    mcNode.appendChild(el("div", "mc-counter", m.trials.toLocaleString() + " trials complete"));
+    var rows = mcRows(mcNode, m.courses);
+    m.courses.forEach(function (co, j) {
+      rows[j].bar.style.width = (co.p * 100).toFixed(1) + "%";
+      rows[j].pct.textContent = (co.p * 100).toFixed(1) + "%";
+    });
+    mcNode.appendChild(el("p", "mc-verdict", mcVerdictLine(m)));
+    mcNode.appendChild(el("p", "fine", MC_DISCLAIMER));
+  }
+
+  function renderMCLive(c, seedStr, onSettled) {
+    var mcNode = document.querySelector("#consensusDoc .cons-mc");
+    if (!mcNode) { if (onSettled) onSettled(null); return; }
+    stopMC();
+    mcNode.innerHTML = "";
+    var counter = el("div", "mc-counter", "Trial 0 / 10,000");
+    mcNode.appendChild(counter);
+    var courses = mcCourses(c);
+    var rows = mcRows(mcNode, courses);
+    runMonteCarlo(courses, seedStr, {
+      alive: function () { return counter.isConnected; },
+      tick: function (done, total, wins) {
+        counter.textContent = "Trial " + done.toLocaleString() + " / " + total.toLocaleString();
+        for (var j = 0; j < rows.length; j++) {
+          var p = wins[j] / done;
+          rows[j].bar.style.width = (p * 100).toFixed(1) + "%";
+          rows[j].pct.textContent = (p * 100).toFixed(1) + "%";
+        }
+      },
+      done: function (m) {
+        counter.textContent = m.trials.toLocaleString() + " trials complete";
+        mcNode.appendChild(el("p", "mc-verdict", mcVerdictLine(m)));
+        mcNode.appendChild(el("p", "fine", MC_DISCLAIMER));
+        if (onSettled) onSettled(m);
+      },
+    });
   }
 
   /* ── Consensus rendering & history ─────────────────────────── */
@@ -1412,6 +1624,21 @@
       var chips = el("div", "cons-themes");
       c.themes.forEach(function (t) { chips.appendChild(el("span", "cons-chip", t)); });
       s1.appendChild(chips);
+    }
+
+    if (c.debate && c.debate.length) {
+      var sD = consSection(doc, next(), "The debate");
+      var chamber = el("div", "cons-debate");
+      var reduced = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+      c.debate.forEach(function (x, i) {
+        if (!x || !x.speaker || !x.line) return;
+        var lineEl = el("div", "cons-debate-line");
+        lineEl.appendChild(el("b", null, x.speaker));
+        lineEl.appendChild(el("span", null, x.line));
+        if (!reduced) lineEl.style.animationDelay = Math.min(i * 0.3, 3).toFixed(1) + "s";
+        chamber.appendChild(lineEl);
+      });
+      sD.appendChild(chamber);
     }
 
     if (c.convergence && c.convergence.length) {
@@ -1479,6 +1706,12 @@
       s8.appendChild(ul);
     }
 
+    var s9 = consSection(doc, next(), "The trial of ten thousand futures");
+    var mcNode = el("div", "cons-mc");
+    s9.appendChild(mcNode);
+    if (c.monteCarlo) renderMCStatic(mcNode, c.monteCarlo);
+    else mcNode.appendChild(el("p", "cons-preamble", "The verdict now goes to trial…"));
+
     if (c.confidence && c.confidence.level) {
       var meta = el("div", "cons-meta");
       meta.appendChild(el("span", "cons-level", c.confidence.level));
@@ -1500,6 +1733,39 @@
       else if ((c.dissents || []).some(function (d) { return (d.between || []).indexOf(name) !== -1; })) vote = "concurs with caution";
       nameNode.appendChild(el("span", "vote-tag" + (vote === "concurs" ? "" : " vote-caution"), vote));
     });
+  }
+
+  // Re-write the saved copies of a report after late data lands (Monte Carlo).
+  function updateSavedReport(report) {
+    save("freemasonry-circle.council.last", report);
+    var hist = load(LS.history, []);
+    for (var i = 0; i < hist.length; i++) {
+      if (hist[i].when === report.when && hist[i].question === report.question) { hist[i] = report; break; }
+    }
+    save(LS.history, hist);
+  }
+
+  /* ── Admin activity log ────────────────────────────────────── */
+
+  function adminLog(entry) {
+    var log = load(LS.adminLog, []);
+    if (!entry.t) entry.t = new Date().toISOString();
+    log.push(entry);
+    if (log.length > 1000) log.splice(0, log.length - 1000);
+    if (!save(LS.adminLog, log) && log.length > 100) {
+      log.splice(0, log.length - 100);
+      save(LS.adminLog, log);
+    }
+  }
+  function adminLogPatch(t, patch) {
+    var log = load(LS.adminLog, []);
+    for (var i = log.length - 1; i >= 0; i--) {
+      if (log[i].t === t) {
+        Object.keys(patch).forEach(function (k) { log[i][k] = patch[k]; });
+        save(LS.adminLog, log);
+        return;
+      }
+    }
   }
 
   function renderCouncilHistory() {
@@ -1533,6 +1799,7 @@
   }
 
   function showSavedReport(r) {
+    stopMC();
     $("councilSetup").hidden = true;
     $("councilReport").hidden = false;
     $("councilReportQ").textContent = r.question;
@@ -1677,10 +1944,17 @@
       var strArr = { type: "array", items: { type: "string" } };
       var schema = {
         type: "object", additionalProperties: false,
-        required: ["preamble", "themes", "convergence", "dissents", "risks", "verdict", "directives", "minority", "conditions", "confidence"],
+        required: ["preamble", "themes", "debate", "convergence", "dissents", "risks", "verdict", "directives", "minority", "conditions", "confidence"],
         properties: {
           preamble: { type: "string", description: "The question as the council understood it, restated with its real stakes surfaced. 2-4 sentences." },
           themes: { type: "array", items: { type: "string" }, description: "1-3 single-word themes the question turns on (e.g. fear, ambition, leadership)." },
+          debate: {
+            type: "array", description: "6-10 short exchanges reconstructing the debate between the members — strictly from positions actually expressed in their answers, each line 1-2 sentences in that speaker's voice, arranged as genuine call and response (challenge, rebuttal, concession, sharpening).",
+            items: {
+              type: "object", additionalProperties: false, required: ["speaker", "line"],
+              properties: { speaker: { type: "string", description: "A member's exact name." }, line: { type: "string" } },
+            },
+          },
           convergence: {
             type: "array", description: "3-5 points where the voices genuinely align. Each point is a substantive claim (2-3 sentences), not a platitude, and names its holders.",
             items: {
@@ -1734,7 +2008,7 @@
       var transcript = report.answers.map(function (a) { return "── " + a.name + " ──\n" + a.text; }).join("\n\n");
       return apiCall({
         model: model, max_tokens: 9000,
-        system: "You are the Recorder of the Supreme Council — a council of history's great minds convened on one question. From their individual counsel you draft the council's formal consensus. Rules: work only from positions the members actually expressed in their answers (you may sharpen, never invent); name members exactly as given; surface genuine convergence and genuine tension rather than forcing false harmony; make the verdict specific to the asker's situation, not generic wisdom; keep every member's voice recognizable in what you credit to them. The result should read like the finding of a real deliberative body: grave, precise, useful.",
+        system: "You are the Recorder of the Supreme Council — a council of history's great minds convened on one question. From their individual counsel you draft the council's formal consensus, including a faithful reconstruction of the debate between them. Rules: work only from positions the members actually expressed in their answers (you may sharpen, never invent); name members exactly as given; surface genuine convergence and genuine tension rather than forcing false harmony; the debate must be real call-and-response between the positions on record, not invented pleasantries; make the verdict specific to the asker's situation, not generic wisdom; keep every member's voice recognizable in what you credit to them. The result should read like the finding of a real deliberative body: grave, precise, useful.",
         messages: [{ role: "user", content: "The question before the Supreme Council:\n\n" + q + (brief ? "\n\nResearch brief the council received:\n\n" + brief : "") + "\n\nThe members' individual counsel:\n\n" + transcript + "\n\nDraft the Consensus of the Supreme Council." }],
         output_config: { format: { type: "json_schema", schema: schema } },
       }).then(function (r) {
@@ -1766,11 +2040,16 @@
   function copyCouncilReport() {
     var r = load("freemasonry-circle.council.last", null);
     if (!r) return;
-    var md = "# Consensus of the Supreme Council — RAWFOTRA v6.5\n\n**Question:** " + r.question + "\n\n" +
+    var md = "# Consensus of the Supreme Council — RAWFOTRA v6.6\n\n**Question:** " + r.question + "\n\n" +
       (r.answers || []).map(function (a) { return "## " + a.name + "\n\n" + a.text; }).join("\n\n");
     var c = r.consensus;
     if (c) {
       md += "\n\n---\n\n# The Consensus\n\n" + (c.preamble || "");
+      if (c.debate && c.debate.length) {
+        md += "\n\n## The debate\n\n" + c.debate.map(function (x) {
+          return "**" + x.speaker + ":** " + x.line;
+        }).join("\n\n");
+      }
       if (c.convergence && c.convergence.length) {
         md += "\n\n## Where the council converges\n\n" + c.convergence.map(function (cv) {
           return "- " + cv.point + (cv.holders && cv.holders.length ? " _(held by " + listNames(cv.holders) + ")_" : "");
@@ -1795,6 +2074,11 @@
       if (c.minority && c.minority.voice) md += "\n\n## Minority opinion\n\n" + c.minority.position;
       if (c.conditions && c.conditions.length) md += "\n\n## Conditions to reconvene\n\n" + c.conditions.map(function (x) { return "- " + x; }).join("\n");
       if (c.confidence && c.confidence.level) md += "\n\n**Confidence:** " + c.confidence.level + " — " + (c.confidence.note || "");
+      if (c.monteCarlo && c.monteCarlo.courses) {
+        md += "\n\n## The trial of ten thousand futures\n\n" + c.monteCarlo.courses.map(function (co) {
+          return "- " + co.name + ": **" + (co.p * 100).toFixed(1) + "%**" + (co.detail ? " — " + co.detail : "");
+        }).join("\n") + "\n\n" + mcVerdictLine(c.monteCarlo) + "\n\n_" + MC_DISCLAIMER + "_";
+      }
     } else if (r.summary) {
       // Report saved by an earlier version of the app.
       md += "\n\n## Consolidated counsel\n\n" + r.summary + "\n\n### Recommendations\n\n" +
@@ -1841,8 +2125,8 @@
   /* ── Admin gate: settings require the admin password ───────── */
 
   // SHA-256 digest of the admin password (the password itself never ships in code).
-  var ADMIN_SHA256 = "7bfe190c56dca87e80b04e32a2812a861b11c677239ed174988edcec3c34803b";
-  var ADMIN_FALLBACK = 755144483; // hashCode digest, used only where Web Crypto is unavailable
+  var ADMIN_SHA256 = "e7cf3ef4f17c3999a94f2c6f612e8a888e5b1026878e4e19398b23bd38ec221a";
+  var ADMIN_FALLBACK = 1281629883; // hashCode digest, used only where Web Crypto is unavailable
 
   function adminUnlocked() {
     try { return sessionStorage.getItem("freemasonry-circle.adminOk") === "1"; } catch (e) { return false; }
@@ -1921,6 +2205,157 @@
     renderEnginePill();
     closeOverlays();
     toast("Settings saved.");
+  }
+
+  /* ── Admin dashboard ───────────────────────────────────────── */
+
+  function downloadTextFile(text, fname, mime, doneMsg) {
+    var standalone = navigator.standalone === true ||
+      (window.matchMedia && matchMedia("(display-mode: standalone)").matches);
+    var isIOS = /iP(hone|ad|od)/.test(navigator.userAgent) ||
+      (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+    if (standalone && isIOS && navigator.share && typeof File === "function") {
+      try {
+        var file = new File([text], fname, { type: mime });
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+          navigator.share({ files: [file] })
+            .then(function () { toast(doneMsg); })
+            .catch(function () { /* user closed the share sheet */ });
+          return;
+        }
+      } catch (e) { /* fall through to the anchor download */ }
+    }
+    var blob = new Blob([text], { type: mime });
+    var href = URL.createObjectURL(blob);
+    var a = document.createElement("a");
+    a.href = href;
+    a.download = fname;
+    a.click();
+    setTimeout(function () { URL.revokeObjectURL(href); }, 60000);
+    toast(doneMsg);
+  }
+
+  function dashBuckets(log) {
+    var now = new Date();
+    var today = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+    var week = today - ((now.getDay() + 6) % 7) * 86400000; // Monday start
+    var month = new Date(now.getFullYear(), now.getMonth(), 1).getTime();
+    var mk = function () { return { total: 0, council: 0, chat: 0 }; };
+    var b = { today: mk(), week: mk(), month: mk(), life: mk() };
+    log.forEach(function (e) {
+      var t = Date.parse(e.t || "");
+      if (isNaN(t)) return;
+      var keys = ["life"];
+      if (t >= month) keys.push("month");
+      if (t >= week) keys.push("week");
+      if (t >= today) keys.push("today");
+      keys.forEach(function (k) {
+        b[k].total++;
+        if (e.kind === "council") b[k].council++; else b[k].chat++;
+      });
+    });
+    return b;
+  }
+
+  function topCounts(pairs, n) {
+    var counts = {};
+    pairs.forEach(function (name) { if (name) counts[name] = (counts[name] || 0) + 1; });
+    return Object.keys(counts)
+      .sort(function (a, b2) { return counts[b2] - counts[a]; })
+      .slice(0, n)
+      .map(function (k) { return { name: k, count: counts[k] }; });
+  }
+
+  function renderDash() {
+    var log = load(LS.adminLog, []);
+    var b = dashBuckets(log);
+
+    var stats = $("dashStats");
+    stats.innerHTML = "";
+    [["Today", b.today], ["Week to date", b.week], ["Month to date", b.month], ["Lifetime", b.life]].forEach(function (row) {
+      var card = el("div", "dash-card");
+      card.appendChild(el("div", "dash-num", String(row[1].total)));
+      card.appendChild(el("div", "dash-label", row[0]));
+      card.appendChild(el("div", "dash-sub", row[1].council + " council · " + row[1].chat + " chat"));
+      stats.appendChild(card);
+    });
+
+    var councils = log.filter(function (e) { return e.kind === "council"; });
+
+    var minds = [];
+    log.forEach(function (e) {
+      if (e.kind === "council") (e.members || []).forEach(function (m) { minds.push(m); });
+      else if (e.mind) minds.push(e.mind);
+    });
+    var mindsBox = $("dashMinds");
+    mindsBox.innerHTML = "";
+    var tops = topCounts(minds, 5);
+    if (!tops.length) mindsBox.appendChild(el("p", "fine", "No activity recorded yet on this device."));
+    tops.forEach(function (x) {
+      var row = el("div", "dash-row");
+      row.appendChild(el("span", null, x.name));
+      row.appendChild(el("b", null, String(x.count)));
+      mindsBox.appendChild(row);
+    });
+
+    var themesBox = $("dashThemes");
+    themesBox.innerHTML = "";
+    var themeList = [];
+    councils.forEach(function (e) { (e.themes || []).forEach(function (t) { themeList.push(t); }); });
+    topCounts(themeList, 5).forEach(function (x) {
+      var row = el("div", "dash-row");
+      row.appendChild(el("span", null, titleCase(x.name)));
+      row.appendChild(el("b", null, String(x.count)));
+      themesBox.appendChild(row);
+    });
+
+    var insights = $("dashInsights");
+    insights.innerHTML = "";
+    var addInsight = function (label, value) {
+      var row = el("div", "dash-row");
+      row.appendChild(el("span", null, label));
+      row.appendChild(el("b", null, value));
+      insights.appendChild(row);
+    };
+    var engines = { wisdom: 0, claude: 0 };
+    councils.forEach(function (e) { engines[e.engine === "claude" ? "claude" : "wisdom"]++; });
+    addInsight("Council sessions", String(councils.length));
+    addInsight("Engine split", engines.wisdom + " wisdom · " + engines.claude + " Claude");
+    if (councils.length) {
+      var seatSum = 0;
+      councils.forEach(function (e) { seatSum += (e.members || []).length; });
+      addInsight("Average bench size", (seatSum / councils.length).toFixed(1) + " minds");
+      var withP = councils.filter(function (e) { return typeof e.p === "number"; });
+      if (withP.length) {
+        var pSum = 0;
+        withP.forEach(function (e) { pSum += e.p; });
+        addInsight("Avg. consensus optimality", ((pSum / withP.length) * 100).toFixed(1) + "%");
+      }
+      var confs = { unanimous: 0, "strong consensus": 0, "a divided bench": 0 };
+      councils.forEach(function (e) { if (confs[e.conf] !== undefined) confs[e.conf]++; });
+      addInsight("Unanimity", confs.unanimous + " unanimous · " + confs["strong consensus"] + " strong · " + confs["a divided bench"] + " divided");
+    }
+    var customs = customExperts.length;
+    addInsight("Custom experts on this device", String(customs));
+
+    var recent = $("dashRecent");
+    recent.innerHTML = "";
+    log.slice(-8).reverse().forEach(function (e) {
+      var row = el("div", "dash-recent-row");
+      var when = "";
+      try { when = new Date(e.t).toLocaleString(undefined, { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" }); } catch (err) { /* ignore */ }
+      row.appendChild(el("span", "dash-when", when));
+      row.appendChild(el("span", "dash-kind" + (e.kind === "council" ? " is-council" : ""), e.kind === "council" ? "council · " + (e.members || []).length : "chat · " + (e.mind || "")));
+      row.appendChild(el("span", "dash-q", e.q || ""));
+      recent.appendChild(row);
+    });
+    if (!log.length) recent.appendChild(el("p", "fine", "The log fills as questions are asked."));
+  }
+
+  function openDash() {
+    renderDash();
+    closeOverlays();
+    openOverlay("dashOverlay");
   }
 
   /* ── Custom experts ────────────────────────────────────────── */
@@ -2177,7 +2612,7 @@
   /* ── Overlay & routing plumbing ────────────────────────────── */
 
   function closeOverlays() {
-    ["profileOverlay", "settingsOverlay", "expertOverlay", "codexOverlay", "adminOverlay"].forEach(function (id) { $(id).hidden = true; });
+    ["profileOverlay", "settingsOverlay", "expertOverlay", "codexOverlay", "adminOverlay", "dashOverlay"].forEach(function (id) { $(id).hidden = true; });
     ["header.nav", "section.hero", "main.explore", "footer.foot"].forEach(function (sel) {
       document.querySelectorAll(sel).forEach(function (n) { n.inert = false; });
     });
@@ -2237,6 +2672,7 @@
     $("councilCopy").addEventListener("click", copyCouncilReport);
     $("councilAgain").addEventListener("click", function () {
       if (councilBusy) { toast("The council is still deliberating."); return; }
+      stopMC();
       $("councilReport").hidden = true;
       $("councilSetup").hidden = false;
       renderCouncilHistory();
@@ -2265,7 +2701,7 @@
     });
     document.addEventListener("keydown", function (e) {
       if (e.key === "Escape") {
-        var anyOverlay = ["profileOverlay", "settingsOverlay", "expertOverlay", "codexOverlay", "adminOverlay"].some(function (id) { return !$(id).hidden; });
+        var anyOverlay = ["profileOverlay", "settingsOverlay", "expertOverlay", "codexOverlay", "adminOverlay", "dashOverlay"].some(function (id) { return !$(id).hidden; });
         if (anyOverlay) dismissOverlays();
         else if (!$("aboutView").hidden) closeAbout();
         else if (!$("chatView").hidden) closeChat();
@@ -2318,6 +2754,20 @@
     $("settingsSave").addEventListener("click", saveSettings);
     $("adminForm").addEventListener("submit", submitAdmin);
     $("forgetBtn").addEventListener("click", forgetEverything);
+
+    // Admin dashboard
+    $("openDashBtn").addEventListener("click", function () { requireAdmin(openDash); });
+    $("dashExport").addEventListener("click", function () {
+      var log = load(LS.adminLog, []);
+      downloadTextFile(JSON.stringify(log, null, 2), "rawfotra-admin-log.json", "application/json",
+        "Exported " + log.length + " log entries as a file.");
+    });
+    $("dashClear").addEventListener("click", function () {
+      if (!confirm("Clear the entire admin activity log on this device?")) return;
+      save(LS.adminLog, []);
+      renderDash();
+      toast("Activity log cleared.");
+    });
 
     // Expert form
     $("expertForm").addEventListener("input", function () { expertDirty = true; });

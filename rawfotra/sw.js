@@ -10,7 +10,7 @@
  * ever touched: CacheStorage is shared origin-wide with the other apps on
  * this Pages site.
  */
-var CACHE = "rawfotra-shell-v6";
+var CACHE = "rawfotra-shell-v7";
 var NETWORK_HEAD_START_MS = 3500;
 var SHELL = [
   "./",
