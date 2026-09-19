@@ -78,6 +78,7 @@
   </div>
   <nav class="nav-actions">
     <button class="btn btn-gold-outline" id="councilBtn" title="Ask one question to up to ten minds">⚖ Council</button>
+    <button class="btn btn-ghost" id="aboutBtn" title="The story of the chamber">About</button>
     <button class="btn btn-ghost" id="codexBtn" title="First principles of the pantheon" hidden>Codex</button>
     <button class="btn btn-ghost" id="surpriseBtn" title="Open a random mind">✦ Surprise</button>
     <button class="btn btn-ghost" id="settingsBtn" title="Chat engine settings">⚙ Settings</button>
@@ -233,6 +234,358 @@
       <button class="btn btn-gold btn-big" id="profileChatBtn">Begin conversation →</button>
     </div>
   </section>
+</div>
+
+<!-- ══════════════ ABOUT — THE CHAMBER ══════════════ -->
+<div class="chatwrap about-wrap" id="aboutView" hidden>
+  <header class="chat-head">
+    <button class="btn btn-ghost" id="aboutBack">← Explore</button>
+    <div class="chat-id">
+      <div>
+        <div class="chat-name">About</div>
+        <div class="chat-epithet">the chamber, and how it came to exist</div>
+      </div>
+    </div>
+    <div class="chat-tools"><span class="engine-pill">Est. outside time</span></div>
+  </header>
+  <div class="about-progress" aria-hidden="true"><span id="aboutProgressBar"></span></div>
+
+  <nav class="about-rail" id="aboutRail" aria-label="About sections">
+    <button data-target="actName">01 Name</button>
+    <button data-target="actLineage">02 Lineage</button>
+    <button data-target="actCouncil">03 Council</button>
+    <button data-target="actCollision">04 Collision</button>
+    <button data-target="actChamber">05 Chamber</button>
+    <button data-target="actQuestion">06 Question</button>
+  </nav>
+
+  <div class="about-scroll" id="aboutScroll">
+    <div class="about-inner">
+
+      <!-- ═══ ACT I — THE NAME ═══ -->
+      <section class="about-section about-hero" id="actName">
+        <p class="about-kicker reveal">About RAWFOTRA</p>
+        <h2 class="about-caps reveal">Read the name backward.</h2>
+        <div class="about-reversal reveal" aria-label="RAWFOTRA reversed is ART OF WAR">
+          <div class="rev-line rev-1">RAWFOTRA</div>
+          <div class="about-arrow" aria-hidden="true">↓</div>
+          <div class="rev-line rev-2">ARTOFWAR</div>
+          <div class="about-arrow" aria-hidden="true">↓</div>
+          <div class="rev-line rev-3">THE ART OF WAR</div>
+        </div>
+        <p class="about-kicker reveal">The reversal is deliberate</p>
+        <div class="about-prose reveal">
+          <p>RAWFOTRA begins with one of civilization's oldest ideas about strategy — and turns it around.</p>
+          <p><button class="mind-link" data-mind="sun-tzu">Sun Tzu</button> taught that the greatest victories are often determined before the battle begins: through knowledge, perspective, preparation, positioning and an understanding of forces others fail to see.</p>
+          <p>RAWFOTRA takes that principle beyond warfare.</p>
+          <p>It asks a larger question:</p>
+        </div>
+        <blockquote class="about-quote reveal">"What if humanity could look backward across thousands of years of accumulated genius in order to see forward more clearly?"</blockquote>
+        <p class="about-prose reveal">The name itself embodies that philosophy.</p>
+        <div class="about-creed">
+          <p class="reveal" style="transition-delay:.05s">Reverse the perspective.</p>
+          <p class="reveal" style="transition-delay:.15s">Question the obvious.</p>
+          <p class="reveal" style="transition-delay:.25s">Study what came before.</p>
+          <p class="reveal" style="transition-delay:.35s">See what others do not.</p>
+          <p class="reveal" style="transition-delay:.45s">Use the accumulated intelligence of civilization to make better decisions about what comes next.</p>
+        </div>
+        <p class="about-motto reveal">Remember the future.<br />Consult the past.</p>
+      </section>
+
+      <!-- ═══ ACT II — THE LINEAGE ═══ -->
+      <section class="about-section" id="actLineage">
+        <p class="about-kicker reveal">A lineage of private thought</p>
+        <p class="about-prose reveal">Before RAWFOTRA, the most consequential ideas in history often emerged not from mass audiences, but from small rooms — academies, lodges, laboratories, salons and invitation-only circles where exceptional minds challenged one another beyond the conventions of ordinary public discourse.</p>
+        <div class="about-lineage">
+          <div class="lineage-node reveal">
+            <span class="ln-era">c. 387 BC</span>
+            <h3 class="ln-name">The Academies of Ancient Greece</h3>
+            <p class="ln-lede">Philosophy as disciplined inquiry.</p>
+            <p class="ln-text">Places where questions about ethics, politics, logic, reality and human flourishing became subjects of systematic examination.</p>
+          </div>
+          <div class="lineage-node reveal">
+            <span class="ln-era">c. 300 BC</span>
+            <h3 class="ln-name">Athens &amp; Alexandria</h3>
+            <p class="ln-lede">Knowledge across disciplines.</p>
+            <p class="ln-text">Philosophy, mathematics, astronomy, medicine and literature crossing boundaries that modern institutions would later separate.</p>
+          </div>
+          <div class="lineage-node ln-em reveal">
+            <span class="ln-era">1640s</span>
+            <h3 class="ln-name">The Invisible College</h3>
+            <p class="ln-lede">Knowledge exchanged beyond institutions.</p>
+            <p class="ln-text">An informal network of natural philosophers whose exchanges formed part of the intellectual environment from which the Royal Society and modern experimental science emerged.</p>
+          </div>
+          <div class="lineage-node reveal">
+            <span class="ln-era">1660</span>
+            <h3 class="ln-name">The Royal Society</h3>
+            <p class="ln-lede">Experiment over authority.</p>
+            <p class="ln-text">Observation, evidence, reproducibility and intellectual challenge helping redefine humanity's understanding of nature.</p>
+          </div>
+          <div class="lineage-node reveal">
+            <span class="ln-era">1717</span>
+            <h3 class="ln-name">Freemasonry</h3>
+            <p class="ln-lede">Ideas across boundaries.</p>
+            <p class="ln-text">Historically, Masonic lodges brought together figures from science, government, philosophy, art, military life, commerce and public affairs across social and national boundaries — a model of private, cross-disciplinary exchange.</p>
+          </div>
+          <div class="lineage-node reveal">
+            <span class="ln-era">c. 1765</span>
+            <h3 class="ln-name">The Lunar Society</h3>
+            <p class="ln-lede">Ideas becoming industry.</p>
+            <p class="ln-text">Scientists, inventors and industrialists exchanging ideas as new technologies transformed society.</p>
+          </div>
+          <div class="lineage-node reveal">
+            <span class="ln-era">18th century</span>
+            <h3 class="ln-name">The Enlightenment Salons</h3>
+            <p class="ln-lede">Collision outside formal authority.</p>
+            <p class="ln-text">Writers, philosophers, scientists, political thinkers and patrons testing ideas across disciplines and social boundaries.</p>
+          </div>
+          <div class="lineage-node ln-em reveal">
+            <span class="ln-era">1820</span>
+            <h3 class="ln-name">The Cambridge Apostles</h3>
+            <p class="ln-lede">Intellectual intensity in a small room.</p>
+            <p class="ln-text">An unusually selective discussion society in which generations of exceptional thinkers privately interrogated truth, morality, philosophy, politics and first principles.</p>
+            <p class="ln-tags">small membership · deep argument · private deliberation</p>
+          </div>
+          <div class="lineage-node reveal">
+            <span class="ln-era">1920s</span>
+            <h3 class="ln-name">The Vienna Circle</h3>
+            <p class="ln-lede">Knowledge subjected to logic.</p>
+            <p class="ln-text">An attempt to interrogate language, science, mathematics and truth through extraordinary analytical rigor.</p>
+          </div>
+          <div class="lineage-node reveal">
+            <span class="ln-era">20th – 21st century</span>
+            <h3 class="ln-name">Modern Private Forums</h3>
+            <p class="ln-lede">Consequential discussion away from the public stage.</p>
+            <p class="ln-text">Invitation-based forums — including gatherings such as Bilderberg — have brought figures from government, finance, business, academia and international institutions into private discussion of major global issues.</p>
+          </div>
+        </div>
+        <div class="lineage-converge reveal" aria-hidden="true"><span></span><span></span><span></span></div>
+        <p class="about-display metal-text reveal" style="text-align:center">RAWFOTRA</p>
+        <div class="about-caps-block">
+          <p class="about-caps reveal">RAWFOTRA is not the successor to any one of these institutions.</p>
+          <p class="about-caps reveal">It is the idea that emerges when their most powerful principles are allowed to converge.</p>
+        </div>
+        <div class="about-creed about-creed-tight">
+          <p class="reveal" style="transition-delay:.05s">Private deliberation.</p>
+          <p class="reveal" style="transition-delay:.12s">First-principles thinking.</p>
+          <p class="reveal" style="transition-delay:.19s">Intellectual diversity.</p>
+          <p class="reveal" style="transition-delay:.26s">Rigorous disagreement.</p>
+          <p class="reveal" style="transition-delay:.33s">Cross-disciplinary knowledge.</p>
+          <p class="reveal" style="transition-delay:.40s">Small rooms.</p>
+          <p class="reveal" style="transition-delay:.47s">Large questions.</p>
+        </div>
+      </section>
+
+      <!-- ═══ ACT III — THE INSTITUTION THAT COULD NEVER EXIST ═══ -->
+      <section class="about-section" id="actCouncil">
+        <p class="about-kicker reveal">The institution that could never exist</p>
+        <div class="about-prose reveal">
+          <p>RAWFOTRA is a 21st-century, transhistorical council of extraordinary minds — an imagined institution where the greatest thinkers, builders, strategists, scientists, philosophers, artists, entrepreneurs and leaders in human history can finally sit at the same table.</p>
+          <p>Its intellectual DNA draws from the traditions that came before it.</p>
+          <p>But RAWFOTRA is not a recreation of any one of them.</p>
+          <p>It is the institution that could never previously exist.</p>
+        </div>
+        <p class="about-huge reveal">What if humanity's greatest intellectual circles could transcend geography, ideology, discipline — and time itself?</p>
+      </section>
+
+      <!-- ═══ ACT IV — CONVERSATIONS HISTORY MADE IMPOSSIBLE ═══ -->
+      <section class="about-section">
+        <h2 class="about-caps about-caps-lg reveal">Conversations<br />history made impossible</h2>
+        <div class="about-pairings">
+          <div class="about-pair reveal">
+            <button class="mind-link" data-mind="socrates">Socrates</button><span class="pair-x" aria-hidden="true">×</span><button class="mind-link" data-mind="albert-einstein">Einstein</button>
+            <p class="pair-note">Questioning certainty.</p>
+          </div>
+          <div class="about-pair reveal">
+            <button class="mind-link" data-mind="leonardo-da-vinci">Leonardo da Vinci</button><span class="pair-x" aria-hidden="true">×</span><button class="mind-link" data-mind="steve-jobs">Steve Jobs</button>
+            <p class="pair-note">Art, engineering and technology.</p>
+          </div>
+          <div class="about-pair reveal">
+            <button class="mind-link" data-mind="sun-tzu">Sun Tzu</button><span class="pair-x" aria-hidden="true">×</span><button class="mind-link" data-mind="winston-churchill">Winston Churchill</button>
+            <p class="pair-note">Strategy across twenty-five centuries.</p>
+          </div>
+          <div class="about-pair reveal">
+            <button class="mind-link" data-mind="marcus-aurelius">Marcus Aurelius</button><span class="pair-x" aria-hidden="true">×</span><button class="mind-link" data-mind="warren-buffett">Warren Buffett</button>
+            <p class="pair-note">Temperament, judgment and control.</p>
+          </div>
+          <div class="about-pair reveal">
+            <button class="mind-link" data-mind="isaac-newton">Isaac Newton</button><span class="pair-x" aria-hidden="true">×</span><button class="mind-link" data-mind="richard-feynman">Richard Feynman</button>
+            <p class="pair-note">What does it mean to truly understand?</p>
+          </div>
+          <div class="about-pair reveal">
+            <button class="mind-link" data-mind="aristotle">Aristotle</button><span class="pair-x" aria-hidden="true">×</span><button class="mind-link" data-mind="peter-drucker">Peter Drucker</button>
+            <p class="pair-note">Purpose, institutions and human organization.</p>
+          </div>
+          <div class="about-pair reveal">
+            <button class="mind-link" data-mind="benjamin-franklin">Benjamin Franklin</button><span class="pair-x" aria-hidden="true">×</span><button class="mind-link" data-mind="nikola-tesla">Nikola Tesla</button>
+            <p class="pair-note">Invention, systems and possibility.</p>
+          </div>
+        </div>
+        <div class="about-prose reveal">
+          <p>For most of history, humanity's greatest minds could inherit one another's ideas.</p>
+          <p>They could discover one another through books.</p>
+          <p>They could challenge those who came before them.</p>
+          <p>They could build upon knowledge accumulated across generations.</p>
+          <p>But they could never deliberate together.</p>
+        </div>
+        <p class="about-caps reveal">They were separated by time.</p>
+        <p class="about-caps about-gold reveal">RAWFOTRA removes that condition.</p>
+      </section>
+
+      <!-- ═══ ACT V — THE INVISIBLE COLLEGE OUTSIDE TIME ═══ -->
+      <section class="about-section">
+        <h2 class="about-display reveal">An Invisible College<br />outside time</h2>
+        <div class="about-nevers">
+          <p class="reveal" style="transition-delay:.05s">Newton could never question Einstein.</p>
+          <p class="reveal" style="transition-delay:.15s">Aristotle could never interrogate Darwin.</p>
+          <p class="reveal" style="transition-delay:.25s">Leonardo could never challenge Tesla.</p>
+          <p class="reveal" style="transition-delay:.35s">Marcus Aurelius could never sit beside Mandela.</p>
+          <p class="reveal" style="transition-delay:.45s">Sun Tzu could never debate Churchill.</p>
+        </div>
+        <p class="about-caps about-gold reveal">Until now.</p>
+        <p class="about-prose reveal">RAWFOTRA changes the premise.</p>
+        <div class="about-timeline reveal" aria-hidden="true">
+          <span>500 BC</span><span>100 AD</span><span>1200</span><span>1700</span><span>1900</span><span class="tl-now">NOW</span>
+        </div>
+        <p class="about-huge reveal">Time is no longer<br />a condition of membership.</p>
+      </section>
+
+      <!-- ═══ ACT VI — THE MEMBERSHIP TEST ═══ -->
+      <section class="about-section">
+        <h2 class="about-caps about-caps-lg reveal">Who belongs in the room?</h2>
+        <div class="about-nots">
+          <p class="reveal" style="transition-delay:.05s">Not wealth.</p>
+          <p class="reveal" style="transition-delay:.12s">Not title.</p>
+          <p class="reveal" style="transition-delay:.19s">Not nationality.</p>
+          <p class="reveal" style="transition-delay:.26s">Not political power.</p>
+          <p class="reveal" style="transition-delay:.33s">Not popularity.</p>
+          <p class="reveal" style="transition-delay:.40s">Not social status.</p>
+          <p class="reveal" style="transition-delay:.47s">Not era.</p>
+        </div>
+        <p class="about-caps about-gold reveal">The qualification is contribution.</p>
+        <p class="about-huge reveal">Did this mind materially change the way humanity understands, builds, governs, discovers, creates, competes, leads or lives?</p>
+        <p class="about-caps reveal">If so, that mind belongs in the room.</p>
+      </section>
+
+      <!-- ═══ ACT VII — INTELLECTUAL COLLISION ═══ -->
+      <section class="about-section" id="actCollision">
+        <h2 class="about-caps about-caps-lg reveal">RAWFOTRA is not built for consensus.</h2>
+        <div class="about-prose reveal">
+          <p>Great minds rarely agree.</p>
+          <p>Agreement can be comfortable.</p>
+          <p>Contradiction can be valuable.</p>
+        </div>
+        <p class="about-display about-gold reveal">Intellectual collision.</p>
+        <div class="about-collision-grid">
+          <span class="reveal" style="transition-delay:.04s">Different civilizations</span>
+          <span class="reveal" style="transition-delay:.08s">Different centuries</span>
+          <span class="reveal" style="transition-delay:.12s">Different disciplines</span>
+          <span class="reveal" style="transition-delay:.16s">Different experiences</span>
+          <span class="reveal" style="transition-delay:.20s">Different assumptions</span>
+          <span class="reveal" style="transition-delay:.24s">Different philosophies</span>
+          <span class="reveal" style="transition-delay:.28s">Different models of reality</span>
+          <span class="reveal" style="transition-delay:.32s">Different first principles</span>
+        </div>
+        <p class="about-caps reveal">One question enters the chamber.</p>
+        <p class="about-caps about-gold reveal">And then the collision begins.</p>
+
+        <div class="about-lenses">
+          <div class="about-lens reveal"><h3>Philosopher</h3><p>Questions whether the premise itself is wrong.</p></div>
+          <div class="about-lens reveal"><h3>Scientist</h3><p>Asks what the evidence actually proves.</p></div>
+          <div class="about-lens reveal"><h3>Mathematician</h3><p>Searches for the underlying structure.</p></div>
+          <div class="about-lens reveal"><h3>Strategist</h3><p>Examines incentives, positioning and second-order consequences.</p></div>
+          <div class="about-lens reveal"><h3>Economist</h3><p>Asks how scarce resources and incentives move.</p></div>
+          <div class="about-lens reveal"><h3>Entrepreneur</h3><p>Asks what can actually be built.</p></div>
+          <div class="about-lens reveal"><h3>Commander</h3><p>Identifies vulnerabilities, asymmetries and consequences.</p></div>
+          <div class="about-lens reveal"><h3>Statesman</h3><p>Considers institutions, legitimacy and human nature.</p></div>
+          <div class="about-lens reveal"><h3>Artist</h3><p>Sees what purely rational analysis overlooks.</p></div>
+          <div class="about-lens reveal"><h3>Stoic</h3><p>Asks which part of the problem is genuinely within your control.</p></div>
+        </div>
+        <div class="about-prose reveal">
+          <p>Each mind examines the same question through an entirely different intellectual lens.</p>
+          <p>They challenge assumptions. Expose blind spots. Identify contradictions. Surface consequences. Test conventional wisdom.</p>
+          <p>Their disagreements are not removed.</p>
+        </div>
+        <p class="about-huge reveal">Their disagreements<br />are the point.</p>
+        <div class="about-prose reveal">
+          <p>Extraordinary decisions rarely emerge from hearing the same idea expressed ten different ways.</p>
+          <p>They emerge when fundamentally different ways of seeing reality are allowed to collide.</p>
+        </div>
+      </section>
+
+      <!-- ═══ ACT VIII — COUNSEL ACROSS CENTURIES ═══ -->
+      <section class="about-section about-counsel">
+        <p class="about-prose reveal">From that collision comes something no single adviser, algorithm, institution, ideology or school of thought can provide:</p>
+        <p class="about-huge about-huge-xl metal-text reveal">Counsel<br />across<br />centuries.</p>
+        <div class="about-prose reveal">
+          <p>Not the answer of one intelligence.</p>
+          <p>The accumulated perspective of civilization.</p>
+        </div>
+      </section>
+
+      <!-- ═══ ACT IX — THE CHAMBER ═══ -->
+      <section class="about-section" id="actChamber">
+        <h2 class="about-caps about-caps-lg reveal">What is RAWFOTRA?</h2>
+        <div class="about-prose reveal">
+          <p>RAWFOTRA is neither a secret society nor an ordinary advisory platform.</p>
+          <p>It is a digital successor to humanity's great traditions of private intellectual deliberation.</p>
+        </div>
+        <div class="about-chamber-grid">
+          <div class="chamber-card reveal"><h3>The Invisible College</h3><p>Knowledge beyond boundaries.</p></div>
+          <div class="chamber-card reveal"><h3>The Philosophical Academy</h3><p>First principles.</p></div>
+          <div class="chamber-card reveal"><h3>The Private Salon</h3><p>Ideas in collision.</p></div>
+          <div class="chamber-card reveal"><h3>The Masonic Lodge</h3><p>Exchange across professions and social boundaries.</p></div>
+          <div class="chamber-card reveal"><h3>The Scientific Society</h3><p>Evidence and challenge.</p></div>
+          <div class="chamber-card reveal"><h3>The Strategy Council</h3><p>Position, consequence and action.</p></div>
+          <div class="chamber-card reveal"><h3>The Laboratory</h3><p>Hypothesis and experiment.</p></div>
+          <div class="chamber-card reveal"><h3>The War Room</h3><p>Decisions under uncertainty.</p></div>
+          <div class="chamber-card reveal"><h3>The Boardroom</h3><p>Capital, organization and execution.</p></div>
+          <div class="chamber-card reveal"><h3>The Inner Chamber</h3><p>Questions consequential enough to deserve privacy and depth.</p></div>
+        </div>
+        <div class="lineage-converge reveal" aria-hidden="true"><span></span><span></span><span></span></div>
+        <p class="about-display metal-text reveal" style="text-align:center">RAWFOTRA</p>
+        <p class="about-caps reveal" style="text-align:center">One living intellectual institution.</p>
+        <div class="about-prose reveal">
+          <p>But with one fundamental difference.</p>
+          <p>For the first time:</p>
+        </div>
+        <p class="about-huge reveal">Time itself is no longer a condition of membership.</p>
+        <div class="about-defining">
+          <p class="about-caps reveal">A council with no geography.</p>
+          <p class="about-caps reveal">A membership with no era.</p>
+          <p class="about-caps reveal">A chamber with no ideological boundary.</p>
+          <p class="about-caps reveal">A conversation with no expiration date.</p>
+        </div>
+      </section>
+
+      <!-- ═══ ACT X — THE FINAL QUESTION ═══ -->
+      <section class="about-section about-finale" id="actQuestion">
+        <div class="about-prose reveal">
+          <p>The greatest minds of the past do not merely belong to history.</p>
+          <p>Their ideas remain instruments for understanding the future.</p>
+          <p>Perhaps the most consequential question is not:</p>
+        </div>
+        <blockquote class="about-quote reveal">"What would the smartest person alive tell you?"</blockquote>
+        <p class="about-huge about-huge-xl reveal">What would the greatest minds who ever lived tell you —<br /><br />if you could put them all in the same room?</p>
+        <div class="about-space" aria-hidden="true"></div>
+        <p class="about-display about-gold reveal" style="text-align:center">That room is RAWFOTRA.</p>
+        <div class="about-reversal about-reversal-sm reveal" aria-label="RAWFOTRA reversed is ART OF WAR">
+          <div class="rev-line rev-1">RAWFOTRA</div>
+          <div class="about-arrow" aria-hidden="true">↓</div>
+          <div class="rev-line rev-2">ARTOFWAR</div>
+          <div class="about-arrow" aria-hidden="true">↓</div>
+          <div class="rev-line rev-3">THE ART OF WAR</div>
+        </div>
+        <div class="about-creed about-creed-tight">
+          <p class="reveal" style="transition-delay:.05s">Look backward.</p>
+          <p class="reveal" style="transition-delay:.15s">Think differently.</p>
+          <p class="reveal" style="transition-delay:.25s">See further.</p>
+        </div>
+        <p class="about-motto reveal">Remember the future.<br />Consult the past.</p>
+      </section>
+
+    </div>
+  </div>
 </div>
 
 <!-- ══════════════ CHAT ══════════════ -->

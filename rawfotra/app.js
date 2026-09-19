@@ -428,6 +428,7 @@
   function openChat(id, prefill) {
     var t = findMind(id);
     if (!t) return;
+    $("aboutView").hidden = true; // chat always takes the room
     chatMind = t;
     location.hash = "#/chat/" + encodeURIComponent(id);
     paintMedallion($("chatMedallion"), t, "medallion-sm");
@@ -803,6 +804,7 @@
   function usingClaude() { return settings.engine === "claude" && !!settings.apiKey; }
 
   function openCouncil(preselectId) {
+    $("aboutView").hidden = true; // the council always takes the room
     if (preselectId && councilSel.indexOf(preselectId) === -1 && councilSel.length < COUNCIL_MAX) {
       councilSel.push(preselectId);
     }
@@ -825,6 +827,68 @@
     if (councilBusy && !confirm("The council is still deliberating. Leave anyway?")) return;
     councilBusy = false;
     $("councilView").hidden = true;
+  }
+
+  /* ── About: the chamber ────────────────────────────────────── */
+
+  function openAbout() {
+    if (!$("chatView").hidden) closeChat();
+    if (!$("councilView").hidden) closeCouncil();
+    if (!$("councilView").hidden) return; // user chose to stay with a deliberating council
+    $("aboutView").hidden = false;
+    $("aboutScroll").scrollTop = 0;
+    updateAboutProgress();
+  }
+  function closeAbout() {
+    $("aboutView").hidden = true;
+  }
+  function updateAboutProgress() {
+    var sc = $("aboutScroll"), bar = $("aboutProgressBar");
+    if (!sc || !bar) return;
+    var max = sc.scrollHeight - sc.clientHeight;
+    var p = max > 0 ? sc.scrollTop / max : 0;
+    bar.style.transform = "scaleX(" + p.toFixed(4) + ")";
+  }
+  function wireAbout() {
+    $("aboutBtn").addEventListener("click", openAbout);
+    $("aboutBack").addEventListener("click", closeAbout);
+
+    // Names in the story open the member's existing profile.
+    $("aboutView").addEventListener("click", function (e) {
+      var link = e.target.closest ? e.target.closest("[data-mind]") : null;
+      if (link && findMind(link.getAttribute("data-mind"))) openProfile(link.getAttribute("data-mind"));
+    });
+
+    var ticking = false;
+    $("aboutScroll").addEventListener("scroll", function () {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(function () { updateAboutProgress(); ticking = false; });
+    }, { passive: true });
+
+    // Section rail: click to travel, observe to highlight.
+    var rail = $("aboutRail");
+    var buttons = rail ? rail.querySelectorAll("button") : [];
+    Array.prototype.forEach.call(buttons, function (b) {
+      b.addEventListener("click", function () {
+        var t = $(b.getAttribute("data-target"));
+        if (t) t.scrollIntoView({ behavior: "smooth", block: "start" });
+      });
+    });
+    if (rail && "IntersectionObserver" in window) {
+      var railIO = new IntersectionObserver(function (entries) {
+        entries.forEach(function (entry) {
+          if (!entry.isIntersecting) return;
+          Array.prototype.forEach.call(buttons, function (b) {
+            b.classList.toggle("active", b.getAttribute("data-target") === entry.target.id);
+          });
+        });
+      }, { root: $("aboutScroll"), rootMargin: "-30% 0px -60% 0px" });
+      ["actName", "actLineage", "actCouncil", "actCollision", "actChamber", "actQuestion"].forEach(function (id) {
+        var n = $(id);
+        if (n) railIO.observe(n);
+      });
+    }
   }
 
   function renderCouncilPicker() {
@@ -1617,6 +1681,7 @@
       if (e.key === "Escape") {
         var anyOverlay = ["profileOverlay", "settingsOverlay", "expertOverlay", "codexOverlay", "adminOverlay"].some(function (id) { return !$(id).hidden; });
         if (anyOverlay) dismissOverlays();
+        else if (!$("aboutView").hidden) closeAbout();
         else if (!$("chatView").hidden) closeChat();
         else if (!$("councilView").hidden) closeCouncil();
       }
@@ -1688,6 +1753,7 @@
   renderDaily();
   renderCodex();
   wire();
+  wireAbout();
   handleHash();
 
   // VM-style scroll reveal: fade-up any .reveal element once, on first viewport entry.
