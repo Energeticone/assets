@@ -623,9 +623,8 @@
       if (/\b(missed|wrong|incorrect|you failed|not what i asked|correct(ion)?)\b/.test(lower)) {
         parts.push("You are right to press — the task deserved a direct answer, and here it is.");
       }
-      if (an.decisive) parts.push(an.decisive.answer + " " + an.decisive.reason + ".");
+      if (an.decisive) parts.push(an.decisive.answer);
       an.computed.forEach(function (comp) {
-        if (an.decisive && comp.decisive === an.decisive) return;
         parts.push(comp.title + ": " + comp.result + (comp.working.length ? " Working: " + comp.working.join("; ") : ""));
       });
       an.conflicts.forEach(function (x) { parts.push(x); });
@@ -1169,15 +1168,18 @@
     if (pmt === null && money.length >= 2) pmt = money[1].v;
     if (cost === null || pmt === null || cost === pmt) return null;
     var n = parseInt(years[1], 10), r = parseFloat(rate[1]) / 100;
-    if (!(n > 0 && n <= 100 && r > 0 && r < 1)) return null;
-    var af = (1 - Math.pow(1 + r, -n)) / r;
+    if (!(n > 0 && n <= 100 && r >= 0 && r < 1)) return null;
+    // Convention, stated explicitly: at a 0% rate the annuity factor is simply n.
+    var af = r === 0 ? n : (1 - Math.pow(1 + r, -n)) / r;
     var npv = -cost + pmt * af;
     var be = cost / af;
     return {
       title: "Net present value",
       result: "NPV = " + anFmtM(npv) + (npv >= 0 ? " — the supplied economics clear the hurdle." : " — the supplied economics fall short."),
       working: [
-        "Annuity factor at " + (r * 100) + "% for " + n + " years = (1 − 1." + String(Math.round(r * 100)).padStart(2, "0") + "⁻" + n + ") / " + r.toFixed(2).replace(/^0/, "") + " = " + af.toFixed(10),
+        r === 0
+          ? "Annuity factor at 0% for " + n + " years = n = " + n + " (undiscounted sum — stated convention)"
+          : "Annuity factor at " + (r * 100) + "% for " + n + " years = (1 − 1." + String(Math.round(r * 100)).padStart(2, "0") + "⁻" + n + ") / " + r.toFixed(2).replace(/^0/, "") + " = " + af.toFixed(10),
         "NPV = −" + anFmtM(cost, 4).replace("−", "") + " + " + anFmtM(pmt, 4) + " × " + af.toFixed(4) + " = " + anFmtM(npv),
         "Break-even annual cash flow = " + anFmtM(cost, 4) + " / " + af.toFixed(4) + " = " + anFmtM(be) + " per year",
       ],
@@ -1307,18 +1309,25 @@
     var out = [];
     var money = anMoney(q);
     var cashVals = [];
-    money.forEach(function (x) { if (/cash/.test(x.before + x.after)) cashVals.push(x.v); });
+    money.forEach(function (x) {
+      if (/cash/.test(x.before.slice(-16)) || /^ ?of cash/.test(x.after)) cashVals.push(x.v);
+    });
     var distinct = cashVals.filter(function (v, i) { return cashVals.indexOf(v) === i; });
     if (distinct.length >= 2) {
       out.push("The brief states cash as both " + distinct.slice(0, 2).map(function (v) { return anFmtM(v, 2); }).join(" and ") + " — a blocking contradiction. Reconcile the balance before any figure-based conclusion.");
     }
     var avail = null;
     money.forEach(function (x) {
-      if (avail === null && /available|on hand|have|in the bank|of cash/.test(x.before + " " + x.after) && /cash|capital|fund/.test(x.before + " " + x.after)) avail = x.v;
+      // Anchor to the figure itself: only its immediate context may label it.
+      var nearB = x.before.slice(-16), nearA = x.after.slice(0, 22);
+      if (avail === null && (/have|available|on hand|in the bank/.test(nearB) || /of cash|available|on hand/.test(nearA))) avail = x.v;
     });
     if (avail !== null) {
       var over = money.filter(function (x) {
-        return x.v > avail * 1.5 && /launch|cost|option|plan|requires|budget|spend/.test(x.before + " " + x.after);
+        if (x.v === avail) return false;
+        var nearB2 = x.before.slice(-22), nearA2 = x.after.slice(0, 22);
+        return x.v > avail * 1.5 && /launch|cost|option|plan|requires|budget|spend|pursue|invest/.test(nearB2) ||
+               x.v > avail * 1.5 && /launch|acquisition|deal|option|plan|expansion|build[- ]out/.test(nearA2);
       });
       if (over.length) {
         out.push("The " + anFmtM(over[0].v, 2) + " option exceeds the " + anFmtM(avail, 2) + " available — infeasible as funded. Compare only the options that fit the cash, or name the financing that closes the gap before debating ambition.");
