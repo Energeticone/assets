@@ -1,9 +1,9 @@
-# 🏛️ RAWFOTRA v6.3 — a Magnetic Glass Initiative
+# 🏛️ RAWFOTRA v6.4 — a Magnetic Glass Initiative
 
 Counsel from history's greatest minds.
 
 An expanded, self-contained replica of the [thetitans.app](https://thetitans.app/explore)
-explore experience: browse **52 legendary minds — historic and living** — philosophers, strategists,
+explore experience: browse **66 legendary minds — historic and living** — philosophers, strategists,
 scientists, artists, writers — chat 1-on-1 with any of them, or **convene a council**:
 ask one question, choose up to ten experts, and receive each expert's considered
 answer plus a **consolidated view with three recommendations**. Built so the roster is
@@ -11,7 +11,7 @@ pure data: adding a **modern-day expert** is a form in the app or a few lines of
 
 ## Features
 
-- **Explore page** — searchable, filterable grid of 52 minds across 9 categories
+- **Explore page** — searchable, filterable grid of 66 minds across 9 categories
   (Philosophy, Strategy & Command, Leadership & Statecraft, Science, Innovation &
   Enterprise, Art & Music, Literature, Spirit & Wisdom, Modern Titans), each with a
   gradient medallion, epithet, and era.
@@ -36,7 +36,7 @@ pure data: adding a **modern-day expert** is a form in the app or a few lines of
     the Anthropic API. Paste your own API key in **Settings**; it is stored only in
     your browser's localStorage and sent only to `api.anthropic.com`. Default model:
     Claude Opus 5.
-- **The Codex** — first principles of the whole pantheon, distilled across the 51
+- **The Codex** — first principles of the whole pantheon, distilled across the 66
   minds and chained into a sequence; each entry is an observation, its consequence,
   and one imperative, credited to the exemplar minds who embody it.
 - **Memory** ✦ — every question you ask (chat and council) and every counsel the
