@@ -1,4 +1,4 @@
-# 🏛️ RAWFOTRA v6.7 — a Magnetic Glass Initiative
+# 🏛️ RAWFOTRA v6.8 — a Magnetic Glass Initiative
 
 Counsel from history's greatest minds.
 
@@ -19,6 +19,17 @@ pure data: adding a **modern-day expert** is a form in the app or a few lines of
 - **Rich profiles** — biography, five core teachings, distilled **first principles**
   (see *The doctrine layer* below), notable works, and starter questions.
 - **The Supreme Council** ⚖ — the centerpiece. Ask one question, seat up to **10 minds**, and:
+  0. the question is **parsed before anyone speaks**: computable tasks (NPV /
+     annuity / break-even, base-rate probability, arithmetic, cash-timing gaps)
+     are computed deterministically with the working shown; contradictions in
+     the brief are flagged as blocking; requests the offline engine cannot
+     honestly perform (live facts, document review) are **declined by name —
+     never answered with a teaching shaped like an answer**. Every report opens
+     with a thirty-second brief (recommendation, why, biggest open risk, next
+     action, what reverses it) and closes with a coverage checklist of every
+     requested deliverable — answered, declined with reason, or flagged. A
+     stated word limit produces a hard-capped short answer with the ceremony
+     folded away.
   1. *(optional, Claude engine)* a **deep research pass** runs live web research on
      the question and briefs every council member;
   2. each mind deliberates **individually** — reasoning as if they were alive
@@ -34,12 +45,13 @@ pure data: adding a **modern-day expert** is a form in the app or a few lines of
      resolution, a risk register, a 200–400-word verdict, five to seven
      horizon-tagged directives, a minority opinion, conditions to reconvene, and
      a confidence seal (unanimous / strong consensus / a divided bench);
-  5. the verdict then goes to **the trial of ten thousand futures** — a Monte
-     Carlo simulation, shown running live, that perturbs the council's own
-     weighting across 10,000 seeded trials and attributes the probability that
-     the consensus is the optimal course against the bench's own counter-course
-     and deliberate delay (a sensitivity trial of the council's conviction, not
-     a forecast of the world).
+  5. the verdict is then stress-tested by **council weight sensitivity** — a
+     Monte Carlo pass, shown running live, that perturbs the council's own
+     weighting across 10,000 seeded trials and reports how firmly the bench
+     holds its verdict against its own counter-course and deliberate delay.
+     The limitation sits beside the number: weighting sensitivity, never a
+     forecast or an outcome probability — and it does not run at all when the
+     council declined the task.
   Past consensus reports are kept on this device (last 10) and can be reopened
   from the setup screen; every report copies out as Markdown, trial included.
 - **LIVE: GLOBAL INSIGHT** ⦿ — a live signal room. World events stream straight
@@ -60,6 +72,11 @@ pure data: adding a **modern-day expert** is a form in the app or a few lines of
   size, average consensus optimality, unanimity distribution, recent activity,
   and an ongoing activity log exportable as a JSON file. Recorded on the
   device only — the app has no server.
+- **Honest engine status** — every report records requested vs delivered
+  engine (with the reason for any fallback); Settings has a real **Test
+  connection** button (ready / auth failed / model unavailable / quota / network)
+  and a **session-only key** option that keeps the API key out of persistent
+  storage entirely.
 - **1-on-1 chat, two engines:**
   - **Built-in wisdom engine** (default, offline, zero setup) — replies composed from
     each mind's curated, in-voice wisdom bank: ten themes matched to your message by

@@ -675,6 +675,37 @@ a { color: var(--gold); }
 .dash-q { color: var(--ink-dim); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .dash-foot { display: flex; justify-content: space-between; gap: 12px; }
 
+/* The brief, working, coverage — decision-first sections */
+.cons-brief { border: 1px solid var(--gold-soft); border-radius: 14px; padding: 18px 20px; background: var(--gold-dim); margin-top: 14px; }
+.cons-brief h4 { margin-bottom: 14px; }
+.brief-row { display: flex; gap: 14px; padding: 7px 0; border-bottom: 1px solid var(--line-soft); align-items: baseline; }
+.brief-row:last-child { border-bottom: none; }
+.brief-row b { flex: 0 0 148px; font-family: var(--mono); font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--gold-soft); font-weight: 500; padding-top: 2px; }
+.brief-row span { color: var(--ink); font-size: 15px; line-height: 1.5; }
+.cons-blocked { border: 1px solid rgba(255, 122, 110, 0.45); border-radius: 14px; padding: 16px 18px; background: rgba(255, 122, 110, 0.07); margin-top: 14px; }
+.cons-blocked b { display: block; color: var(--danger); font-size: 15px; margin-bottom: 6px; }
+.cons-blocked span { color: var(--ink-dim); font-size: 13.5px; line-height: 1.5; }
+.cons-calc { border: 1px solid var(--line-soft); border-radius: 12px; padding: 14px 16px; background: var(--bg-card); margin-bottom: 12px; }
+.cons-calc b { font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--ink-faint); font-weight: 500; }
+.cons-calc-result { font-family: var(--serif); font-size: 19px; color: var(--gold); margin: 8px 0 10px; line-height: 1.4; }
+.cons-calc-line { font-family: var(--mono); font-size: 12.5px; color: var(--ink-dim); padding: 3px 0; }
+.cons-conflict { border-left: 2px solid var(--danger); padding: 8px 0 8px 14px; margin-bottom: 10px; }
+.cons-conflict p { color: var(--ink-dim); font-size: 14.5px; line-height: 1.55; }
+.cons-coverage { list-style: none; display: flex; flex-direction: column; gap: 9px; }
+.cons-coverage li { font-size: 14px; line-height: 1.5; color: var(--ink-dim); }
+.cons-coverage b { font-weight: 600; }
+.cov-computed b { color: var(--acc-innovation); }
+.cov-declined b { color: var(--danger); }
+.cov-flagged b { color: var(--gold); }
+.cons-more { margin-top: 26px; border-top: 1px solid var(--line-soft); padding-top: 6px; }
+.cons-more > summary { cursor: pointer; font-family: var(--mono); font-size: 11.5px; letter-spacing: 0.24em; text-transform: uppercase; color: var(--ink-faint); padding: 12px 0; }
+.cons-more > summary:hover { color: var(--gold); }
+.voices-details { margin-top: 22px; }
+.voices-details > summary { cursor: pointer; font-family: var(--mono); font-size: 11.5px; letter-spacing: 0.24em; text-transform: uppercase; color: var(--gold); padding: 12px 0; margin-bottom: 8px; }
+.api-actions { display: flex; align-items: center; gap: 12px; margin: 10px 0 6px; flex-wrap: wrap; }
+.api-status.is-ok { color: var(--acc-innovation); }
+.api-status.is-bad { color: var(--danger); }
+
 .vote-tag {
   margin-left: 9px; font-family: var(--mono); font-size: 9.5px; letter-spacing: 0.14em; text-transform: uppercase;
   color: var(--gold-soft); border: 1px solid var(--gold-dim); border-radius: 999px; padding: 2px 8px;

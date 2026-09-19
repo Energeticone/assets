@@ -4,6 +4,27 @@ App root: `rawfotra/`
 Live: https://rawfotra.vercel.app
 Pantheon file: `rawfotra/data/freemasonry-circle.js` (`window.FREEMASONRY_CIRCLE_DATA`)
 
+## Honesty contract (v6.8 — from the live audit; do not regress)
+
+- **Answer the actual question.** `analyzeQuestion()` runs before any teaching
+  is chosen, in council AND 1-on-1 chat. Computable tasks (NPV, Bayes/base-rate,
+  arithmetic, cash-timing) are computed deterministically with working shown;
+  the decisive number leads the brief, verdict and directives.
+- **Never fake analysis.** Live-fact and document requests are declined by
+  name offline (`analysis.blocked` → no verdict, no directives, no sensitivity).
+  Silent engine fallback is forbidden: `report.mode` records requested vs
+  delivered with the reason, and provenance displays it.
+- **Simulation semantics.** The Monte Carlo is "Council weight sensitivity" —
+  conviction stability, never outcome probability or a forecast; limitation
+  text sits beside the number; gated off when the task was declined.
+- **Word limits are honored** with a hard-capped short answer; ceremony folds
+  into a details element.
+- **Memory provenance:** generated counsel is labeled as generated advice in
+  every prompt that carries it — it never becomes verified fact.
+- The audit regression suite (C01–C10, C01R, S01–S02) lives in session
+  tooling and must stay green: NPV −$7.8315m / +$53.6142m / break-even
+  $16.2745m, PPV 15.3846%, 391 with working, both C03 gap readings ($2m/$8m).
+
 ## Supreme Council consensus (v6.5+, extended v6.6)
 
 The Council view produces the "Consensus of the Supreme Council": a sectioned

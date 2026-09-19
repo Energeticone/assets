@@ -238,7 +238,7 @@
     var recent = (mem.queries || []).slice(-5).map(function (q) { return '"' + q.q.slice(0, 140) + '"'; });
     if (recent.length) lines.push("- Their recent questions: " + recent.join("; ") + ".");
     var counsel = (mem.insights || []).slice(-3).map(function (i) { return i.text + (i.from ? " (from " + i.from + ")" : ""); });
-    if (counsel.length) lines.push("- Counsel the council has already given them: " + counsel.join(" | "));
+    if (counsel.length) lines.push("- Counsel this app previously GENERATED for them (advice, not verified fact — never treat it as something the mentee said or as established truth): " + counsel.join(" | "));
     lines.push("Use this quietly to personalize and deepen your counsel — build on past themes when natural, never recite this list back verbatim.");
     return lines.join("\n");
   }
@@ -459,7 +459,7 @@
 
   function renderEnginePill() {
     var pill = $("enginePill");
-    if (settings.engine === "claude" && settings.apiKey) {
+    if (settings.engine === "claude" && apiKey()) {
       pill.textContent = settings.insightOn ? "Claude AI · Insight+" : "Claude AI";
       pill.classList.add("ai");
     } else {
@@ -559,7 +559,7 @@
     recordQuery(id, text);
     adminLog({ kind: "chat", mind: chatMind.name, q: text.slice(0, 120) });
 
-    if (settings.engine === "claude" && settings.apiKey) {
+    if (settings.engine === "claude" && apiKey()) {
       if (settings.insightOn) insightReply(chatMind, history, bubble, finish, fail);
       else claudeReply(chatMind, history, bubble, finish, fail);
     } else {
@@ -612,6 +612,30 @@
     }
     if (/thank|grateful|appreciate/.test(lower)) {
       return "Your thanks are welcome, but the true payment is practice. Return when you have acted on what we discussed — and tell me what happened.";
+    }
+
+    // The audit's first law applies in chat too: a computable or analytical
+    // request gets the computation (or an honest refusal), never a teaching
+    // shaped like an answer.
+    var an = analyzeQuestion(text);
+    if (an.computed.length || an.conflicts.length || an.declined.length) {
+      var parts = [];
+      if (/\b(missed|wrong|incorrect|you failed|not what i asked|correct(ion)?)\b/.test(lower)) {
+        parts.push("You are right to press — the task deserved a direct answer, and here it is.");
+      }
+      if (an.decisive) parts.push(an.decisive.answer + " " + an.decisive.reason + ".");
+      an.computed.forEach(function (comp) {
+        if (an.decisive && comp.decisive === an.decisive) return;
+        parts.push(comp.title + ": " + comp.result + (comp.working.length ? " Working: " + comp.working.join("; ") : ""));
+      });
+      an.conflicts.forEach(function (x) { parts.push(x); });
+      an.declined.forEach(function (d) {
+        parts.push("I will not pretend on the " + d.label.toLowerCase() + ": " + d.reason + ".");
+      });
+      if (an.computed.length) {
+        parts.push("That is the arithmetic, exactly. Tell me what decision hangs on it — that is where my counsel begins.");
+      }
+      return parts.join("\n\n");
     }
 
     var topicKey = detectTopic(text);
@@ -729,7 +753,7 @@
       method: "POST",
       headers: {
         "content-type": "application/json",
-        "x-api-key": settings.apiKey,
+        "x-api-key": apiKey(),
         "anthropic-version": "2023-06-01",
         "anthropic-dangerous-direct-browser-access": "true",
       },
@@ -809,7 +833,13 @@
   var councilBusy = false;
   var councilGen = 0;         // bumped on convene/close so an abandoned run's callbacks die quietly
 
-  function usingClaude() { return settings.engine === "claude" && !!settings.apiKey; }
+  function apiKey() {
+    if (settings.keySession) {
+      try { return sessionStorage.getItem("freemasonry-circle.apiKey.session") || ""; } catch (e) { return ""; }
+    }
+    return settings.apiKey || "";
+  }
+  function usingClaude() { return settings.engine === "claude" && !!apiKey(); }
 
   function saveBench() { save(LS.bench, councilSel); }
 
@@ -917,8 +947,10 @@
     wrap.innerHTML = "";
     allMinds().forEach(function (t) {
       if (filter && !matchesSearch(t, filter)) return;
-      var b = el("button", "pick" + (councilSel.indexOf(t.id) !== -1 ? " selected" : ""));
+      var selectedNow = councilSel.indexOf(t.id) !== -1;
+      var b = el("button", "pick" + (selectedNow ? " selected" : ""));
       b.type = "button";
+      b.setAttribute("aria-pressed", String(selectedNow));
       b.setAttribute("data-cat", t.category);
       var med = el("div");
       paintMedallion(med, t, "medallion-sm");
@@ -927,7 +959,9 @@
       box.appendChild(el("div", "pick-name", t.name));
       box.appendChild(el("div", "pick-sub", t.epithet || categoryLabel(t.category)));
       b.appendChild(box);
-      b.appendChild(el("span", "pick-check", "✓"));
+      var chk = el("span", "pick-check", "✓");
+      chk.setAttribute("aria-hidden", "true");
+      b.appendChild(chk);
       b.addEventListener("click", function () {
         var i = councilSel.indexOf(t.id);
         if (i !== -1) councilSel.splice(i, 1);
@@ -978,7 +1012,20 @@
       cards[t.id] = text;
     });
 
-    var report = { question: q, when: new Date().toISOString(), engine: usingClaude() ? "claude" : "wisdom", answers: [], consensus: null };
+    var report = {
+      question: q, when: new Date().toISOString(),
+      engine: usingClaude() ? "claude" : "wisdom",
+      mode: {
+        requested: settings.engine === "claude" ? (apiKey() ? "Claude AI (" + (settings.model || "claude-opus-5") + ")" : "Claude AI — no key available") : "wisdom engine",
+        actual: usingClaude() ? "Claude AI (" + (settings.model || "claude-opus-5") + ")" : "wisdom engine",
+        reason: usingClaude() ? "" : (settings.engine === "claude" ? "no API key at convene time — wisdom engine chosen instead, openly" : ""),
+      },
+      answers: [], consensus: null,
+    };
+    if (report.follows === undefined && conveneCouncil._follows) { report.follows = conveneCouncil._follows; conveneCouncil._follows = null; }
+    $("voicesWrap").open = true;
+    $("voicesSummary").textContent = "The voices, one by one";
+    $("councilFollow").hidden = true;
 
     var finishAll = function () {
       if (gen !== councilGen) return;
@@ -987,6 +1034,7 @@
         ? "The consensus of the Supreme Council is drafted."
         : "Consensus composed offline from the council's own teachings — add a Claude API key in Settings for deep AI deliberation.";
       $("councilCopy").hidden = false;
+      $("councilFollow").hidden = false;
       save("freemasonry-circle.council.last", report);
       var hist = load(LS.history, []);
       hist.unshift(report);
@@ -1015,10 +1063,14 @@
       });
       renderConsensus(c);
       tagVotes(c);
-      $("councilProvenance").textContent = report.engine === "claude"
-        ? "Deliberated and drafted by " + (settings.model || "claude-opus-5") + " from the " + members.length + " voices above."
-        : "Composed on-device from the assembled minds' own teachings — every line traces to a member's corpus.";
+      var prov = report.mode.actual.indexOf("Claude") === 0
+        ? "Deliberated and drafted by " + (settings.model || "claude-opus-5") + " from the " + members.length + " voices below."
+        : "Composed on-device from the assembled minds' own teachings" + (c.analysis && c.analysis.computed.length ? ", with the numeric working computed deterministically" : "") + ".";
+      prov += " Engine — requested: " + report.mode.requested + " · delivered: " + report.mode.actual + (report.mode.reason ? " (" + report.mode.reason + ")" : "") + ".";
+      $("councilProvenance").textContent = prov;
       $("councilConsolidated").hidden = false;
+      $("voicesWrap").open = false;
+      $("voicesSummary").textContent = "The voices, one by one (" + members.length + ")";
       // The verdict goes to trial: the Monte Carlo runs live in the document.
       renderMCLive(c, q + "|" + members.map(function (t) { return t.id; }).join(",") + "|mc", function (m) {
         if (!m) return;
@@ -1069,6 +1121,255 @@
     }
     if (!parts.length) parts.push((t.greeting || "") + " Bring me the particulars, and I will reason with you from what my life taught me.");
     return parts.join("\n\n");
+  }
+
+  /* ── Decision analysis (offline) ──────────────────────────────
+     The audit's first law: answer the actual question. Before any
+     teaching is chosen, the question is parsed for computable tasks,
+     explicit deliverables, contradictions and impossibilities. What
+     can be computed deterministically IS computed — exactly. What
+     cannot be done offline is declined by name, never papered over
+     with a teaching shaped like an answer. */
+
+  function anMoney(text) {
+    // Every money mention, normalized to millions of dollars.
+    var out = [];
+    var re = /\$\s*([\d,]+(?:\.\d+)?)\s*(million|billion|thousand|mn|bn|m\b|k\b)?/gi;
+    var m;
+    while ((m = re.exec(text)) !== null) {
+      var v = parseFloat(m[1].replace(/,/g, ""));
+      var unit = (m[2] || "").toLowerCase();
+      if (unit === "billion" || unit === "bn") v *= 1000;
+      else if (unit === "thousand" || unit === "k") v /= 1000;
+      else if (unit === "million" || unit === "m" || unit === "mn") v *= 1;
+      else v = v >= 10000 ? v / 1e6 : v; // bare "$4" in a business question reads as $4m only if units say so — keep small bare figures as-is
+      out.push({ v: v, idx: m.index, raw: m[0], before: text.slice(Math.max(0, m.index - 42), m.index).toLowerCase(), after: text.slice(m.index + m[0].length, m.index + m[0].length + 42).toLowerCase() });
+    }
+    return out;
+  }
+  function anFmtM(v, dp) {
+    var d = dp === undefined ? 4 : dp;
+    var s = Math.abs(v).toFixed(d).replace(/\.?0+$/, "");
+    return (v < 0 ? "−$" : "$") + s + "m";
+  }
+
+  function anNPV(q) {
+    var years = q.match(/for\s+(\d{1,3})\s+years?/i);
+    var rate = q.match(/(?:discount|hurdle)\s*rate\s*(?:is|of|:)?\s*([\d.]+)\s*%/i) || q.match(/([\d.]+)\s*%\s*(?:discount|hurdle)/i);
+    if (!years || !rate) return null;
+    var money = anMoney(q);
+    var cost = null, pmt = null;
+    money.forEach(function (x) {
+      // Exclusive, nearest-context classification: one figure, one role.
+      var nearBefore = x.before.slice(-24), nearAfter = x.after.slice(0, 24);
+      if (cost === null && /cost|invest|outlay|price of|upfront/.test(nearBefore)) cost = x.v;
+      else if (pmt === null && (/pays?|returns?|cash ?flows?|receiv|yields?|generat/.test(nearBefore) || /(each|per|every)\s*year|annual/.test(nearAfter))) pmt = x.v;
+    });
+    if (cost === null && money.length >= 2) cost = money[0].v;
+    if (pmt === null && money.length >= 2) pmt = money[1].v;
+    if (cost === null || pmt === null || cost === pmt) return null;
+    var n = parseInt(years[1], 10), r = parseFloat(rate[1]) / 100;
+    if (!(n > 0 && n <= 100 && r > 0 && r < 1)) return null;
+    var af = (1 - Math.pow(1 + r, -n)) / r;
+    var npv = -cost + pmt * af;
+    var be = cost / af;
+    return {
+      title: "Net present value",
+      result: "NPV = " + anFmtM(npv) + (npv >= 0 ? " — the supplied economics clear the hurdle." : " — the supplied economics fall short."),
+      working: [
+        "Annuity factor at " + (r * 100) + "% for " + n + " years = (1 − 1." + String(Math.round(r * 100)).padStart(2, "0") + "⁻" + n + ") / " + r.toFixed(2).replace(/^0/, "") + " = " + af.toFixed(10),
+        "NPV = −" + anFmtM(cost, 4).replace("−", "") + " + " + anFmtM(pmt, 4) + " × " + af.toFixed(4) + " = " + anFmtM(npv),
+        "Break-even annual cash flow = " + anFmtM(cost, 4) + " / " + af.toFixed(4) + " = " + anFmtM(be) + " per year",
+      ],
+      assumptions: "Assumes the supplied figures only: year-end payments, constant " + (r * 100) + "% rate, no residual value, no other costs. Not investment advice.",
+      decisive: {
+        answer: npv >= 0
+          ? "Invest, on the supplied assumptions: the project is worth " + anFmtM(npv) + " above the " + (r * 100) + "% hurdle."
+          : "Decline, on the supplied assumptions: the project destroys " + anFmtM(Math.abs(npv)) + " of value at the " + (r * 100) + "% hurdle.",
+        reason: "Annual cash flow of " + anFmtM(pmt, 2) + " against a break-even of " + anFmtM(be, 4) + " per year over " + n + " years.",
+        reversal: "The recommendation reverses if annual cash flows " + (npv >= 0 ? "fall below" : "rise above") + " " + anFmtM(be, 4) + ", the discount rate changes materially, or residual value enters the picture.",
+      },
+    };
+  }
+
+  function anBayes(q) {
+    var base = q.match(/([\d.]+)\s*%\s*(?:defect|base ?rate|prevalence|of units are defective)/i) || q.match(/(?:defect|base) rate of ([\d.]+)\s*%/i);
+    var sens = q.match(/([\d.]+)\s*%\s*sensitivit/i) || q.match(/(?:catches|detects|finds)\s+([\d.]+)\s*%/i);
+    var fp = q.match(/([\d.]+)\s*%\s*false[- ]positives?/i) || q.match(/false[- ]positive rate of ([\d.]+)\s*%/i);
+    if (!base || !sens || !fp) return null;
+    var b = parseFloat(base[1]) / 100, s = parseFloat(sens[1]) / 100, f = parseFloat(fp[1]) / 100;
+    if (!(b > 0 && b < 1 && s > 0 && s <= 1 && f >= 0 && f < 1)) return null;
+    var tp = b * s, fpr = (1 - b) * f;
+    var ppv = tp / (tp + fpr);
+    var per = 10000;
+    var tpu = Math.round(per * tp), fpu = Math.round(per * fpr);
+    return {
+      title: "Probability a flagged item is truly positive",
+      result: (ppv * 100).toFixed(4).replace(/0+$/, "").replace(/\.$/, "") + "% — most flags are false alarms; the base rate dominates.",
+      working: [
+        "Per " + per.toLocaleString() + " units: " + Math.round(per * b) + " truly positive, " + (per - Math.round(per * b)) + " not.",
+        "True positives flagged: " + Math.round(per * b) + " × " + (s * 100) + "% = " + tpu + ". False positives: " + (per - Math.round(per * b)) + " × " + (f * 100) + "% = " + fpu + ".",
+        "P(defective | flagged) = " + tpu + " / (" + tpu + " + " + fpu + ") = " + tpu + "/" + (tpu + fpu) + " = " + (ppv * 100).toFixed(4) + "%",
+      ],
+      assumptions: "Assumes the supplied rates hold exactly and flags are independent.",
+      decisive: {
+        answer: "A flagged unit is defective with probability " + (ppv * 100).toFixed(4) + "% — roughly 1 in " + Math.round(1 / ppv) + ".",
+        reason: "The " + (b * 100) + "% base rate is so low that the " + (f * 100) + "% false-positive rate produces " + fpu + " false alarms for every " + tpu + " true catches.",
+        reversal: "A higher base rate, a lower false-positive rate, or a second independent test would raise the flagged-unit probability materially.",
+      },
+    };
+  }
+
+  function anArithmetic(q) {
+    var m = q.match(/(\d+(?:\.\d+)?)\s*(?:[x×*]|times)\s*(\d+(?:\.\d+)?)/i);
+    var op = "×";
+    if (!m) { m = q.match(/(\d+(?:\.\d+)?)\s*\+\s*(\d+(?:\.\d+)?)/); op = "+"; }
+    if (!m) { m = q.match(/(\d+(?:\.\d+)?)\s*(?:[-−]|minus)\s*(\d+(?:\.\d+)?)/i); op = "−"; }
+    if (!m) { m = q.match(/(\d+(?:\.\d+)?)\s*(?:[÷/]|divided by)\s*(\d+(?:\.\d+)?)/i); op = "÷"; }
+    if (!m) return null;
+    // Money contexts ("$15 million ... 10 years") are not arithmetic drills.
+    if (/\$/.test(q.slice(Math.max(0, m.index - 4), m.index + m[0].length))) return null;
+    var a = parseFloat(m[1]), b = parseFloat(m[2]);
+    var v, working = [];
+    if (op === "×") {
+      v = a * b;
+      if (a === Math.round(a) && b === Math.round(b) && b >= 10 && b < 100) {
+        var tens = Math.floor(b / 10) * 10, ones = b - tens;
+        working.push(m[1] + " × " + tens + " = " + a * tens + (ones ? ";  " + m[1] + " × " + ones + " = " + a * ones : ""));
+        if (ones) working.push(a * tens + " + " + a * ones + " = " + v);
+      } else working.push(m[1] + " × " + m[2] + " = " + v);
+    } else if (op === "+") { v = a + b; working.push(m[1] + " + " + m[2] + " = " + v); }
+    else if (op === "−") { v = a - b; working.push(m[1] + " − " + m[2] + " = " + v); }
+    else { if (b === 0) return null; v = a / b; working.push(m[1] + " ÷ " + m[2] + " = " + v); }
+    var shown = v === Math.round(v) ? String(v) : String(Math.round(v * 1e6) / 1e6);
+    return {
+      title: "Arithmetic",
+      result: m[1] + " " + op + " " + m[2] + " = " + shown,
+      working: working,
+      assumptions: "",
+      decisive: { answer: shown + ".", reason: working.join("; "), reversal: "" },
+    };
+  }
+
+  function anRunway(q) {
+    var money = anMoney(q);
+    var cash = null, burn = null, spend = null, receipt = null;
+    money.forEach(function (x) {
+      // Nearest label wins, one role per figure, roles claimed in cause order.
+      var near = x.before.slice(-18) + " ⟂ " + x.after.slice(0, 26);
+      if (burn === null && /burn/.test(near)) burn = x.v;
+      else if (spend === null && /spend|delivery|deliver|fulfil/.test(near)) spend = x.v;
+      else if (receipt === null && /receipt|receiv|collect|paid|payment/.test(near)) receipt = x.v;
+      else if (cash === null && /cash|in the bank|available|on hand|reserves/.test(near)) cash = x.v;
+    });
+    var days = q.match(/(\d{2,4})\s*days/i);
+    var monthsToReceipt = days ? Math.round(parseInt(days[1], 10) / 30) : null;
+    if (cash === null || burn === null || spend === null || receipt === null || monthsToReceipt === null) return null;
+    var immediateGap = spend - cash;
+    var cumulativeGap = spend + monthsToReceipt * burn - cash;
+    return {
+      title: "Cash timing analysis",
+      result: "This is a working-capital problem, not a profitability problem: money leaves before it returns.",
+      working: [
+        "If the " + anFmtM(spend, 2) + " delivery spend is due at once against " + anFmtM(cash, 2) + " cash, the immediate gap is " + anFmtM(immediateGap, 2) + ".",
+        "If delivery spend and " + anFmtM(burn, 2) + "/month burn both run for the " + monthsToReceipt + " months before the " + anFmtM(receipt, 2) + " receipt, the cumulative pre-receipt gap reaches " + anFmtM(cumulativeGap, 2) + " — before financing costs or contingency.",
+        "The brief does not say when the delivery costs fall due or whether burn overlaps them — THAT AMBIGUITY sets the funding need, so resolve it before signing.",
+      ],
+      assumptions: "Ranges shown for both timing interpretations because the question does not fix payment timing.",
+      decisive: {
+        answer: "Do not sign as-is: on the supplied figures the pre-receipt funding gap is between " + anFmtM(Math.max(0, immediateGap), 2) + " and " + anFmtM(cumulativeGap, 2) + ", and the brief leaves the exact timing open.",
+        reason: "Cash out (" + anFmtM(spend, 2) + " delivery + up to " + monthsToReceipt + "×" + anFmtM(burn, 2) + " burn) precedes the " + anFmtM(receipt, 2) + " receipt by ~" + monthsToReceipt + " months against only " + anFmtM(cash, 2) + " on hand.",
+        reversal: "A customer deposit or milestone payments, committed financing covering the gap, or delivery costs contractually deferred past the receipt would reverse this.",
+      },
+    };
+  }
+
+  function anPersonal(q) {
+    var wantReframe = /\breframe\b/i.test(q);
+    var wantAction = /15[- ]?min/i.test(q);
+    var wantMetric = /week(?:ly)?[- ]?(?:metric|measure|number|count)/i.test(q);
+    if (!wantReframe && !wantAction && !wantMetric) return null;
+    var th = detectThemes(q)[0] || "fear";
+    var working = [];
+    if (wantReframe) working.push("Reframe: treat " + th + " as information about what matters to you — a signal to move carefully, never a verdict that you may not move at all.");
+    if (wantAction) working.push("15-minute action, today: set a timer and produce the smallest finishable piece of the feared work — one paragraph, one sketch, one call — then show it to exactly one person before the day ends.");
+    if (wantMetric) working.push("Weekly metric: the count of finished pieces shown to another person. Target one or more per week; a zero week triggers the 15-minute action the next morning.");
+    return {
+      title: "The deliverables you asked for",
+      result: "Answered plainly, before any longer counsel:",
+      working: working,
+      assumptions: "",
+      decisive: null,
+    };
+  }
+
+  function anConflicts(q) {
+    var out = [];
+    var money = anMoney(q);
+    var cashVals = [];
+    money.forEach(function (x) { if (/cash/.test(x.before + x.after)) cashVals.push(x.v); });
+    var distinct = cashVals.filter(function (v, i) { return cashVals.indexOf(v) === i; });
+    if (distinct.length >= 2) {
+      out.push("The brief states cash as both " + distinct.slice(0, 2).map(function (v) { return anFmtM(v, 2); }).join(" and ") + " — a blocking contradiction. Reconcile the balance before any figure-based conclusion.");
+    }
+    var avail = null;
+    money.forEach(function (x) {
+      if (avail === null && /available|on hand|have|in the bank|of cash/.test(x.before + " " + x.after) && /cash|capital|fund/.test(x.before + " " + x.after)) avail = x.v;
+    });
+    if (avail !== null) {
+      var over = money.filter(function (x) {
+        return x.v > avail * 1.5 && /launch|cost|option|plan|requires|budget|spend/.test(x.before + " " + x.after);
+      });
+      if (over.length) {
+        out.push("The " + anFmtM(over[0].v, 2) + " option exceeds the " + anFmtM(avail, 2) + " available — infeasible as funded. Compare only the options that fit the cash, or name the financing that closes the gap before debating ambition.");
+      }
+    }
+    if (/\b(loi|letter of intent)\b/i.test(q) && /\bsigned\b/i.test(q)) {
+      out.push("A non-binding letter of intent is cited where a signed agreement is claimed — treat the deal as UNSIGNED until an executed contract is produced.");
+    }
+    return out;
+  }
+
+  function analyzeQuestion(q) {
+    var lower = q.toLowerCase();
+    var an = { tasks: [], computed: [], declined: [], conflicts: anConflicts(q), wordLimit: null, decisive: null, blocked: false };
+
+    var wl = lower.match(/under\s+(\d{2,4})\s+words|in\s+(\d{2,4})\s+words\s+or\s+(?:fewer|less)|no more than\s+(\d{2,4})\s+words|within\s+(\d{2,4})\s+words|(\d{2,4})\s+words\s+(?:max|maximum)/);
+    if (wl) an.wordLimit = parseInt(wl[1] || wl[2] || wl[3] || wl[4] || wl[5], 10);
+
+    // Computable tasks, in priority order — the first decisive one leads.
+    [anNPV, anBayes, anRunway, anArithmetic, anPersonal].forEach(function (fn) {
+      var r = fn(q);
+      if (r) {
+        an.computed.push(r);
+        an.tasks.push({ label: r.title, status: "computed" });
+        if (!an.decisive && r.decisive) an.decisive = r.decisive;
+      }
+    });
+
+    // Asked-for deliverables the computation may or may not have covered.
+    if (/\bnpv\b|net present value/i.test(q) && !an.computed.some(function (c) { return c.title === "Net present value"; })) {
+      an.declined.push({ label: "NPV calculation", reason: "the cash-flow pattern in the brief could not be parsed into cost, payment, term and rate — restate those four figures plainly and the council will compute it" });
+    }
+    if (/break[- ]?even/i.test(q) && !an.computed.some(function (c) { return c.title === "Net present value"; })) {
+      an.tasks.push({ label: "Break-even", status: an.computed.length ? "computed" : "declined" });
+    }
+    if (/\b(probability|chance|likelihood)\b/i.test(q) && !an.computed.some(function (c) { return c.title.indexOf("Probability") === 0; }) && /%/.test(q)) {
+      an.declined.push({ label: "Probability calculation", reason: "the rates in the brief could not be parsed — state base rate, sensitivity and false-positive rate plainly" });
+    }
+
+    // Tasks the offline engine must refuse by name, never fake.
+    if (/\b(latest|current|today'?s?|as of (now|today)|right now)\b/.test(lower) && /\b(rate|rates|price|federal reserve|fed\b|inflation|news|market|target range)\b/.test(lower)) {
+      an.declined.push({ label: "Current factual lookup", reason: "the offline wisdom engine has no live data source and cannot state today's figures; the LIVE: GLOBAL INSIGHT room carries open live feeds, and the Claude engine (Settings) can research with sources" });
+    }
+    if (/\b(attached|attachment|clauses?|the contract|the agreement|this document|the memo)\b/.test(lower) && /\b(summari[sz]e|review|analy[sz]e|read|extract)\b/.test(lower)) {
+      an.declined.push({ label: "Document review", reason: "no document can be read here — nothing is attached and offline mode has no document reader; paste the decisive text into the question itself" });
+    }
+
+    if (an.declined.length && !an.computed.length && !an.conflicts.length) an.blocked = true;
+    an.declined.forEach(function (d) { an.tasks.push({ label: d.label, status: "declined", reason: d.reason }); });
+    an.conflicts.forEach(function () { an.tasks.push({ label: "Evidence conflict", status: "flagged" }); });
+    return an;
   }
 
   /* ── The Consensus of the Supreme Council (offline engine) ────
@@ -1147,6 +1448,7 @@
 
   function buildOfflineConsensus(q, members) {
     var seed = hashCode(q + "|" + members.map(function (t) { return t.id; }).join(","));
+    var analysis = analyzeQuestion(q);
     var qStems = sigWords(q);
     var themes = detectThemes(q);
     // Bare questions ("Is it time?") hit no keywords: let the bench itself
@@ -1367,8 +1669,17 @@
       risks.push({ risk: firstSentence(r.d.reasoning, 220), raisedBy: r.t.name, counsel: r.d.imperative });
     });
 
-    // Directives: the five strongest teachings, one per mind, horizon-tagged.
+    // Directives: the decisive computation leads when there is one;
+    // the strongest teachings follow, one per mind, horizon-tagged.
     var directives = [];
+    if (analysis.decisive) {
+      directives.push({
+        imperative: firstSentence(analysis.decisive.answer, 160),
+        reasoning: analysis.decisive.reason,
+        drawnFrom: "the council's own working, computed deterministically from the figures you supplied",
+        horizon: "at once",
+      });
+    }
     var dMinds = {}, dTitles = {};
     var horizonOf = function (text) {
       var lower = text.toLowerCase();
@@ -1435,11 +1746,43 @@
       note = "The council issues a verdict, but the divisions above are real — treat the directives as a sequence, not a chorus.";
     }
 
-    // The verdict: composed from the actual material above.
+    // The verdict: composed from the actual material above. When the
+    // question carried computable substance, the numbers speak first;
+    // when it required work the offline engine cannot do, the verdict
+    // is the honest refusal — never a teaching dressed as an answer.
     var catKeys = {}, catList = [];
     members.forEach(function (t) { if (!catKeys[t.category]) { catKeys[t.category] = 1; catList.push(categoryLabel(t.category).toLowerCase()); } });
+    var qShown = q.length > 180 ? q.slice(0, 179).replace(/\s+\S*$/, "") + "…" : q;
+    var matterOf = analysis.decisive
+      ? "first a matter of the supplied numbers" + (themes.length ? ", tempered by " + listNames(themes) : "")
+      : (themes.length ? listNames(themes) : "judgment under uncertainty");
+
+    if (analysis.blocked) {
+      // No simulated deliberation where no real work was possible.
+      var declineLines = analysis.declined.map(function (d) { return d.label + ": " + d.reason + "."; });
+      return {
+        preamble: 'The council heard the question — "' + qShown + '" — and found it asks for work this offline sitting cannot honestly perform.',
+        themes: themes,
+        analysis: analysis,
+        debate: [], convergence: [], dissents: [], risks: [],
+        verdict: "The Supreme Council returns no verdict on this question, because a verdict here would be theatre.\n\n" +
+          declineLines.join("\n\n") +
+          "\n\nBring the missing material — or enable the Claude engine in Settings for live research — and the council will sit again. Its members' teachings remain open in the meantime, offered as reflection, not as the analysis you asked for.",
+        directives: [],
+        minority: null,
+        conditions: analysis.declined.map(function (d) { return "Reconvene once resolved — " + d.label.toLowerCase() + "."; }).slice(0, 3),
+        confidence: { level: "no verdict", note: "The council declines rather than simulate an answer it cannot support." },
+      };
+    }
+
     var vparts = [];
-    vparts.push("A Supreme Council of " + members.length + (members.length > 1 ? " minds" : " mind") + ", drawn from " + listNames(catList) + ", was convened on this question and heard it as a matter of " + (themes.length ? listNames(themes) : "judgment under uncertainty") + ".");
+    vparts.push("A Supreme Council of " + members.length + (members.length > 1 ? " minds" : " mind") + ", drawn from " + listNames(catList) + ", was convened on this question and heard it as " + matterOf + ".");
+    if (analysis.conflicts.length) {
+      vparts.push("Before anything else, the council flags what blocks clean judgment: " + analysis.conflicts.join(" "));
+    }
+    if (analysis.decisive) {
+      vparts.push("The decisive element is arithmetic, not opinion. " + analysis.decisive.answer + " " + analysis.decisive.reason + (analysis.decisive.reversal ? " " + analysis.decisive.reversal : ""));
+    }
     if (convergence.length) {
       vparts.push("On the essentials the bench is of one mind. " + firstSentence(convergence[0].point, 240) + (convergence[1] ? " And again, from another quarter: " + firstSentence(convergence[1].point, 200) : ""));
     }
@@ -1454,9 +1797,14 @@
     }
     vparts.push("So concludes the Supreme Council — " + members.length + (members.length > 1 ? " voices" : " voice") + " concurring" + (minority ? ", one caution filed" : "") + ".");
 
+    if (analysis.decisive) {
+      note = "The decisive element was computed from your own figures; the bench's teachings frame how to carry it.";
+    }
+
     return {
-      preamble: 'The council heard the question — "' + (q.length > 180 ? q.slice(0, 179).replace(/\s+\S*$/, "") + "…" : q) + '" — ' + kindVerb + ", and read it as a matter of " + (themes.length ? listNames(themes) : "judgment under uncertainty") + ".",
+      preamble: 'The council heard the question — "' + qShown + '" — ' + kindVerb + ", and read it as " + matterOf + ".",
       themes: themes,
+      analysis: analysis,
       debate: debate,
       convergence: convergence,
       dissents: dissents,
@@ -1573,10 +1921,10 @@
 
   function mcVerdictLine(m) {
     var p0 = m.courses[0] ? m.courses[0].p : 0;
-    return "Across " + m.trials.toLocaleString() + " simulated futures, the consensus holds as the optimal course in " +
-      (p0 * 100).toFixed(1) + "% ± " + (m.ci * 100).toFixed(1) + "% of trials.";
+    return "Under " + m.trials.toLocaleString() + " random perturbations of the council's own weights, the consensus retained majority support in " +
+      (p0 * 100).toFixed(1) + "% ± " + (m.ci * 100).toFixed(1) + "% of trials (sampling error).";
   }
-  var MC_DISCLAIMER = "A sensitivity trial of the council's own weighting under random perturbation — a measure of how firmly this bench holds its verdict, not a forecast of the world.";
+  var MC_DISCLAIMER = "This measures how firmly the bench holds its verdict — sensitivity of the council's own weighting, not the probability of any real-world outcome, and never a forecast. Reproducible: the seed derives from question + bench; noise is uniform-sum ±0.3; course weights come from the report's own structure (accords strengthen, dissents erode).";
 
   function renderMCStatic(mcNode, m) {
     mcNode.innerHTML = "";
@@ -1637,8 +1985,105 @@
     doc.innerHTML = "";
     var n = 0;
     var next = function () { n++; return roman(n) + "."; };
+    var an = c.analysis || null;
+    var concise = !!(an && an.wordLimit) && !(an && an.blocked);
 
-    var s1 = consSection(doc, next(), "The question as heard");
+    // ── A hard word limit gets a hard-capped short answer, nothing more. ──
+    if (concise) {
+      var sa = el("section", "cons-sec cons-brief");
+      sa.appendChild(el("h4", null, "The short answer — within " + an.wordLimit + " words"));
+      var saText = an.decisive
+        ? [an.decisive.answer, an.decisive.reason, an.decisive.reversal].filter(Boolean).join(" ")
+        : firstSentence(c.verdict, 400);
+      var saWords = saText.split(/\s+/);
+      if (saWords.length > an.wordLimit) saText = saWords.slice(0, an.wordLimit).join(" ");
+      sa.appendChild(el("p", "cons-preamble", saText));
+      doc.appendChild(sa);
+      if (an.computed.length) {
+        var swc = consSection(doc, next(), "The working");
+        an.computed.forEach(function (comp) {
+          (comp.working || []).forEach(function (line) { swc.appendChild(el("div", "cons-calc-line", line)); });
+        });
+      }
+    }
+
+    // ── The brief in thirty seconds: conclusion first, always. ──
+    if (!concise && !(an && an.blocked)) {
+      var brief = el("section", "cons-sec cons-brief");
+      brief.appendChild(el("h4", null, "The brief — thirty seconds"));
+      var briefRow = function (k, v) {
+        if (!v) return;
+        var row = el("div", "brief-row");
+        row.appendChild(el("b", null, k));
+        row.appendChild(el("span", null, v));
+        brief.appendChild(row);
+      };
+      var d0 = (c.directives || [])[0];
+      briefRow("Recommendation", an && an.decisive ? an.decisive.answer : (d0 ? d0.imperative + " " + firstSentence(d0.reasoning, 140) : firstSentence(c.verdict, 180)));
+      briefRow("Why", an && an.decisive ? an.decisive.reason : (c.convergence && c.convergence[0] ? firstSentence(c.convergence[0].point, 160) : ""));
+      briefRow("Biggest open risk", (an && an.conflicts && an.conflicts[0]) ? firstSentence(an.conflicts[0], 160) : (c.risks && c.risks[0] ? firstSentence(c.risks[0].risk, 160) : (c.dissents && c.dissents[0] ? "The bench itself divides here: " + firstSentence(c.dissents[0].tension, 130) : "")));
+      var nextAct = (c.directives || []).filter(function (d) { return d.horizon === "at once"; })[0] || d0;
+      briefRow("Next action", nextAct ? nextAct.imperative : "");
+      briefRow("What reverses it", an && an.decisive && an.decisive.reversal ? an.decisive.reversal : (c.conditions && c.conditions[0] ? firstSentence(c.conditions[0], 170) : ""));
+      doc.appendChild(brief);
+    } else {
+      var blocked = el("div", "cons-blocked");
+      blocked.appendChild(el("b", null, "No verdict — this sitting cannot honestly perform the work requested."));
+      blocked.appendChild(el("span", null, "The items below say exactly what is missing and what would let the council sit again. Nothing has been simulated in its place."));
+      doc.appendChild(blocked);
+    }
+
+    // ── The council's working: deterministic computation, shown in full. ──
+    if (an && an.computed.length && !concise) {
+      var sw = consSection(doc, next(), "The council's working");
+      an.computed.forEach(function (comp) {
+        var box = el("div", "cons-calc");
+        box.appendChild(el("b", null, comp.title));
+        box.appendChild(el("div", "cons-calc-result", comp.result));
+        (comp.working || []).forEach(function (line) { box.appendChild(el("div", "cons-calc-line", line)); });
+        if (comp.assumptions) box.appendChild(el("p", "fine", comp.assumptions));
+        sw.appendChild(box);
+      });
+    }
+    if (an && an.conflicts.length && !an.blocked && !concise) {
+      var sc2 = consSection(doc, next(), "Evidence the council cannot reconcile");
+      an.conflicts.forEach(function (x) {
+        var w = el("div", "cons-conflict");
+        w.appendChild(el("p", null, x));
+        sc2.appendChild(w);
+      });
+    }
+
+    // ── Coverage: every requested item answered, declined, or flagged. ──
+    if (an && an.tasks.length && !concise) {
+      var scv = consSection(doc, next(), "Coverage of your requests");
+      var ulc = el("ul", "cons-coverage");
+      an.tasks.forEach(function (t) {
+        var li = el("li", "cov-" + t.status);
+        li.appendChild(el("b", null, (t.status === "computed" ? "✓ " : t.status === "declined" ? "✕ " : "⚑ ") + t.label));
+        if (t.reason) li.appendChild(el("span", null, " — " + t.reason));
+        else li.appendChild(el("span", null, t.status === "computed" ? " — answered above, with working shown." : t.status === "flagged" ? " — flagged in the document." : ""));
+        ulc.appendChild(li);
+      });
+      if (an.wordLimit) {
+        var liw = el("li", "cov-computed");
+        liw.appendChild(el("b", null, "✓ Length limit (" + an.wordLimit + " words)"));
+        liw.appendChild(el("span", null, " — the brief above honors it; the full document is folded away below."));
+        ulc.appendChild(liw);
+      }
+      scv.appendChild(ulc);
+    }
+
+    // When a word limit was requested, everything ceremonial folds away.
+    var body = doc;
+    if (concise) {
+      var more = el("details", "cons-more");
+      more.appendChild(el("summary", null, "The full council document"));
+      doc.appendChild(more);
+      body = more;
+    }
+
+    var s1 = consSection(body, next(), "The question as heard");
     s1.appendChild(el("p", "cons-preamble", c.preamble || ""));
     if (c.themes && c.themes.length) {
       var chips = el("div", "cons-themes");
@@ -1647,7 +2092,7 @@
     }
 
     if (c.debate && c.debate.length) {
-      var sD = consSection(doc, next(), "The debate");
+      var sD = consSection(body, next(), "The debate");
       var chamber = el("div", "cons-debate");
       var reduced = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
       c.debate.forEach(function (x, i) {
@@ -1662,7 +2107,7 @@
     }
 
     if (c.convergence && c.convergence.length) {
-      var s2 = consSection(doc, next(), "Where the council converges");
+      var s2 = consSection(body, next(), "Where the council converges");
       c.convergence.forEach(function (cv) {
         var item = el("div", "cons-conv");
         item.appendChild(el("p", null, cv.point));
@@ -1672,7 +2117,7 @@
     }
 
     if (c.dissents && c.dissents.length) {
-      var s3 = consSection(doc, next(), "Where the council divides");
+      var s3 = consSection(body, next(), "Where the council divides");
       c.dissents.forEach(function (d) {
         var item = el("div", "cons-dissent");
         if (d.between && d.between.length === 2) item.appendChild(el("div", "cons-between", d.between[0] + "  ⚔  " + d.between[1]));
@@ -1683,7 +2128,7 @@
     }
 
     if (c.risks && c.risks.length) {
-      var s4 = consSection(doc, next(), "Risks the council names");
+      var s4 = consSection(body, next(), "Risks the council names");
       c.risks.forEach(function (r) {
         var item = el("div", "cons-risk");
         item.appendChild(el("p", null, r.risk));
@@ -1692,11 +2137,11 @@
       });
     }
 
-    var s5 = consSection(doc, next(), "The verdict of the Supreme Council");
+    var s5 = consSection(body, next(), "The verdict of the Supreme Council");
     s5.appendChild(el("div", "cons-verdict", c.verdict || ""));
 
     if (c.directives && c.directives.length) {
-      var s6 = consSection(doc, next(), "Directives");
+      var s6 = consSection(body, next(), "Directives");
       var ol = el("ol", "recs cons-directives");
       c.directives.forEach(function (d) {
         var li = el("li");
@@ -1713,30 +2158,32 @@
     }
 
     if (c.minority && c.minority.voice) {
-      var s7 = consSection(doc, next(), "The minority opinion");
+      var s7 = consSection(body, next(), "The minority opinion");
       var mi = el("div", "cons-minority");
       mi.appendChild(el("p", null, c.minority.position));
       s7.appendChild(mi);
     }
 
     if (c.conditions && c.conditions.length) {
-      var s8 = consSection(doc, next(), "Conditions to reconvene");
+      var s8 = consSection(body, next(), "Conditions to reconvene");
       var ul = el("ul", "cons-conditions");
       c.conditions.forEach(function (cond) { ul.appendChild(el("li", null, cond)); });
       s8.appendChild(ul);
     }
 
-    var s9 = consSection(doc, next(), "The trial of ten thousand futures");
-    var mcNode = el("div", "cons-mc");
-    s9.appendChild(mcNode);
-    if (c.monteCarlo) renderMCStatic(mcNode, c.monteCarlo);
-    else mcNode.appendChild(el("p", "cons-preamble", "The verdict now goes to trial…"));
+    if ((c.directives || []).length && !(an && an.blocked)) {
+      var s9 = consSection(body, next(), "Council weight sensitivity");
+      var mcNode = el("div", "cons-mc");
+      s9.appendChild(mcNode);
+      if (c.monteCarlo) renderMCStatic(mcNode, c.monteCarlo);
+      else mcNode.appendChild(el("p", "cons-preamble", "Testing how firmly this bench holds its verdict under perturbation…"));
+    }
 
     if (c.confidence && c.confidence.level) {
       var meta = el("div", "cons-meta");
       meta.appendChild(el("span", "cons-level", c.confidence.level));
       meta.appendChild(el("span", null, c.confidence.note || ""));
-      doc.appendChild(meta);
+      body.appendChild(meta);
     }
   }
 
@@ -1848,6 +2295,9 @@
       card.appendChild(body);
       answers.appendChild(card);
     });
+    $("voicesWrap").open = !r.consensus;
+    $("voicesSummary").textContent = "The voices, one by one (" + (r.answers || []).length + ")";
+    $("councilFollow").hidden = true;
     if (r.consensus) {
       renderConsensus(r.consensus);
       tagVotes(r.consensus);
@@ -1859,9 +2309,10 @@
           updateSavedReport(r);
         });
       }
-      $("councilProvenance").textContent = r.engine === "claude"
-        ? "Deliberated and drafted by Claude from the " + (r.answers || []).length + " voices above."
-        : "Composed on-device from the assembled minds' own teachings.";
+      $("councilProvenance").textContent = (r.engine === "claude"
+        ? "Deliberated and drafted by Claude from the " + (r.answers || []).length + " voices below."
+        : "Composed on-device from the assembled minds' own teachings.") +
+        (r.mode ? " Engine — requested: " + r.mode.requested + " · delivered: " + r.mode.actual + (r.mode.reason ? " (" + r.mode.reason + ")" : "") + "." : "");
       $("councilConsolidated").hidden = false;
     } else {
       $("councilConsolidated").hidden = true;
@@ -1878,7 +2329,7 @@
       method: "POST",
       headers: {
         "content-type": "application/json",
-        "x-api-key": settings.apiKey,
+        "x-api-key": apiKey(),
         "anthropic-version": "2023-06-01",
         "anthropic-dangerous-direct-browser-access": "true",
       },
@@ -2054,7 +2505,10 @@
         showConsensus(parsed);
       }).catch(function (e) {
         if (/no answers could be gathered/.test(String(e.message))) throw e;
-        // Fall back to the on-device synthesis rather than losing the session.
+        // Fall back to the on-device synthesis rather than losing the session —
+        // and say so on the report itself, not only in a passing toast.
+        report.mode.actual = "wisdom engine (fallback)";
+        report.mode.reason = "AI synthesis failed: " + String(e.message || e).slice(0, 140);
         showConsensus(buildOfflineConsensus(q, members));
         toast("AI consensus failed (" + e.message + ") — showing the on-device consensus instead.");
       });
@@ -2076,7 +2530,7 @@
   function copyCouncilReport() {
     var r = load("freemasonry-circle.council.last", null);
     if (!r) return;
-    var md = "# Consensus of the Supreme Council — RAWFOTRA v6.7\n\n**Question:** " + r.question + "\n\n" +
+    var md = "# Consensus of the Supreme Council — RAWFOTRA v6.8\n\n**Question:** " + r.question + "\n\n" +
       (r.answers || []).map(function (a) { return "## " + a.name + "\n\n" + a.text; }).join("\n\n");
     var c = r.consensus;
     if (c) {
@@ -2111,7 +2565,7 @@
       if (c.conditions && c.conditions.length) md += "\n\n## Conditions to reconvene\n\n" + c.conditions.map(function (x) { return "- " + x; }).join("\n");
       if (c.confidence && c.confidence.level) md += "\n\n**Confidence:** " + c.confidence.level + " — " + (c.confidence.note || "");
       if (c.monteCarlo && c.monteCarlo.courses) {
-        md += "\n\n## The trial of ten thousand futures\n\n" + c.monteCarlo.courses.map(function (co) {
+        md += "\n\n## Council weight sensitivity\n\n" + c.monteCarlo.courses.map(function (co) {
           return "- " + co.name + ": **" + (co.p * 100).toFixed(1) + "%**" + (co.detail ? " — " + co.detail : "");
         }).join("\n") + "\n\n" + mcVerdictLine(c.monteCarlo) + "\n\n_" + MC_DISCLAIMER + "_";
       }
@@ -2209,7 +2663,11 @@
   function openSettings() {
     var radios = document.querySelectorAll("input[name=engine]");
     radios.forEach(function (r) { r.checked = r.value === settings.engine; });
-    $("apiKeyInput").value = settings.apiKey || "";
+    $("apiKeyInput").value = apiKey() || "";
+    $("keySessionOnly").checked = !!settings.keySession;
+    $("apiStatus").textContent = settings.lastTest
+      ? (settings.lastTest.ok ? "Last test: ready (" + settings.lastTest.model + ")" : "Last test failed: " + settings.lastTest.reason)
+      : "";
     $("modelSelect").value = settings.model || "claude-opus-5";
     $("memoryToggle").checked = memoryOn();
     $("insightToggle").checked = !!settings.insightOn;
@@ -2227,11 +2685,19 @@
   function saveSettings() {
     var engine = document.querySelector("input[name=engine]:checked");
     settings.engine = engine ? engine.value : "wisdom";
-    settings.apiKey = $("apiKeyInput").value.trim();
+    var enteredKey = $("apiKeyInput").value.trim();
+    settings.keySession = $("keySessionOnly").checked;
+    if (settings.keySession) {
+      try { sessionStorage.setItem("freemasonry-circle.apiKey.session", enteredKey); } catch (e) { /* ignore */ }
+      settings.apiKey = ""; // session-only: the key never touches persistent storage
+    } else {
+      settings.apiKey = enteredKey;
+      try { sessionStorage.removeItem("freemasonry-circle.apiKey.session"); } catch (e) { /* ignore */ }
+    }
     settings.model = $("modelSelect").value;
     settings.memoryOn = $("memoryToggle").checked;
     settings.insightOn = $("insightToggle").checked;
-    if (settings.engine === "claude" && !settings.apiKey) {
+    if (settings.engine === "claude" && !apiKey()) {
       toast("Add an API key to use Claude — falling back to the wisdom engine.");
       settings.engine = "wisdom";
     }
@@ -2410,6 +2876,49 @@
     renderDash();
     closeOverlays();
     openOverlay("dashOverlay");
+  }
+
+  function testApiConnection() {
+    var key = $("apiKeyInput").value.trim();
+    var model = $("modelSelect").value;
+    var s = $("apiStatus");
+    var setStatus = function (text, ok) {
+      s.textContent = text;
+      s.className = "fine api-status" + (ok === true ? " is-ok" : ok === false ? " is-bad" : "");
+    };
+    if (!key) { setStatus("No key entered — nothing to test.", false); return; }
+    setStatus("Validating against the API…", null);
+    fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        "x-api-key": key,
+        "anthropic-version": "2023-06-01",
+        "anthropic-dangerous-direct-browser-access": "true",
+      },
+      body: JSON.stringify({ model: model, max_tokens: 1, messages: [{ role: "user", content: "ping" }] }),
+    }).then(function (res) {
+      if (res.ok) {
+        setStatus("Ready — " + model + " answered.", true);
+        settings.lastTest = { when: new Date().toISOString(), ok: true, model: model };
+        save(LS.settings, settings);
+        return;
+      }
+      return res.text().then(function (bodyText) {
+        var msg = "";
+        try { var p = JSON.parse(bodyText); msg = (p.error && p.error.message) || ""; } catch (e) { /* ignore */ }
+        var reason =
+          res.status === 401 || res.status === 403 ? "Authentication failed — the key was rejected." :
+          res.status === 404 || /model/i.test(msg) ? "Model unavailable to this key: " + model + "." :
+          res.status === 429 ? "The key works, but the rate or credit limit is exhausted." :
+          "API error " + res.status + (msg ? ": " + msg : ".");
+        setStatus(reason, false);
+        settings.lastTest = { when: new Date().toISOString(), ok: false, model: model, reason: reason };
+        save(LS.settings, settings);
+      });
+    }).catch(function () {
+      setStatus("Network failure — check the connection; no request reached the API.", false);
+    });
   }
 
   /* ── Custom experts ────────────────────────────────────────── */
@@ -3135,6 +3644,19 @@
     $("councilFilter").addEventListener("input", renderCouncilPicker);
     $("councilConvene").addEventListener("click", conveneCouncil);
     $("councilCopy").addEventListener("click", copyCouncilReport);
+    $("councilFollow").addEventListener("click", function () {
+      if (councilBusy) { toast("The council is still deliberating."); return; }
+      var last = load("freemasonry-circle.council.last", null);
+      conveneCouncil._follows = last ? last.when : null;
+      stopMC();
+      $("councilReport").hidden = true;
+      $("councilSetup").hidden = false;
+      $("councilQuestion").value = "";
+      renderCouncilHistory();
+      $("councilScroll").scrollTop = 0;
+      $("councilQuestion").focus();
+    });
+    $("testApiBtn").addEventListener("click", testApiConnection);
     $("councilAgain").addEventListener("click", function () {
       if (councilBusy) { toast("The council is still deliberating."); return; }
       stopMC();
