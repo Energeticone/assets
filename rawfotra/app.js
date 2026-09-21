@@ -3204,16 +3204,16 @@
   var GI_REFRESH = 90;
 
   var GI_CHANNELS = [
-    { key: "all", label: "All signals", acc: "gold", q: '("breaking news" OR crisis OR "central bank" OR election OR ceasefire OR markets OR earthquake)' },
-    { key: "geopolitics", label: "Geopolitics", acc: "leadership", q: '(sanctions OR treaty OR summit OR nato OR ceasefire OR diplomacy OR "foreign minister" OR "security council")' },
-    { key: "conflict", label: "Conflict", acc: "strategy", q: '(offensive OR airstrike OR missile OR "drone attack" OR troops OR frontline OR insurgent)' },
-    { key: "finance", label: "Finance", acc: "modern", q: '("central bank" OR inflation OR "interest rate" OR "bond yields" OR "stock market" OR earnings OR recession)' },
-    { key: "politics", label: "Politics", acc: "literature", q: '(election OR parliament OR congress OR legislation OR coalition OR referendum OR impeachment)' },
-    { key: "business", label: "Business", acc: "art", q: '(merger OR acquisition OR layoffs OR ipo OR bankruptcy OR antitrust OR "supply chain")' },
-    { key: "technology", label: "Technology", acc: "science", q: '("artificial intelligence" OR semiconductor OR cyberattack OR "data breach" OR startup OR spacecraft)' },
-    { key: "crypto", label: "Crypto", acc: "spirit", q: '(bitcoin OR ethereum OR cryptocurrency OR stablecoin OR "crypto exchange")' },
-    { key: "commodities", label: "Commodities", acc: "innovation", q: '(opec OR "crude oil" OR "natural gas" OR wheat OR copper OR lithium OR "grain exports")' },
-    { key: "disasters", label: "Disasters", acc: "philosophy", q: '(earthquake OR hurricane OR typhoon OR wildfire OR flood OR eruption OR evacuation)' },
+    { key: "all", label: "All signals", acc: "gold", qs: "world", q: '("breaking news" OR crisis OR "central bank" OR election OR ceasefire OR markets OR earthquake)' },
+    { key: "geopolitics", qs: "diplomacy", label: "Geopolitics", acc: "leadership", q: '(sanctions OR treaty OR summit OR nato OR ceasefire OR diplomacy OR "foreign minister" OR "security council")' },
+    { key: "conflict", qs: "military", label: "Conflict", acc: "strategy", q: '(offensive OR airstrike OR missile OR "drone attack" OR troops OR frontline OR insurgent)' },
+    { key: "finance", qs: "markets", label: "Finance", acc: "modern", q: '("central bank" OR inflation OR "interest rate" OR "bond yields" OR "stock market" OR earnings OR recession)' },
+    { key: "politics", qs: "election", label: "Politics", acc: "literature", q: '(election OR parliament OR congress OR legislation OR coalition OR referendum OR impeachment)' },
+    { key: "business", qs: "merger", label: "Business", acc: "art", q: '(merger OR acquisition OR layoffs OR ipo OR bankruptcy OR antitrust OR "supply chain")' },
+    { key: "technology", qs: "technology", label: "Technology", acc: "science", q: '("artificial intelligence" OR semiconductor OR cyberattack OR "data breach" OR startup OR spacecraft)' },
+    { key: "crypto", qs: "bitcoin", label: "Crypto", acc: "spirit", q: '(bitcoin OR ethereum OR cryptocurrency OR stablecoin OR "crypto exchange")' },
+    { key: "commodities", qs: "\"crude oil\"", label: "Commodities", acc: "innovation", q: '(opec OR "crude oil" OR "natural gas" OR wheat OR copper OR lithium OR "grain exports")' },
+    { key: "disasters", qs: "earthquake", label: "Disasters", acc: "philosophy", q: '(earthquake OR hurricane OR typhoon OR wildfire OR flood OR eruption OR evacuation)' },
   ];
   function giChannel(key) {
     return GI_CHANNELS.filter(function (c) { return c.key === key; })[0] || GI_CHANNELS[0];
@@ -3282,8 +3282,14 @@
 
   function giFetch(url) {
     return fetch(url).then(function (res) {
-      if (!res.ok) throw new Error("HTTP " + res.status);
-      return res.json();
+      return res.text().then(function (body) {
+        if (!res.ok) throw new Error("HTTP " + res.status + (res.status === 429 ? " (rate-limited)" : ""));
+        try { return JSON.parse(body); } catch (e) {
+          throw new Error("unexpected reply: " + String(body).slice(0, 80).replace(/\s+/g, " "));
+        }
+      });
+    }, function () {
+      throw new Error("network or cross-origin block — the browser could not read the source");
     });
   }
   function giGdeltUrl(query, maxrecords, timespan) {
@@ -3307,7 +3313,8 @@
         if (d.bitcoin) setCell("pulseBtc", f(d.bitcoin.usd), ch(d.bitcoin.usd_24h_change || 0));
         if (d.ethereum) setCell("pulseEth", f(d.ethereum.usd), ch(d.ethereum.usd_24h_change || 0));
       }).catch(function () { setCell("pulseBtc", "—", "unavailable"); setCell("pulseEth", "—", "unavailable"); });
-    giFetch("https://api.frankfurter.app/latest?from=USD&to=EUR,GBP,JPY")
+    giFetch("https://api.frankfurter.dev/v1/latest?from=USD&to=EUR,GBP,JPY")
+      .catch(function () { return giFetch("https://api.frankfurter.app/latest?from=USD&to=EUR,GBP,JPY"); })
       .then(function (d) {
         if (d.rates) setCell("pulseFx", "€" + d.rates.EUR.toFixed(3), "£" + d.rates.GBP.toFixed(3) + " · ¥" + Math.round(d.rates.JPY));
       }).catch(function () { setCell("pulseFx", "—", "unavailable"); });
@@ -3358,42 +3365,62 @@
     });
   }
 
+  function giCleanArticles(d, chKey) {
+    var arts = ((d && d.articles) || []).filter(function (a) { return a && a.title; });
+    // De-duplicate near-identical headlines from syndication.
+    var seen = {};
+    arts = arts.filter(function (a) {
+      var k = String(a.title).toLowerCase().replace(/[^a-z]+/g, "").slice(0, 60);
+      if (seen[k]) return false;
+      seen[k] = 1;
+      return true;
+    });
+    arts.forEach(function (a) { a._cls = giClassify(a, chKey); });
+    return arts;
+  }
+
   function giLoadFeed(manual) {
     var gen = ++GI.gen;
     var ch = giChannel(GI.channel);
-    $("insightStatus").textContent = "Scanning the wire…";
+    $("insightStatus").textContent = "Scanning the wire\u2026";
+    // Two attempts before giving up: the rich channel query, then a plain
+    // single-term sweep, so a query rejection can never blank the room.
     giFetch(giGdeltUrl(ch.q, 45, "12h"))
       .then(function (d) {
-        if (gen !== GI.gen || !GI.open) return;
-        var arts = (d.articles || []).filter(function (a) { return a && a.title; });
-        // De-duplicate near-identical headlines from syndication.
-        var seen = {};
-        arts = arts.filter(function (a) {
-          var k = String(a.title).toLowerCase().replace(/[^a-z]+/g, "").slice(0, 60);
-          if (seen[k]) return false;
-          seen[k] = 1;
-          return true;
-        });
-        arts.forEach(function (a) { a._cls = giClassify(a, ch.key); });
-        GI.articles = arts;
+        var arts = giCleanArticles(d, ch.key);
+        if (!arts.length) throw new Error("the news index matched nothing on this channel");
+        return { arts: arts, note: "" };
+      })
+      .catch(function (e1) {
+        if (gen !== GI.gen || !GI.open) throw e1;
+        return giFetch(giGdeltUrl(ch.qs || "world", 45, "1d")).then(function (d) {
+          var arts = giCleanArticles(d, ch.key);
+          if (!arts.length) throw e1;
+          return { arts: arts, note: "Channel query failed (" + e1.message + ") \u2014 broad sweep shown instead. " };
+        }, function () { throw e1; });
+      })
+      .then(function (r) {
+        if (gen !== GI.gen || !GI.open || !r) return;
+        GI.articles = r.arts;
         giRenderFeed();
+        if (r.note) $("insightStatus").textContent = r.note + $("insightStatus").textContent;
         var cache = load(LS.insight, {});
-        cache[ch.key] = { when: new Date().toISOString(), articles: arts.slice(0, 30) };
+        cache[ch.key] = { when: new Date().toISOString(), articles: r.arts.slice(0, 30) };
         save(LS.insight, cache);
       })
-      .catch(function () {
+      .catch(function (e) {
         if (gen !== GI.gen || !GI.open) return;
         var cache = load(LS.insight, {})[ch.key];
         if (cache && cache.articles) {
           GI.articles = cache.articles;
           giRenderFeed();
           var when = "";
-          try { when = new Date(cache.when).toLocaleString(); } catch (e) { /* ignore */ }
-          $("insightStatus").textContent = "Live fetch failed — showing the last capture" + (when ? " from " + when : "") + ".";
+          try { when = new Date(cache.when).toLocaleString(); } catch (err) { /* ignore */ }
+          $("insightStatus").textContent = "Live fetch failed (" + e.message + ") \u2014 showing the last capture" + (when ? " from " + when : "") + ".";
         } else {
           GI.articles = [];
           $("insightFeed").innerHTML = "";
-          $("insightStatus").textContent = "The wire is unreachable right now — check your connection and it will retry on the next cycle.";
+          $("insightStatus").textContent = "The wire is unreachable \u2014 " + e.message + ". It will retry on the next cycle.";
         }
       });
     GI.left = GI_REFRESH;
@@ -3475,7 +3502,10 @@
     var rel = el("div", "brief-related");
     rel.appendChild(el("p", "fine", "Searching other outlets…"));
     s5.appendChild(rel);
-    var terms = sigWords(a.title).filter(function (w, i, arr) { return arr.indexOf(w) === i; }).slice(0, 4);
+    // Real words from the headline, never stems: the index matches whole words.
+    var terms = String(a.title || "").toLowerCase().split(/[^a-z0-9]+/).filter(function (w, i, arr) {
+      return w.length > 4 && !STOP_WORDS[w] && arr.indexOf(w) === i;
+    }).slice(0, 4);
     var relQuery = terms.map(function (t) { return '"' + t + '"'; }).join(" OR ");
     giFetch(giGdeltUrl(relQuery || '"' + String(a.title || "").slice(0, 40) + '"', 25, "3d"))
       .then(function (d) {
