@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<title>RAWFOTRA v6.8 — Counsel &amp; Strategic Advice from the Greatest Minds, Past and Present</title>
+<title>RAWFOTRA v6.9 — Counsel &amp; Strategic Advice from the Greatest Minds, Past and Present</title>
 <meta name="description" content="Explore 66 legendary minds, chat 1-on-1 with each, or convene your Supreme Council: ask one question, seat up to ten minds, and receive each voice's counsel plus the Consensus of the Supreme Council — a deep analysis with verdict, directives and dissents. Expandable with your own modern-day experts." />
 <meta name="theme-color" content="#06070c" />
 <link rel="icon" href="icons/icon-192.png" type="image/png" />
@@ -17,7 +17,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 <meta name="apple-mobile-web-app-title" content="RAWFOTRA" />
 <link rel="stylesheet" href="styles.css" />
-<meta property="og:title" content="RAWFOTRA v6.8 — Counsel &amp; Strategic Advice from the Greatest Minds, Past and Present" />
+<meta property="og:title" content="RAWFOTRA v6.9 — Counsel &amp; Strategic Advice from the Greatest Minds, Past and Present" />
 <meta property="og:description" content="Chat 1-on-1 with 66 legendary figures, or convene your Supreme Council of up to ten minds on one question — every voice heard, then one deep consensus: verdict, directives, dissents." />
 <meta property="og:type" content="website" />
 </head>
@@ -69,7 +69,7 @@
       <rect x="8" y="85" width="84" height="7" rx="2" fill="url(#markGold)" />
     </svg>
     <span class="brand-stack">
-      <span class="brand-word">RAWFOTRA <b>v6.8</b></span>
+      <span class="brand-word">RAWFOTRA <b>v6.9</b></span>
       <span class="brand-sub">a Magnetic Glass Initiative</span>
     </span>
   </a>
@@ -120,7 +120,7 @@
 
 <footer class="foot">
   <p class="foot-dash">— Remember the future. Consult the past.</p>
-  <p>RAWFOTRA <b>v6.8</b> — a Magnetic Glass Initiative</p>
+  <p>RAWFOTRA <b>v6.9</b> — a Magnetic Glass Initiative</p>
   <p class="foot-fine">Every mentor is data, so the roster is yours to grow.</p>
 </footer>
 
@@ -211,6 +211,14 @@
   </header>
 
   <div class="chat-scroll" id="insightScroll">
+    <div class="insight-wrap insight-querybar">
+      <div class="insight-query">
+        <input id="insightQuery" type="search" placeholder="Ask the wire anything — type a topic, press Enter for a full sweep of all sources…" aria-label="Query all sources" autocomplete="off" />
+        <button class="btn btn-gold" id="insightQueryGo" type="button">Sweep →</button>
+      </div>
+      <p class="fine insight-query-hint">Typing filters the live feed below; <b>Enter</b> runs a comprehensive sweep — press coverage, background, communities, geography and an AI read — no account or key needed.</p>
+    </div>
+
     <div class="insight-wrap" id="insightFeedWrap">
       <div class="pulse-strip" aria-label="World pulse">
         <div class="pulse-cell" id="pulseBtc"><span class="pulse-label">Bitcoin</span><span class="pulse-val">…</span><span class="pulse-sub"></span></div>
@@ -232,7 +240,6 @@
           <option>Oceania</option>
           <option>Global</option>
         </select>
-        <input id="insightSearch" type="search" placeholder="Search the signals…" aria-label="Search signals" />
       </div>
 
       <div class="fine insight-status" id="insightStatus"></div>
@@ -241,6 +248,19 @@
       <p class="fine insight-foot">Signals stream from open public data — the GDELT news index, USGS seismology,
         CoinGecko and Frankfurter — fetched directly by your browser. Classification (channel, region, sentiment,
         impact, sectors, assets) is computed on this device; verify against the original reports before acting.</p>
+    </div>
+
+    <div class="insight-wrap" id="queryPanel" hidden>
+      <div class="brief-head">
+        <button class="btn btn-ghost" id="queryBack">← Live feed</button>
+        <div class="daily-label">Query dossier</div>
+      </div>
+      <h2 class="query-title" id="queryTitle"></h2>
+      <div class="query-sources" id="querySources" aria-label="Source status"></div>
+      <div id="queryBody"></div>
+      <div class="council-actions">
+        <button class="btn btn-gold btn-big" id="queryCouncil">Put it before the Supreme Council →</button>
+      </div>
     </div>
 
     <div class="insight-wrap" id="briefPanel" hidden>

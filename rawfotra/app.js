@@ -2539,7 +2539,7 @@
   function copyCouncilReport() {
     var r = load("freemasonry-circle.council.last", null);
     if (!r) return;
-    var md = "# Consensus of the Supreme Council — RAWFOTRA v6.8\n\n**Question:** " + r.question + "\n\n" +
+    var md = "# Consensus of the Supreme Council — RAWFOTRA v6.9\n\n**Question:** " + r.question + "\n\n" +
       (r.answers || []).map(function (a) { return "## " + a.name + "\n\n" + a.text; }).join("\n\n");
     var c = r.consensus;
     if (c) {
@@ -3441,6 +3441,7 @@
 
   function giOpenBrief(a) {
     GI.brief = a;
+    $("queryPanel").hidden = true;
     adminLog({ kind: "insight", q: String(a.title || "").slice(0, 120), channel: a._cls.channel });
     $("insightFeedWrap").hidden = true;
     $("briefPanel").hidden = false;
@@ -3557,6 +3558,302 @@
     $("insightFeedWrap").hidden = false;
   }
 
+  /* ── Deep query: one topic, every reachable source ───────────
+     The user asks the wire anything; the room sweeps press coverage
+     (GDELT), background (Wikipedia), communities (Reddit, Hacker News),
+     attention and geography (GDELT timeline/geo) in parallel, then an
+     AI read synthesizes it — Claude when the reader has a key, a free
+     public engine when they do not, and the on-device composer as the
+     floor that never fails. X has no free public API, so the dossier
+     pivots there with one-tap live searches instead of pretending. */
+
+  function giQueryTerms(q) {
+    // Respect power syntax (quotes, OR); otherwise AND the real words.
+    if (/["()]| OR /.test(q)) return q;
+    var words = q.toLowerCase().split(/[^a-z0-9]+/).filter(function (w) { return w.length > 2 && !STOP_WORDS[w]; });
+    return (words.slice(0, 6).join(" ") || q).trim();
+  }
+
+  function giSourceChip(name) {
+    var chip = el("span", "src-chip", name);
+    $("querySources").appendChild(chip);
+    return {
+      ok: function (note) { chip.className = "src-chip is-ok"; chip.textContent = name + (note ? " · " + note : ""); },
+      fail: function (why) { chip.className = "src-chip is-bad"; chip.textContent = name + " · " + String(why).slice(0, 46); chip.title = String(why); },
+    };
+  }
+
+  function giQuerySection(title) {
+    var sec = el("section", "brief-sec");
+    sec.appendChild(el("h4", null, title));
+    $("queryBody").appendChild(sec);
+    return sec;
+  }
+
+  function giRunQuery(q) {
+    q = String(q || "").trim();
+    if (!q) { toast("Type a topic first."); return; }
+    var gen = ++GI.gen; // stale sweeps die with the feed generation
+    GI.brief = null;
+    $("briefPanel").hidden = true;
+    $("insightFeedWrap").hidden = true;
+    $("queryPanel").hidden = false;
+    $("queryTitle").textContent = q;
+    $("querySources").innerHTML = "";
+    $("queryBody").innerHTML = "";
+    $("insightScroll").scrollTop = 0;
+    adminLog({ kind: "insight", q: q.slice(0, 120), channel: "deep-query" });
+
+    var terms = giQueryTerms(q);
+    var enc = encodeURIComponent(terms + " sourcelang:english");
+    var dossier = { q: q, articles: [], countries: [], wiki: null, reddit: [], hn: [], trend: null, places: [] };
+    var pending = 5;
+    var live = function () { return gen === GI.gen && GI.open && !$("queryPanel").hidden; };
+
+    // ── Pivots (immediate): the hunt continues on platforms with no free API. ──
+    var sp = giQuerySection("Continue the hunt — live pivots");
+    sp.appendChild(el("p", "fine", "X offers no free public API, so these open the live searches directly — one tap each:"));
+    var pv = el("div", "query-pivots");
+    [["X · latest", "https://x.com/search?f=live&q=" + encodeURIComponent(q)],
+     ["X · top", "https://x.com/search?q=" + encodeURIComponent(q)],
+     ["Google News", "https://news.google.com/search?q=" + encodeURIComponent(q)],
+     ["YouTube", "https://www.youtube.com/results?search_query=" + encodeURIComponent(q)],
+     ["Wayback Machine", "https://web.archive.org/web/*/" + encodeURIComponent(q)]].forEach(function (x) {
+      var a = el("a", "pivot-link", x[0]);
+      a.href = x[1]; a.target = "_blank"; a.rel = "noopener";
+      pv.appendChild(a);
+    });
+    sp.appendChild(pv);
+
+    var done = function () {
+      pending--;
+      if (pending <= 0 && live()) giAiRead(dossier, gen);
+    };
+
+    // ── Press coverage ──
+    var cPress = giSourceChip("press");
+    giFetch("https://api.gdeltproject.org/api/v2/doc/doc?query=" + enc + "&mode=ArtList&format=json&sort=DateDesc&maxrecords=40&timespan=3d")
+      .then(function (d) {
+        if (!live()) return;
+        var arts = giCleanArticles(d, "all");
+        dossier.articles = arts;
+        var cs = {};
+        arts.forEach(function (a) { if (a.sourcecountry) cs[a.sourcecountry] = 1; });
+        dossier.countries = Object.keys(cs);
+        cPress.ok(arts.length + " articles · " + dossier.countries.length + " countries");
+        var s = giQuerySection("Press coverage — last 3 days");
+        if (!arts.length) { s.appendChild(el("p", "fine", "No press coverage matched. Try fewer or broader words.")); return; }
+        s.appendChild(el("p", "brief-body-text", arts.length + " articles from " + dossier.countries.length + " countries. The most recent, across outlets:"));
+        arts.slice(0, 8).forEach(function (a) {
+          var row = el("a", "rel-row");
+          row.href = a.url || "#"; row.target = "_blank"; row.rel = "noopener";
+          row.appendChild(el("span", "rel-outlet", (a.domain || "") + (a.sourcecountry ? " · " + a.sourcecountry : "") + " · " + giAgo(a.seendate)));
+          row.appendChild(el("span", "rel-title", a.title));
+          s.appendChild(row);
+        });
+      })
+      .catch(function (e) { if (live()) cPress.fail(e.message); })
+      .then(done, done);
+
+    // ── Attention trend ──
+    var cTrend = giSourceChip("attention");
+    giFetch("https://api.gdeltproject.org/api/v2/doc/doc?query=" + enc + "&mode=TimelineVolRaw&format=json&timespan=7d")
+      .then(function (d) {
+        if (!live()) return;
+        var data = (d && d.timeline && d.timeline[0] && d.timeline[0].data) || [];
+        if (data.length < 8) throw new Error("not enough data");
+        var vals = data.map(function (p) { return p.value || 0; });
+        var cut = Math.max(1, Math.floor(vals.length * 6 / 7));
+        var avg = function (a) { return a.reduce(function (x, y) { return x + y; }, 0) / Math.max(1, a.length); };
+        var before = avg(vals.slice(0, cut)), after = avg(vals.slice(cut));
+        var ratio = before > 0 ? after / before : (after > 0 ? 2 : 1);
+        dossier.trend = ratio >= 1.5 ? "rising sharply" : ratio >= 1.1 ? "rising" : ratio <= 0.6 ? "fading" : "steady";
+        cTrend.ok(dossier.trend);
+      })
+      .catch(function (e) { if (live()) cTrend.fail(e.message); })
+      .then(done, done);
+
+    // ── Geography ──
+    var cGeo = giSourceChip("geography");
+    giFetch("https://api.gdeltproject.org/api/v2/geo/geo?query=" + enc + "&format=geojson&timespan=7d&maxpoints=100")
+      .then(function (d) {
+        if (!live()) return;
+        var counts = Object.create(null);
+        ((d && d.features) || []).forEach(function (f) {
+          var n = f && f.properties && (f.properties.name || f.properties.shortname);
+          if (n) counts[n] = (counts[n] || 0) + (f.properties.count || 1);
+        });
+        var top = Object.keys(counts).sort(function (a, b) { return counts[b] - counts[a]; }).slice(0, 5);
+        if (!top.length) throw new Error("no locations");
+        dossier.places = top;
+        cGeo.ok(top.length + " hotspots");
+        var s = giQuerySection("Where it is being reported");
+        s.appendChild(el("p", "brief-body-text", "Coverage concentrates around: " + top.join(" · ") + "."));
+      })
+      .catch(function (e) { if (live()) cGeo.fail(e.message); })
+      .then(done, done);
+
+    // ── Background (Wikipedia) ──
+    var cWiki = giSourceChip("background");
+    giFetch("https://en.wikipedia.org/w/api.php?action=opensearch&limit=1&format=json&origin=*&search=" + encodeURIComponent(q))
+      .then(function (d) {
+        var title = d && d[1] && d[1][0];
+        if (!title) throw new Error("no matching article");
+        return giFetch("https://en.wikipedia.org/api/rest_v1/page/summary/" + encodeURIComponent(title));
+      })
+      .then(function (p) {
+        if (!live()) return;
+        if (!p || !p.extract) throw new Error("no summary");
+        dossier.wiki = { title: p.title, extract: p.extract };
+        cWiki.ok(p.title);
+        var s = giQuerySection("Background");
+        s.appendChild(el("p", "brief-body-text", p.extract));
+        var a = el("a", "brief-link", "Read the full article: " + p.title + " ↗");
+        a.href = (p.content_urls && p.content_urls.desktop && p.content_urls.desktop.page) || ("https://en.wikipedia.org/wiki/" + encodeURIComponent(p.title));
+        a.target = "_blank"; a.rel = "noopener";
+        s.appendChild(a);
+      })
+      .catch(function (e) { if (live()) cWiki.fail(e.message); })
+      .then(done, done);
+
+    // ── Communities (Reddit + Hacker News) ──
+    var cComm = giSourceChip("communities");
+    var reddit = giFetch("https://www.reddit.com/search.json?sort=relevance&t=week&limit=8&raw_json=1&q=" + encodeURIComponent(q))
+      .then(function (d) {
+        dossier.reddit = (((d || {}).data || {}).children || []).map(function (c) { return c.data; }).filter(Boolean).slice(0, 5);
+      }).catch(function () { /* one community source may fail alone */ });
+    var hn = giFetch("https://hn.algolia.com/api/v1/search?hitsPerPage=6&query=" + encodeURIComponent(q))
+      .then(function (d) { dossier.hn = ((d || {}).hits || []).filter(function (h) { return h && h.title; }).slice(0, 4); })
+      .catch(function () { /* ditto */ });
+    reddit.then(function () { return hn; }).then(function () {
+      if (!live()) return;
+      var n = dossier.reddit.length + dossier.hn.length;
+      if (!n) { cComm.fail("no discussions reachable"); return; }
+      cComm.ok(n + " threads");
+      var s = giQuerySection("Community signal — this week");
+      dossier.reddit.forEach(function (r) {
+        var row = el("a", "rel-row");
+        row.href = "https://www.reddit.com" + (r.permalink || ""); row.target = "_blank"; row.rel = "noopener";
+        row.appendChild(el("span", "rel-outlet", "reddit · r/" + (r.subreddit || "?") + " · " + (r.score || 0) + " points · " + (r.num_comments || 0) + " comments"));
+        row.appendChild(el("span", "rel-title", r.title || ""));
+        s.appendChild(row);
+      });
+      dossier.hn.forEach(function (h) {
+        var row = el("a", "rel-row");
+        row.href = "https://news.ycombinator.com/item?id=" + h.objectID; row.target = "_blank"; row.rel = "noopener";
+        row.appendChild(el("span", "rel-outlet", "hacker news · " + (h.points || 0) + " points · " + (h.num_comments || 0) + " comments"));
+        row.appendChild(el("span", "rel-title", h.title));
+        s.appendChild(row);
+      });
+    }).then(done, done);
+  }
+
+  /* The AI read: Claude with the reader's key, else a free public engine,
+     else the on-device composer. The provenance line never lies. */
+  function giAiRead(dossier, gen) {
+    var live = function () { return gen === GI.gen && GI.open && !$("queryPanel").hidden; };
+    if (!live()) return;
+    var s = giQuerySection("The AI read");
+    var body = el("div", "brief-body-text query-ai");
+    body.textContent = "Synthesizing the sweep…";
+    s.appendChild(body);
+    var prov = el("p", "fine");
+    s.appendChild(prov);
+
+    var digest = giDossierDigest(dossier);
+    var prompt = "You are an open-source intelligence analyst. From ONLY the material below, write a tight read of the topic \"" + dossier.q + "\": 1) the situation in 2-3 sentences; 2) key actors and interests; 3) where accounts differ or are thin; 4) what to watch next; 5) one-line confidence note naming gaps. No invented facts - if the material is thin, say so.\n\nMATERIAL:\n" + digest;
+
+    var finish = function (text, source, note) {
+      if (!live()) return;
+      body.textContent = text;
+      prov.textContent = "Delivered by " + source + "." + (note ? " " + note : "");
+    };
+    var localFloor = function (reason) {
+      finish(giLocalRead(dossier), "the on-device composer (no external AI reachable" + (reason ? " — " + String(reason).slice(0, 60) : "") + ")",
+        "Computed from the gathered material on this device.");
+    };
+
+    if (usingClaude()) {
+      apiCall({ model: settings.model || "claude-opus-5", max_tokens: 1500,
+        system: "You are a careful open-source intelligence analyst. Use only supplied material; never invent facts.",
+        messages: [{ role: "user", content: prompt }] })
+        .then(function (r) {
+          var t = textOf(r);
+          if (!t) throw new Error("empty reply");
+          finish(t, "Claude (" + (settings.model || "claude-opus-5") + ") with your API key");
+        })
+        .catch(function (e) { giFreeEngine(prompt, function (t) { finish(t, "a free public AI engine (no account)", "Claude failed: " + e.message + ". Queries sent to a free engine are public infrastructure — keep private details out."); }, localFloor); });
+    } else {
+      giFreeEngine(prompt, function (t) {
+        finish(t, "a free public AI engine (no account or key)", "Free engines are shared public infrastructure: responses can be slow or brief, and your query text leaves this device — keep private details out. Add your own Claude key in Settings for the strongest read.");
+      }, localFloor);
+    }
+  }
+
+  function giFreeEngine(prompt, ok, fail) {
+    var ac = typeof AbortController !== "undefined" ? new AbortController() : null;
+    var timer = ac ? setTimeout(function () { ac.abort(); }, 45000) : null;
+    fetch("https://text.pollinations.ai/" + encodeURIComponent(prompt.slice(0, 6000)), ac ? { signal: ac.signal } : {})
+      .then(function (res) {
+        if (timer) clearTimeout(timer);
+        if (!res.ok) throw new Error("HTTP " + res.status);
+        return res.text();
+      })
+      .then(function (t) {
+        t = String(t || "").trim();
+        if (t.length < 40 || /^\s*[<{]/.test(t)) throw new Error("unusable reply");
+        ok(t);
+      })
+      .catch(function (e) { if (timer) clearTimeout(timer); fail(e && e.message); });
+  }
+
+  function giDossierDigest(d) {
+    var lines = [];
+    if (d.articles.length) {
+      lines.push("PRESS (" + d.articles.length + " articles, countries: " + d.countries.slice(0, 8).join(", ") + "):");
+      d.articles.slice(0, 10).forEach(function (a) { lines.push("- [" + (a.domain || "?") + " / " + (a.sourcecountry || "?") + "] " + a.title); });
+    } else lines.push("PRESS: nothing reachable.");
+    if (d.trend) lines.push("ATTENTION over 7 days: " + d.trend + ".");
+    if (d.places.length) lines.push("GEOGRAPHY of coverage: " + d.places.join(", ") + ".");
+    if (d.wiki) lines.push("BACKGROUND (" + d.wiki.title + "): " + d.wiki.extract.slice(0, 500));
+    if (d.reddit.length || d.hn.length) {
+      lines.push("COMMUNITY THREADS:");
+      d.reddit.forEach(function (r) { lines.push("- reddit r/" + r.subreddit + " (" + r.score + "pts): " + r.title); });
+      d.hn.forEach(function (h) { lines.push("- hn (" + (h.points || 0) + "pts): " + h.title); });
+    }
+    return lines.join("\n");
+  }
+
+  function giLocalRead(d) {
+    var parts = [];
+    if (d.articles.length) {
+      var neg = 0, pos = 0;
+      d.articles.forEach(function (a) {
+        var hay = " " + String(a.title).toLowerCase() + " ";
+        GI_NEG.forEach(function (w) { if (hay.indexOf(w) !== -1) neg++; });
+        GI_POS.forEach(function (w) { if (hay.indexOf(w) !== -1) pos++; });
+      });
+      var mood = neg > pos * 1.5 ? "predominantly tense" : pos > neg ? "leaning constructive" : "mixed";
+      var outlets = Object.create(null);
+      d.articles.forEach(function (a) { if (a.domain) outlets[a.domain] = (outlets[a.domain] || 0) + 1; });
+      var topOut = Object.keys(outlets).sort(function (a, b) { return outlets[b] - outlets[a]; }).slice(0, 3);
+      parts.push("Situation: " + d.articles.length + " articles across " + d.countries.length + " countries in the last three days, led by " + topOut.join(", ") + ". The tone of the headlines is " + mood + (d.trend ? ", with attention " + d.trend : "") + ".");
+    } else {
+      parts.push("Situation: the press sweep found nothing reachable on this topic right now — treat everything below as thin evidence.");
+    }
+    if (d.places.length) parts.push("Geography: reporting clusters around " + d.places.join(", ") + ".");
+    if (d.wiki) parts.push("Background: " + firstSentence(d.wiki.extract, 260));
+    if (d.reddit.length || d.hn.length) parts.push("Communities: " + (d.reddit.length + d.hn.length) + " active threads this week — useful for ground-level claims, but unverified by definition.");
+    parts.push("What to watch: whether coverage spreads to new countries, whether community claims get picked up by the press, and whether the attention trend " + (d.trend ? "holds" : "emerges") + ".");
+    parts.push("Confidence: composed on-device from the gathered material only — headlines and summaries, not full texts. Open the sources above before acting.");
+    return parts.join("\n\n");
+  }
+
+  function giCloseQuery() {
+    $("queryPanel").hidden = true;
+    $("insightFeedWrap").hidden = false;
+  }
+
   function giRenderChips() {
     var wrap = $("insightChips");
     wrap.innerHTML = "";
@@ -3582,6 +3879,7 @@
     $("aboutView").hidden = true;
     GI.open = true;
     $("insightView").hidden = false;
+    $("queryPanel").hidden = true;
     giCloseBrief();
     giRenderChips();
     giLoadFeed(true);
@@ -3666,9 +3964,29 @@
       GI.region = e.target.value;
       giRenderFeed();
     });
-    $("insightSearch").addEventListener("input", function (e) {
+    $("insightQuery").addEventListener("input", function (e) {
       GI.search = e.target.value.trim().toLowerCase();
+      if (!$("insightFeedWrap").hidden) giRenderFeed();
+    });
+    $("insightQuery").addEventListener("keydown", function (e) {
+      if (e.key === "Enter" && !e.isComposing && e.keyCode !== 229) {
+        e.preventDefault();
+        giRunQuery(e.target.value);
+      }
+    });
+    $("insightQueryGo").addEventListener("click", function () { giRunQuery($("insightQuery").value); });
+    $("queryBack").addEventListener("click", function () {
+      giCloseQuery();
+      GI.search = $("insightQuery").value.trim().toLowerCase();
       giRenderFeed();
+    });
+    $("queryCouncil").addEventListener("click", function () {
+      var topic = $("queryTitle").textContent;
+      if (!topic) return;
+      closeInsight();
+      openCouncil();
+      $("councilQuestion").value = 'The council weighs an open question from the wire: "' + topic.slice(0, 160) +
+        '" \u2014 how should a decision-maker read the situation, and what should they do about it?';
     });
     $("briefCouncil").addEventListener("click", function () {
       var a = GI.brief;
@@ -3730,7 +4048,11 @@
         var anyOverlay = ["profileOverlay", "settingsOverlay", "expertOverlay", "codexOverlay", "adminOverlay", "dashOverlay"].some(function (id) { return !$(id).hidden; });
         if (anyOverlay) dismissOverlays();
         else if (!$("aboutView").hidden) closeAbout();
-        else if (!$("insightView").hidden) { if (!$("briefPanel").hidden) giCloseBrief(); else closeInsight(); }
+        else if (!$("insightView").hidden) {
+          if (!$("queryPanel").hidden) giCloseQuery();
+          else if (!$("briefPanel").hidden) giCloseBrief();
+          else closeInsight();
+        }
         else if (!$("chatView").hidden) closeChat();
         else if (!$("councilView").hidden) closeCouncil();
       }

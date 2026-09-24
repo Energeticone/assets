@@ -1,4 +1,4 @@
-# 🏛️ RAWFOTRA v6.8 — a Magnetic Glass Initiative
+# 🏛️ RAWFOTRA v6.9 — a Magnetic Glass Initiative
 
 Counsel from history's greatest minds.
 
@@ -66,6 +66,18 @@ pure data: adding a **modern-day expert** is a form in the app or a few lines of
   countries (compare the framings), and source context — plus one tap to put
   the signal before the Supreme Council. Fails soft: last capture is cached
   for offline reading.
+- **Deep query** ⌕ — inside the live room, ask the wire anything: typing
+  filters the feed, Enter sweeps every reachable open source in parallel —
+  press coverage (GDELT, with country spread), 7-day attention trend,
+  geography of coverage, background (Wikipedia), community signal (Reddit +
+  Hacker News) — each source degrading independently with its status shown.
+  The dossier ends with an **AI read**: Claude when the reader has a key, a
+  free public AI engine when they do not (clearly labeled, with a privacy
+  note), and the on-device composer as the floor that never fails — the
+  provenance line always says which tier delivered. X has no free public
+  API, so the dossier pivots there honestly: one-tap live X searches,
+  Google News, YouTube and the Wayback Machine. One tap puts any dossier
+  before the Supreme Council.
 - **Admin dashboard** 🛡 — Settings (admin-gated) opens a device-local dashboard:
   queries asked today / week to date / month to date / lifetime (council vs
   chat), most-summoned minds, themes asked about, engine split, average bench
