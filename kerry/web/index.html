@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Kerry — the learning loop the firm owns</title>
+  <meta name="description" content="Kerry is a pioneer AI architecture: not a model, but the learning loop that sits on top of a swappable generalist model and compounds a firm's human and token capital. Runs entirely in your browser." />
+  <meta name="theme-color" content="#0e1116" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" href="icons/icon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="icons/icon-180.png" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="top">
+    <div class="top-inner">
+      <div class="brand">
+        <div class="mark" aria-hidden="true">K</div>
+        <div>
+          <h1>Kerry</h1>
+          <p class="sub">the learning loop the firm owns</p>
+        </div>
+      </div>
+      <div class="spacer"></div>
+      <button class="icon-btn" id="themeBtn" title="Toggle light / dark" aria-label="Toggle theme">◐ Theme</button>
+    </div>
+  </header>
+
+  <div class="wrap">
+    <section class="hero">
+      <p class="kicker">A pioneer model that is a loop, not a model</p>
+      <h2>Own the learning. Rent the model.</h2>
+      <p class="lead">
+        The opportunity isn't picking the best model — it's building a learning loop
+        <em>on top of</em> models, where your firm's human capital and token capital
+        compound and stay yours. Kerry runs that loop right here in your browser.
+        Watch it climb, then swap the model out and watch the value hold.
+      </p>
+
+      <div class="capital-strip">
+        <div class="cap human">
+          <h3>Human capital</h3>
+          <p>The knowledge, judgment, and direction your people bring — the knowledge base and the goals they set.</p>
+        </div>
+        <div class="cap token">
+          <h3>Token capital</h3>
+          <p>The AI capability you build and own — the veteran's lessons, distilled from your own traces.</p>
+        </div>
+      </div>
+    </section>
+
+    <div class="grid">
+      <!-- Run panel -->
+      <section class="card full" id="runCard">
+        <h3 class="title">The hill-climbing machine</h3>
+        <p class="hint">Each cycle: retrieve → draft → evaluate → reward → distill → absorb. The model only drafts; the firm's judgment does the rest.</p>
+
+        <div class="controls">
+          <label class="lbl" for="genSelect">Generalist</label>
+          <select class="gen" id="genSelect" aria-label="Swappable generalist model"></select>
+          <button class="btn primary" id="climbBtn">▶ Climb 4 cycles</button>
+          <button class="btn" id="stepBtn">Step one cycle</button>
+          <button class="btn" id="swapBtn" title="Swap the model and re-run — the sovereignty test">⇄ Swap model &amp; test sovereignty</button>
+          <button class="btn ghost" id="resetBtn">Reset</button>
+        </div>
+
+        <div class="tiles">
+          <div class="tile signal"><p class="k">Private eval score</p><p class="v" id="tEval">—</p></div>
+          <div class="tile"><p class="k">Human capital</p><p class="v" id="tHuman">—</p></div>
+          <div class="tile token"><p class="k">Token capital</p><p class="v" id="tToken">—</p></div>
+          <div class="tile"><p class="k">Lessons owned</p><p class="v" id="tLessons">—</p></div>
+        </div>
+
+        <div class="chart-wrap">
+          <svg class="chart" id="chart" viewBox="0 0 720 260" role="img" aria-label="Eval score and token capital per cycle"></svg>
+          <div class="legend">
+            <span><span class="dot" style="background:var(--signal)"></span>Private eval score (business outcomes)</span>
+            <span><span class="dot" style="background:var(--accent)"></span>Token capital (owned lessons)</span>
+          </div>
+        </div>
+
+        <div class="sov" id="sovBox" hidden>
+          <div class="verdict" id="sovVerdict"></div>
+          <div class="detail" id="sovDetail"></div>
+          <div class="nums" id="sovNums"></div>
+        </div>
+      </section>
+
+      <!-- Veteran -->
+      <section class="card">
+        <h3 class="title">The company veteran <span id="vetCount" style="color:var(--text-faint);font-weight:400"></span></h3>
+        <p class="hint">Lessons distilled from real traces — the token capital that survives a model swap.</p>
+        <div class="list" id="vetList"><p class="empty">No lessons yet. Run a cycle — the veteran learns from what the evals show was missed.</p></div>
+      </section>
+
+      <!-- Knowledge base -->
+      <section class="card">
+        <h3 class="title">Institutional memory <span id="kbCount" style="color:var(--text-faint);font-weight:400"></span></h3>
+        <p class="hint">The firm's owned knowledge, queried efficiently. Human capital in storage.</p>
+        <div class="list" id="kbList"></div>
+      </section>
+
+      <!-- Traces -->
+      <section class="card">
+        <h3 class="title">Trace log</h3>
+        <p class="hint">Real in-house traces — the signal the private RL environment learns from.</p>
+        <div class="list" id="traceList"><p class="empty">Traces appear here as tasks run through the loop.</p></div>
+      </section>
+
+      <!-- Editor -->
+      <section class="card">
+        <h3 class="title">Make it your firm</h3>
+        <p class="hint">Edit the knowledge base and tasks (JSON), then re-seed. Your loop, your capital — saved on this device.</p>
+        <textarea class="editor" id="editor" spellcheck="false" aria-label="Knowledge and tasks JSON"></textarea>
+        <div class="controls" style="margin-top:10px">
+          <button class="btn primary" id="applyBtn">Apply &amp; re-seed</button>
+          <button class="btn ghost" id="seedBtn">Restore sample firm</button>
+        </div>
+        <div class="editor-msg" id="editorMsg"></div>
+      </section>
+    </div>
+
+    <details class="arch">
+      <summary>How Kerry maps to the architecture</summary>
+      <div class="arch-body">
+        <p style="color:var(--text-dim);font-size:13.5px;margin-top:4px">
+          Everything below the swappable seam is a commodity you rent. Everything above it is capital you own.
+        </p>
+        <table>
+          <thead><tr><th>Thesis</th><th>In this app</th></tr></thead>
+          <tbody>
+            <tr><td>Institutional memory, queried efficiently</td><td><code>KnowledgeBase</code> — the firm's owned facts</td></tr>
+            <tr><td>The company veteran that survives a model swap</td><td><code>Veteran</code> — accumulated lessons</td></tr>
+            <tr><td>Private evals against business outcomes, not benchmarks</td><td><code>PrivateEvals</code></td></tr>
+            <tr><td>A private RL environment that learns from real traces</td><td><code>RLEnvironment</code></td></tr>
+            <tr><td>Swap the generalist without losing the veteran</td><td>the <code>Generalist</code> selector — the commodity seam</td></tr>
+            <tr><td>Human + token capital, compounding</td><td><code>CapitalLedger</code></td></tr>
+            <tr><td>The hill-climbing machine that ties it together</td><td><code>Kerry</code> — the loop</td></tr>
+            <tr><td>Learning as a durable, owned asset</td><td><code>localStorage</code> — survives reloads</td></tr>
+          </tbody>
+        </table>
+        <p style="color:var(--text-faint);font-size:12.5px;margin-top:12px">
+          The offline generalists are deterministic stand-ins so the sovereignty test is reproducible with no key.
+          In production the same seam takes a frontier model (e.g. Claude) — the loop above it does not change. That
+          is the point.
+        </p>
+      </div>
+    </details>
+
+    <footer class="foot">
+      Kerry runs entirely on your device — no server, no API key, works offline. Your firm's learning is saved locally and stays yours.
+    </footer>
+  </div>
+
+  <script src="engine.js"></script>
+  <script src="seed.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
