@@ -271,29 +271,46 @@ def api_push_subscribe():
     return jsonify({"ok": True, "push_enabled": bool(_PUSH and _VAPID_PRIVATE)})
 
 
-def main():
-    global _VAPID_PUBLIC, _VAPID_PRIVATE
+_provisioned = False
+
+
+def provision():
+    """Idempotent runtime setup: DB, media dir, VAPID keys, bridge listeners.
+
+    Called at import so it runs under any WSGI server (gunicorn), and again from
+    main() for the dev server. TLS is handled separately: by main() for the dev
+    server and by gunicorn.conf.py for production.
+    """
+    global _VAPID_PUBLIC, _VAPID_PRIVATE, _provisioned
+    if _provisioned:
+        return
     store.init()
     os.makedirs(config.MEDIA_DIR, exist_ok=True)
-
     _VAPID_PUBLIC, _VAPID_PRIVATE = security.ensure_vapid()
+    if bridge.__class__.__name__ != "LocalBridge":
+        bridge.start()
+    _provisioned = True
 
+
+# Run provisioning at import so `gunicorn server:app` has a ready application.
+provision()
+
+
+def main():
+    """Development entrypoint: Flask's built-in server with auto TLS."""
     ssl_context = None
     scheme = "http"
     if config.USE_TLS:
         try:
-            cert, key = security.ensure_cert()
-            ssl_context = (cert, key)
+            ssl_context = security.ensure_cert()
             scheme = "https"
         except Exception as e:
             log.warning("TLS setup failed (%s); falling back to HTTP", e)
 
-    if bridge.__class__.__name__ != "LocalBridge":
-        bridge.start()
-
-    log.info("iOS-on-Huawei on %s://%s:%s  (bridge=%s, push=%s, tls=%s)",
+    log.info("iOS-on-Huawei (dev server) on %s://%s:%s  (bridge=%s, push=%s, tls=%s)",
              scheme, config.HOST, config.PORT, config.BRIDGE,
              bool(_VAPID_PRIVATE), ssl_context is not None)
+    log.info("For production use: gunicorn -c gunicorn.conf.py server:app")
     app.run(host=config.HOST, port=config.PORT, threaded=True,
             ssl_context=ssl_context, debug=False)
 

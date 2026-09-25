@@ -3,3 +3,6 @@ Flask-Cors>=4.0
 python-dotenv>=1.0
 pywebpush>=1.14      # Web Push notifications + VAPID key generation
 requests>=2.31       # used by the iMessage relay bridge
+gunicorn>=21.2       # production WSGI server
+gevent>=23.9         # async worker for long-lived SSE connections
+packaging>=21.0      # required by gunicorn's gevent worker

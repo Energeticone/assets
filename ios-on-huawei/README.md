@@ -75,11 +75,17 @@ If SSE is ever unavailable the client automatically falls back to HTTP polling.
 cd ios-on-huawei
 python -m venv .venv && source .venv/bin/activate
 pip install -r requirements.pip
-python server.py            # https://0.0.0.0:8770
+
+# Production (recommended):
+gunicorn -c gunicorn.conf.py server:app   # https://0.0.0.0:8770
+
+# Development (Flask's built-in server):
+python server.py
 ```
 
 On first run the server **auto-generates** a self-signed TLS certificate (`certs/`)
-and Web Push VAPID keys (`vapid.json`). No manual setup.
+and Web Push VAPID keys (`vapid.json`). No manual setup. Both entrypoints listen
+on the same address and serve the same app.
 
 Then on the Huawei:
 
@@ -106,17 +112,35 @@ For a trusted padlock instead of the self-signed warning, point the server at yo
 own cert: `IOS_HUAWEI_CERT=/path/cert.pem IOS_HUAWEI_KEY=/path/key.pem`. To run
 plain HTTP behind your own reverse proxy, set `IOS_HUAWEI_TLS=0`.
 
+### Production notes (gunicorn + gevent)
+
+`gunicorn.conf.py` runs a **single gevent worker**, and that is deliberate:
+
+- **gevent**, because Server-Sent Events hold one long-lived HTTP response per
+  connected phone. Sync workers would each block on a single client; gevent's
+  greenlets serve thousands of concurrent SSE streams in one process (verified
+  with 8 simultaneous clients on one worker).
+- **one worker**, because the realtime broker in `server.py` is in-process. A
+  second worker wouldn't see the first's messages. To scale past one worker,
+  move the broker to a shared bus (e.g. Redis pub/sub) and raise
+  `IOS_HUAWEI_WORKERS`.
+
+Tunables (all env vars): `IOS_HUAWEI_WORKERS`, `IOS_HUAWEI_WORKER_CONNECTIONS`,
+`IOS_HUAWEI_TIMEOUT`, `IOS_HUAWEI_LOGLEVEL`. To keep it running, put gunicorn
+under a process manager (systemd, supervisor, or a container restart policy).
+
 ### Optional: real iMessage via a Mac relay box
 
 1. On a Mac mini/MacBook logged into your Apple ID, install **BlueBubbles Server**.
 2. Set `BRIDGE=imessage_relay`, `BLUEBUBBLES_URL`, `BLUEBUBBLES_PASSWORD` (see `config.py`).
-3. Restart `server.py`. Your real iMessages now flow into the Huawei app.
+3. Restart the server. Your real iMessages now flow into the Huawei app.
 
 ## Layout
 
 ```
 ios-on-huawei/
 ├── server.py            Flask app: REST + SSE realtime, static serving
+├── gunicorn.conf.py     Production WSGI config (gevent, single worker, auto TLS)
 ├── store.py             SQLite persistence (users, threads, messages, media, push)
 ├── security.py          Auto self-signed TLS cert + VAPID key provisioning
 ├── config.py            Env-driven config (matches repo convention)
