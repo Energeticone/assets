@@ -118,6 +118,19 @@ pure data: adding a **modern-day expert** is a form in the app or a few lines of
   bio, teachings, voice, greeting, starters, optional wisdom bank). Custom experts
   live in your browser, are fully chat- and council-capable with both engines, can be
   edited or removed, and can be **exported/imported as JSON**.
+- **The Athenaeum** ⊕ — an in-app **marketplace** of curated *expert packs*: themed
+  bundles of new minds ready to seat with one tap (*Founders & Operators*,
+  *The Contemplatives*, *Statecraft & Command*, …). In keeping with the app's
+  zero-dependency ethos the whole catalog is **bundled data** — no accounts, no keys,
+  no network requests. Installing a pack (or a single member) copies it into your
+  custom experts, so an installed mind behaves exactly like one you added yourself:
+  chat- and council-capable, editable, removable, and exportable. Installs are
+  collision-safe on id and de-duplicated, so re-installing a pack never seats the
+  same mind twice, and packs never touch or duplicate the permanent built-in seats.
+  Each pack member is authored to the same house rules as the pantheon (original
+  paraphrase, five teachings, first-principles doctrine, and a ten-theme wisdom
+  bank). Add your own packs by appending to `window.RAWFOTRA_EXPERT_PACKS` in
+  [`data/expert-packs.js`](data/expert-packs.js).
 - **Deep links** — `#/mind/<id>` opens a profile, `#/chat/<id>` opens a conversation.
 - **Zero dependencies** — vanilla HTML/CSS/JS, no build step, no external requests
   (except the optional Claude API calls you configure).

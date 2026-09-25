@@ -415,6 +415,51 @@ a { color: var(--gold); }
 .wisdom-details summary { cursor: pointer; color: var(--ink-dim); }
 #wisdomFields { display: flex; flex-direction: column; gap: 10px; margin-top: 12px; }
 
+/* ── The Athenaeum: expert-pack marketplace ── */
+.modal.market { max-width: 860px; }
+.market-list { display: flex; flex-direction: column; gap: 18px; margin-top: 20px; }
+.market-pack {
+  padding: 20px 22px;
+  border-color: color-mix(in srgb, var(--accent, var(--line)) 32%, transparent);
+}
+.market-pack-head { display: flex; align-items: center; gap: 14px; }
+.market-glyph {
+  flex: none; width: 46px; height: 46px; border-radius: 12px;
+  display: grid; place-items: center; font-size: 22px;
+  color: var(--accent, var(--gold));
+  background: color-mix(in srgb, var(--accent, var(--gold)) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent, var(--gold)) 34%, transparent);
+}
+.market-pack .market-pack-title { font-family: var(--serif, inherit); font-size: 21px; letter-spacing: normal; text-transform: none; color: var(--ink); margin: 0; font-weight: 600; }
+.market-pack-tag { color: var(--accent, var(--gold)); font-style: italic; font-size: 14px; margin-top: 2px; }
+.market-pack-blurb { color: var(--ink-dim); margin: 12px 0 4px; max-width: 74ch; font-size: 14.5px; }
+.market-members {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 8px; margin: 14px 0 4px;
+}
+.market-member {
+  display: flex; align-items: center; gap: 11px; text-align: left;
+  padding: 10px 12px; border: 1px solid var(--line-soft); border-radius: 12px;
+  background: rgba(19, 21, 29, 0.55); transition: border-color 0.15s, background 0.15s, transform 0.15s;
+}
+.market-member:hover { border-color: var(--accent, var(--gold-soft)); background: var(--bg-card-hover, rgba(28, 31, 42, 0.7)); transform: translateY(-2px); }
+.market-member > .medallion { flex: none; }
+.market-member-info { display: flex; flex-direction: column; min-width: 0; flex: 1; }
+.market-member-name { color: var(--ink); font-weight: 600; font-size: 14px; line-height: 1.25; }
+.market-member-ep { color: var(--accent, var(--ink-faint)); font-style: italic; font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; margin-top: 1px; }
+.market-member-badge {
+  flex: none; font-family: var(--mono); font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--accent, var(--gold)); border: 1px solid color-mix(in srgb, var(--accent, var(--gold)) 40%, transparent);
+  padding: 4px 9px; border-radius: 999px;
+}
+.market-member.installed { opacity: 0.82; }
+.market-member.installed .market-member-badge { color: var(--ink-dim); border-color: var(--line-soft); }
+.market-pack-foot { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 14px; flex-wrap: wrap; }
+.market-pack-count { letter-spacing: 0.1em; }
+@media (max-width: 640px) {
+  .market-members { grid-template-columns: 1fr; }
+}
+
 /* ── Council ── */
 .council-art {
   position: absolute; top: 0; left: 0; right: 0;

@@ -3181,6 +3181,147 @@
     reader.readAsText(file);
   }
 
+  /* ── The Athenaeum: expert-pack marketplace ─────────────────────
+     Curated, bundled packs of new minds (data/expert-packs.js) —
+     no accounts, no keys, no network, in keeping with the app's
+     ethos. Installing copies a pack's members into customExperts
+     (the same store as the form and Import), collision-safe on id
+     via slugify and de-duplicated by a packRef stamp so re-installing
+     a pack never seats the same mind twice. An installed mind is an
+     ordinary custom expert thereafter: chat- and council-capable,
+     editable, removable, and exportable. */
+
+  var expertPacks = (window.RAWFOTRA_EXPERT_PACKS || []).filter(function (p) {
+    return p && p.id && Array.isArray(p.members) && p.members.length;
+  });
+
+  // The custom expert installed from a given pack member, if any.
+  function installedFromPack(packId, memberId) {
+    return customExperts.filter(function (e) {
+      return e.packRef && e.packRef.pack === packId && e.packRef.member === memberId;
+    })[0] || null;
+  }
+
+  // Copy one bundled pack member into the pantheon. Bundled data is trusted,
+  // so we keep the full persona (doctrine included); slugify keeps the id from
+  // colliding with any existing mind, and packRef records the origin for dedupe.
+  function installMember(pack, member) {
+    var e = JSON.parse(JSON.stringify(member));
+    var origId = String(member.id || member.name || "expert");
+    e.id = slugify(member.name || origId);
+    e.packRef = { pack: pack.id, member: origId };
+    if (!e.category) e.category = "modern";
+    customExperts.push(e);
+    return e;
+  }
+
+  function packById(id) {
+    return expertPacks.filter(function (p) { return p.id === id; })[0] || null;
+  }
+
+  function installPack(packId) {
+    var pack = packById(packId);
+    if (!pack) return;
+    var added = 0;
+    pack.members.forEach(function (m) {
+      if (installedFromPack(pack.id, m.id)) return;
+      installMember(pack, m);
+      added++;
+    });
+    if (!added) { toast("“" + pack.title + "” is already in your pantheon."); return; }
+    var stored = save(LS.experts, customExperts);
+    renderChips();
+    renderGrid();
+    renderMarketplace();
+    toast(stored
+      ? "Installed " + added + " mind" + (added === 1 ? "" : "s") + " from “" + pack.title + ".”"
+      : "Installed " + added + ", but browser storage is full or blocked — they will be lost on reload.");
+  }
+
+  function installOne(packId, memberId) {
+    var pack = packById(packId);
+    if (!pack) return;
+    var member = pack.members.filter(function (m) { return m.id === memberId; })[0];
+    if (!member) return;
+    if (installedFromPack(pack.id, member.id)) { toast(member.name + " is already seated."); return; }
+    var e = installMember(pack, member);
+    var stored = save(LS.experts, customExperts);
+    renderChips();
+    renderGrid();
+    renderMarketplace();
+    toast(stored
+      ? e.name + " has joined the pantheon."
+      : "Added " + e.name + ", but browser storage is full or blocked — they will be lost on reload.");
+  }
+
+  function renderMarketplace() {
+    var wrap = $("marketList");
+    if (!wrap) return;
+    wrap.innerHTML = "";
+    if (!expertPacks.length) {
+      wrap.appendChild(el("p", "fine", "No packs are available in this build."));
+      return;
+    }
+    expertPacks.forEach(function (pack) {
+      var card = el("div", "market-pack card");
+      if (pack.accent) card.setAttribute("data-cat", pack.accent);
+
+      var head = el("div", "market-pack-head");
+      head.appendChild(el("div", "market-glyph", pack.glyph || "✦"));
+      var titles = el("div", "market-pack-titles");
+      titles.appendChild(el("h3", "market-pack-title", pack.title));
+      if (pack.tagline) titles.appendChild(el("div", "market-pack-tag", pack.tagline));
+      head.appendChild(titles);
+      card.appendChild(head);
+
+      if (pack.blurb) card.appendChild(el("p", "market-pack-blurb", pack.blurb));
+
+      var list = el("div", "market-members");
+      var installedCount = 0;
+      pack.members.forEach(function (m) {
+        var seated = installedFromPack(pack.id, m.id);
+        if (seated) installedCount++;
+        var row = el("button", "market-member" + (seated ? " installed" : ""));
+        row.type = "button";
+        if (m.category) row.setAttribute("data-cat", m.category);
+        row.setAttribute("aria-label", (seated ? "Open " : "Install ") + m.name);
+        var med = el("span");
+        paintMedallion(med, m, "medallion-sm");
+        row.appendChild(med);
+        var info = el("span", "market-member-info");
+        info.appendChild(el("span", "market-member-name", m.name));
+        info.appendChild(el("span", "market-member-ep", m.epithet || ""));
+        row.appendChild(info);
+        row.appendChild(el("span", "market-member-badge", seated ? "✓ Seated" : "+ Install"));
+        row.addEventListener("click", function () {
+          var now = installedFromPack(pack.id, m.id);
+          if (now) { closeOverlays(); openProfile(now.id); }
+          else installOne(pack.id, m.id);
+        });
+        list.appendChild(row);
+      });
+      card.appendChild(list);
+
+      var foot = el("div", "market-pack-foot");
+      var all = installedCount === pack.members.length;
+      foot.appendChild(el("span", "fine market-pack-count", installedCount + " of " + pack.members.length + " seated"));
+      var btn = el("button", "btn " + (all ? "btn-ghost" : "btn-gold"),
+        all ? "All seated" : (installedCount ? "Install the rest" : "Install pack"));
+      btn.type = "button";
+      if (all) btn.disabled = true;
+      else btn.addEventListener("click", function () { installPack(pack.id); });
+      foot.appendChild(btn);
+      card.appendChild(foot);
+
+      wrap.appendChild(card);
+    });
+  }
+
+  function openMarketplace() {
+    renderMarketplace();
+    openOverlay("marketplaceOverlay");
+  }
+
   /* ── LIVE: GLOBAL INSIGHT ──────────────────────────────────────
      A live signal room: world events streamed from open public data
      (GDELT news index, USGS seismology, CoinGecko, Frankfurter FX),
@@ -3903,7 +4044,7 @@
   /* ── Overlay & routing plumbing ────────────────────────────── */
 
   function closeOverlays() {
-    ["profileOverlay", "settingsOverlay", "expertOverlay", "codexOverlay", "adminOverlay", "dashOverlay"].forEach(function (id) { $(id).hidden = true; });
+    ["profileOverlay", "settingsOverlay", "expertOverlay", "marketplaceOverlay", "codexOverlay", "adminOverlay", "dashOverlay"].forEach(function (id) { $(id).hidden = true; });
     ["header.nav", "section.hero", "main.explore", "footer.foot"].forEach(function (sel) {
       document.querySelectorAll(sel).forEach(function (n) { n.inert = false; });
     });
@@ -3955,6 +4096,7 @@
     $("settingsBtn").addEventListener("click", function () { requireAdmin(openSettings); });
     $("addExpertBtn").addEventListener("click", function () { openExpertForm(null); });
     $("heroAddExpert").addEventListener("click", function () { openExpertForm(null); });
+    $("marketplaceBtn").addEventListener("click", openMarketplace);
     $("councilBtn").addEventListener("click", function () { openCouncil(); });
     $("heroCouncil").addEventListener("click", function () { openCouncil(); });
     $("insightBtn").addEventListener("click", openInsight);
@@ -4045,7 +4187,7 @@
     });
     document.addEventListener("keydown", function (e) {
       if (e.key === "Escape") {
-        var anyOverlay = ["profileOverlay", "settingsOverlay", "expertOverlay", "codexOverlay", "adminOverlay", "dashOverlay"].some(function (id) { return !$(id).hidden; });
+        var anyOverlay = ["profileOverlay", "settingsOverlay", "expertOverlay", "marketplaceOverlay", "codexOverlay", "adminOverlay", "dashOverlay"].some(function (id) { return !$(id).hidden; });
         if (anyOverlay) dismissOverlays();
         else if (!$("aboutView").hidden) closeAbout();
         else if (!$("insightView").hidden) {

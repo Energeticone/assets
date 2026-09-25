@@ -83,6 +83,7 @@
     <button class="btn btn-ghost" id="codexBtn" title="First principles of the pantheon" hidden>Codex</button>
     <button class="btn btn-ghost" id="surpriseBtn" title="Open a random mind">✦ Surprise</button>
     <button class="btn btn-ghost" id="settingsBtn" title="Chat engine settings">⚙ Settings</button>
+    <button class="btn btn-ghost" id="marketplaceBtn" title="Install curated packs of new minds">⊕ Marketplace</button>
     <button class="btn btn-gold" id="addExpertBtn">+ Add expert</button>
   </nav>
 </header>
@@ -819,6 +820,18 @@
 </div>
 
 <!-- ══════════════ ADD / EDIT EXPERT MODAL ══════════════ -->
+<div class="overlay" id="marketplaceOverlay" hidden>
+  <section class="modal market" tabindex="-1" role="dialog" aria-modal="true" aria-labelledby="marketTitle">
+    <button class="modal-x" data-close aria-label="Close">✕</button>
+    <div class="daily-label">The Athenaeum</div>
+    <h2 id="marketTitle">Expert Marketplace</h2>
+    <p class="fine">Curated packs of new minds, ready to seat. Everything here is bundled with the app —
+      no accounts, no keys, no network. Install a pack and its members join your pantheon as custom experts:
+      fully chat- and council-capable, editable, and exportable like any you add yourself.</p>
+    <div id="marketList" class="market-list"></div>
+  </section>
+</div>
+
 <div class="overlay" id="expertOverlay" hidden>
   <section class="modal expert" tabindex="-1" role="dialog" aria-modal="true" aria-labelledby="expertTitle">
     <button class="modal-x" data-close aria-label="Close">✕</button>
@@ -866,6 +879,7 @@
 <div class="toast" id="toast" hidden></div>
 
 <script src="data/freemasonry-circle.js"></script>
+<script src="data/expert-packs.js"></script>
 <script src="bg.js"></script>
 <script src="app.js"></script>
 </body>
