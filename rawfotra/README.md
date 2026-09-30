@@ -2,7 +2,7 @@
 
 Counsel from history's greatest minds.
 
-A self-contained counsel experience: browse **66 legendary minds — historic and living** — philosophers, strategists,
+A self-contained counsel experience: browse **67 legendary minds — historic and living** — philosophers, strategists,
 scientists, artists, writers — chat 1-on-1 with any of them, or **convene your Supreme Council**:
 ask one question, seat up to ten minds, and receive each voice's considered
 answer plus the **Consensus of the Supreme Council** — a deep, sectioned ruling with
@@ -12,7 +12,7 @@ pure data: adding a **modern-day expert** is a form in the app or a few lines of
 
 ## Features
 
-- **Explore page** — searchable, filterable grid of 66 minds across 9 categories
+- **Explore page** — searchable, filterable grid of 67 minds across 9 categories
   (Philosophy, Strategy & Command, Leadership & Statecraft, Science, Innovation &
   Enterprise, Art & Music, Literature, Spirit & Wisdom, Modern Minds), each with a
   gradient medallion, epithet, and era.
@@ -98,7 +98,7 @@ pure data: adding a **modern-day expert** is a form in the app or a few lines of
     the Anthropic API. Paste your own API key in **Settings**; it is stored only in
     your browser's localStorage and sent only to `api.anthropic.com`. Default model:
     Claude Opus 5.
-- **The Codex** — first principles of the whole pantheon, distilled across the 66
+- **The Codex** — first principles of the whole pantheon, distilled across the 67
   minds and chained into a sequence; each entry is an observation, its consequence,
   and one imperative, credited to the exemplar minds who embody it.
 - **Memory** ✦ — every question you ask (chat and council) and every counsel the

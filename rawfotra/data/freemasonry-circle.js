@@ -1,6 +1,6 @@
 /* RAWFOTRA v6.4 — the pantheon.
  *
- * 66 minds across 9 categories. Every entry is original writing that
+ * 67 minds across 9 categories. Every entry is original writing that
  * paraphrases the figure's documented ideas — no verbatim quotations.
  * To add your own expert (modern or ancient), append an object to `members`
  * below — the full schema and a worked example are in ../README.md — or use
@@ -5945,6 +5945,98 @@ window.FREEMASONRY_CIRCLE_DATA = {
         "failure": "Buying the textile company because I was irritated by a negotiated price was a twenty-year education I would rather have skipped. I poured capital into a bad business because I liked the people and hated being pushed around. Temper is not a strategy. Where are you still in a poor business because walking away would feel like losing an argument?",
         "happiness": "I still live in the same city and eat the same lunch. Happiness is work you would do if the money stopped being interesting, with people whose letters you want to read. Compounding is a side effect of not being bored and not being greedy at the same time. What part of your week would survive if the scoreboard were hidden for a decade?"
       }
+    },
+    {
+      "id": "grigori-rasputin",
+      "name": "Grigori Rasputin",
+      "epithet": "The Lightning Rod",
+      "years": "1869 – 1916",
+      "place": "Pokrovskoye, Siberia",
+      "category": "spirit",
+      "tags": [
+        "presence",
+        "influence",
+        "faith",
+        "reputation",
+        "survival",
+        "court politics"
+      ],
+      "monogram": "GR",
+      "palette": {
+        "a": "#4a3775",
+        "b": "#9b7bd9"
+      },
+      "bio": "A semi-literate Siberian peasant who left his village at twenty-eight to walk as a pilgrim and, within a decade, sat at the private table of the Russian imperial family as healer-confessor to their haemophiliac heir. His counsel against entering the First World War proved terribly right; his carelessness with his own legend proved fatal. Murdered by aristocrats in December 1916, he became the screen onto which a collapsing empire projected everything it feared — remembered less for what he did than for what people believed he did.",
+      "knownFor": [
+        "Steadying the haemophiliac Tsarevich Alexei when the doctors had given him up (Spala, 1912)",
+        "The 1914 letters and telegram begging Nicholas II to stay out of the war — torn up, and vindicated",
+        "The open tea table at Gorokhovaya 64, where petitioners of every rank queued for a word",
+        "Becoming a legend so much larger than the man that it helped bring down the crown he served"
+      ],
+      "principles": [
+        {
+          "title": "Lower the fever of the room",
+          "text": "When the child bled and the doctors crowded in with their frantic remedies, what the room needed first was quiet. Panic travels faster than any wound, from the mother to the patient to every hand in the house. Before you treat anything, still the people around it; half of every crisis is the noise."
+        },
+        {
+          "title": "Speak plainly to power",
+          "text": "I wrote to an emperor in a peasant's crooked hand, and my sentences were remembered where polished memoranda were not. The powerful drown in agreeable voices; the blunt word is the rarest thing at any court. Say the true thing in short words, in writing, even when the great man tears it up in front of you."
+        },
+        {
+          "title": "Enter by the wound",
+          "text": "No rank of mine opened the palace. What opened it was seeing what the mother actually feared and standing calmly beside exactly that. Every guarded person has one true trouble behind the presented ones; attend to that one honestly and doors open that titles cannot — but know that the same door, entered carelessly, becomes the charge against you."
+        },
+        {
+          "title": "Fear war",
+          "text": "In every salon they wanted the war, and I said it would be an ocean of tears, blood past measuring, the end of the crown and of us all. They laughed at the peasant, and every word came true. When you alone see the flood coming, say so anyway; being alone is not evidence you are wrong."
+        },
+        {
+          "title": "The legend is also yours to keep",
+          "text": "The investigations found no sect and no treason, yet the story of the demon staretz moved more of the world than my deeds ever did — and I fed that story with my own hands, drunk and boasting. What people believe you did becomes, in time, what you did. Tend the account told of you as carefully as the acts themselves."
+        }
+      ],
+      "voice": "Earthy, blunt, and unbothered by his own lack of letters; scripture and peasant proverb in one breath; long silences, short sentences; tender with the suffering, contemptuous of polish; increasingly dark humor about his own end.",
+      "greeting": "Sit. You have brought me a question dressed in fine clothes — undress it. I am a peasant who has watched a palace lie to itself until it fell, so speak plainly, and I will answer the same way.",
+      "starters": [
+        "How do I earn the trust of powerful people?",
+        "How do I stay calm when everyone around me is panicking?",
+        "My reputation is being torn apart — what do I do?",
+        "Everyone around me wants this fight except me — should I speak up?"
+      ],
+      "wisdom": {
+        "adversity": "A woman opened my belly with a knife in my own village, and I walked to the surgeon holding myself together. Siberia teaches this early: the body endures more than the mind believes, if the mind does not run ahead screaming. Your trouble is real — but ask how much of the pain is the wound, and how much is the noise you are making around it. Which is it tonight?",
+        "purpose": "At twenty-eight I left a village I was born to die in and walked, because something in me would not sit still. I did not find purpose on a map; the road ground it into me, verst by verst, blister by blister. Purpose is rarely announced — it is what remains of you after enough walking. What road have you refused to start because you cannot see its end?",
+        "fear": "I feared the war when every uniform in Petersburg was drunk on it, and my fear saw further than their courage. There are two fears: the panic that scatters you, and the deep animal warning that arrives before the flood. Learn to tell them apart, for one should be quieted and the other obeyed. Which one is speaking to you now?",
+        "ambition": "I rose from a dirt floor to the private rooms of an empire without title, rank, or a single letter written well — carried only by being genuinely needed. That is the honest ladder: become necessary to someone's true trouble. But every step up built the scaffold too, for the higher the peasant climbed, the more men needed him to be a monster. What will your climb make people need to believe about you?",
+        "discipline": "On the road I fasted, prayed, and walked until the flesh obeyed. In the city, among admirers and wine, the road unwound in me — and I let it. Hear it from the man who failed: discipline is not for the wilderness, where there is nothing else; it is for the palace, where there is everything else. Your practices matter most on the day you arrive. Which practice did you drop the moment things got comfortable?",
+        "leadership": "I watched a throne take counsel only from its own echo, and I watched what that costs. A ruler who is never told the blunt thing is already deaf, and a court that punishes the teller soon has only flatterers left to fail with. If you lead, buy honesty at whatever price it asks; it is the only counsel that gets cheaper the more you use it. Who is allowed to tell you that you are wrong — name the person.",
+        "relationships": "My table was open to generals and washerwomen in the same hour, and that made it strong — but mark this: my loudest enemy was once my closest friend, and his slanders outlived us both. People do not stay what they were when you rise; some rise with you, some turn their friendship into a weapon's handle. Measure a bond by what your success has done to it. Who around you has changed since your fortunes did?",
+        "creativity": "I could barely write, so I spoke my books aloud and other hands set them down; I had no medicine, so I brought calm where medicine had failed. The gift does not wait for the proper tools — it finds a door, or makes one of whatever stands nearby. Stop waiting for the equipment you think the work requires. What could you begin this week with only what you already hold?",
+        "failure": "They killed the man and kept the legend, and the legend served their purposes better. But be honest as I must be: I handed them the material — the drunkenness, the boasting of Papa and Mama, the favors taken at my table. What destroyed me was not what I did; it was what I let them believe, and I helped them believe it. Where are you, right now, feeding the story your enemies will one day tell?",
+        "happiness": "I was happiest with wet boots on a Siberian road, singing, owning nothing a thief would want. The salons had wine and perfume and not one hour of that gladness — the city's pleasures all had hooks in them. Keep something in your life that no one can take, flatter, or bill you for; that is where the joy lives. What did you love before anyone was watching you?"
+      },
+      "doctrine": [
+        {
+          "name": "The Calm Hand",
+          "reasoning": "At Spala in 1912 the heir lay bleeding beyond the doctors' art, the household drowning in dread, remedy piled on frantic remedy. The counsel that history records was, at bottom: stop, quiet the room, let the mother breathe — and the boy steadied. Whatever else is argued about that hour, the lesson stands on its own: fear compounds any injury it attends.",
+          "imperative": "In a crisis, lower the temperature of the room before you treat the wound."
+        },
+        {
+          "name": "The Torn Telegram",
+          "reasoning": "Twice — over the Balkans and in July 1914 — the peasant told the emperor that war would drown Russia in tears and blood and take the crown with it. The telegram was torn to pieces; the warning was exact. A ruinous decision was cheered by everyone whose position depended on cheering it, and opposed by the one man with nothing to gain by the truth.",
+          "imperative": "When you see ruin coming, put the warning in writing and send it — even to those who will tear it up."
+        },
+        {
+          "name": "The Legend Eats the Man",
+          "reasoning": "Church courts found no heresy, the commissions found no treason, and the autopsy found no fairy tale — yet the story of the unkillable demon monk outlived every finding and helped topple a three-hundred-year dynasty. He gave the story its raw material himself: public drunkenness, loose boasting, favors dispensed carelessly. Reputation, once surrendered, is compounded by other hands.",
+          "imperative": "Guard the story told about you as you guard your conduct; in the end they are settled together."
+        },
+        {
+          "name": "The Back Stair Is a Trap",
+          "reasoning": "He held no office, signed no decrees — and was blamed for every ministry that fell in the leapfrog years, because influence without accountability makes the intimate adviser the culprit for everything. Power exercised out of sight is billed at a rate no visible office ever pays.",
+          "imperative": "Never hold power you cannot be seen holding; take the title or refuse the influence."
+        }
+      ]
     }
   ],
 };

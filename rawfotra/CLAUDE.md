@@ -39,7 +39,7 @@ deterministic; it perturbs the report's own weights — never present it as a
 forecast of the world. History: last 10 reports in `localStorage` key
 `freemasonry-circle.council.history`; admin activity log in
 `freemasonry-circle.admin.log` (device-local, exportable from the admin
-dashboard in Settings). Selection cap is 10 seats; all 66 members permanent.
+dashboard in Settings). Selection cap is 10 seats; all 67 members permanent.
 
 ## Locked built-in seats (v6.4)
 
@@ -62,6 +62,7 @@ Do not overwrite `kerry-adler` or `charlie-munger`.
 | carl-von-clausewitz | Carl von Clausewitz | The Dialectician of War | strategy |
 | niccolo-machiavelli | Niccolò Machiavelli | The Clerk of Power | strategy |
 | anwar-sadat | Anwar Sadat | The Breaker of the Freeze | leadership |
+| grigori-rasputin | Grigori Rasputin | The Lightning Rod | spirit |
 
 If asked to add an expert who matches one of these names, deepen the existing object — do not create a second id.
 If asked to reset the pantheon, keep these 13 and the original 53.
