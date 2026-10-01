@@ -1,0 +1,341 @@
+<title>AI Copernic v2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500;1,600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: an astronomer's star-chart. Orbit plate in the hero, sidebar index of the manual, chapters as plates. */
+:root {
+  --paper: #eef1f4;      /* chart paper, blue-grey */
+  --plate: #f8f9fb;      /* raised plate */
+  --ink: #18233a;        /* deep celestial ink */
+  --ink-soft: #4a5672;
+  --rule: #c9d0dc;
+  --brass: #a8701c;      /* astrolabe brass */
+  --brass-soft: #f1e3c8;
+  --orbit: #8a97b0;
+  --code-bg: #e3e8ef;
+  --display: "Cormorant Garamond", "Iowan Old Style", Georgia, serif;
+  --body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #0d1322; --plate: #141c2f; --ink: #e4e8f1; --ink-soft: #9aa6be;
+    --rule: #26314a; --brass: #e0a94d; --brass-soft: #3a2c14; --orbit: #4d5b7a; --code-bg: #0a0f1b;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #0d1322; --plate: #141c2f; --ink: #e4e8f1; --ink-soft: #9aa6be;
+  --rule: #26314a; --brass: #e0a94d; --brass-soft: #3a2c14; --orbit: #4d5b7a; --code-bg: #0a0f1b;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body { background: var(--paper); color: var(--ink); font: 15px/1.6 var(--body); }
+a { color: var(--brass); text-underline-offset: 3px; }
+a:focus-visible, button:focus-visible { outline: 2px solid var(--brass); outline-offset: 2px; border-radius: 2px; }
+code, pre { font-family: var(--mono); font-size: 13px; }
+:not(pre) > code { background: var(--code-bg); padding: 1px 5px; border-radius: 3px; }
+h1, h2, h3 { text-wrap: balance; margin: 0; }
+
+.wrap { max-width: 1180px; margin: 0 auto; padding-inline: 20px; }
+
+/* masthead */
+.mast { border-bottom: 1px solid var(--rule); }
+.mast .wrap { display: flex; flex-wrap: wrap; gap: 8px 20px; align-items: center; justify-content: space-between; padding-block: 14px; }
+.brand { display: flex; align-items: baseline; gap: 10px; font-family: var(--display); font-size: 22px; font-weight: 600; }
+.brand small { font-family: var(--mono); font-size: 11px; color: var(--ink-soft); letter-spacing: .08em; }
+.stamp { font-family: var(--mono); font-size: 11px; color: var(--ink-soft); letter-spacing: .06em; text-transform: uppercase; }
+
+/* hero */
+.hero .wrap { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 40px; align-items: center; padding-block: 48px 40px; }
+.eyebrow { font-family: var(--mono); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--brass); }
+.hero h1 { font-family: var(--display); font-weight: 500; font-size: clamp(44px, 7vw, 84px); line-height: .95; letter-spacing: -.01em; margin-block: 14px 18px; }
+.hero h1 em { font-style: italic; color: var(--brass); }
+.lede { font-size: 17px; color: var(--ink-soft); max-width: 34em; margin: 0 0 24px; }
+.cta { display: flex; flex-wrap: wrap; gap: 10px; }
+.btn { display: inline-flex; align-items: center; gap: 8px; padding: 10px 16px; border-radius: 3px; font-weight: 500; text-decoration: none; border: 1px solid var(--ink); color: var(--ink); background: transparent; font-size: 14px; }
+.btn.primary { background: var(--ink); color: var(--paper); }
+.orbitbox { position: relative; aspect-ratio: 1; max-width: 100%; width: 100%; }
+.orbitbox canvas { width: 100%; height: 100%; display: block; }
+.orbitbox figcaption { position: absolute; left: 0; bottom: -4px; font-family: var(--mono); font-size: 10.5px; color: var(--ink-soft); letter-spacing: .06em; }
+
+/* feature plates */
+.plates { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-block: 1px solid var(--rule); }
+.plates > div { padding: 22px 22px 24px; border-left: 1px solid var(--rule); min-width: 0; }
+.plates > div:first-child { border-left: 0; }
+.plates h3 { font-family: var(--display); font-size: 23px; font-weight: 600; margin-bottom: 6px; }
+.plates p { margin: 0; color: var(--ink-soft); }
+.plates .glyph { font-family: var(--mono); font-size: 11px; color: var(--brass); letter-spacing: .1em; display: block; margin-bottom: 10px; }
+
+/* manual */
+.manual .wrap { display: grid; grid-template-columns: 240px minmax(0, 1fr); gap: 48px; padding-block: 48px; }
+.toc { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 16px); align-self: start; font-size: 14px; }
+.toc h4 { font-family: var(--mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-soft); margin: 0 0 8px; font-weight: 500; }
+.toc ol { list-style: none; padding: 0; margin: 0 0 22px; display: grid; gap: 4px; }
+.toc a { color: var(--ink); text-decoration: none; }
+.toc a:hover { color: var(--brass); }
+.chapter { padding-bottom: 36px; margin-bottom: 36px; border-bottom: 1px solid var(--rule); }
+.chapter:last-child { border-bottom: 0; }
+.chapter > header { display: flex; align-items: baseline; gap: 14px; margin-bottom: 14px; }
+.chapter .num { font-family: var(--display); font-style: italic; font-size: 34px; color: var(--brass); line-height: 1; }
+.chapter h2 { font-family: var(--display); font-size: 34px; font-weight: 600; line-height: 1.1; }
+.chapter > p { max-width: 64ch; color: var(--ink-soft); margin: 0 0 16px; }
+.pages { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 8px; }
+.pages a { display: flex; flex-direction: column; gap: 2px; padding: 12px 14px; background: var(--plate); border: 1px solid var(--rule); border-radius: 3px; text-decoration: none; color: var(--ink); }
+.pages a:hover { border-color: var(--brass); }
+.pages a span { font-size: 12.5px; color: var(--ink-soft); }
+.pages a b { font-weight: 600; font-size: 14px; }
+
+pre.code { background: var(--code-bg); border: 1px solid var(--rule); border-radius: 3px; padding: 14px 16px; overflow-x: auto; margin: 0 0 14px; line-height: 1.55; }
+pre .c { color: var(--ink-soft); }
+pre .k { color: var(--brass); }
+.codehead { display: flex; justify-content: space-between; align-items: center; font-family: var(--mono); font-size: 11px; color: var(--ink-soft); margin-bottom: 6px; letter-spacing: .05em; }
+.copy { font: inherit; background: none; border: 1px solid var(--rule); color: var(--ink-soft); border-radius: 3px; padding: 2px 8px; cursor: pointer; }
+
+.note { background: var(--brass-soft); border-left: 3px solid var(--brass); padding: 12px 16px; border-radius: 0 3px 3px 0; max-width: 72ch; margin-bottom: 14px; }
+.note b { font-family: var(--mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; display: block; margin-bottom: 2px; color: var(--brass); }
+
+table.rel { border-collapse: collapse; width: 100%; font-size: 14px; font-variant-numeric: tabular-nums; }
+.tablewrap { overflow-x: auto; }
+table.rel th, table.rel td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--rule); vertical-align: top; }
+table.rel th { font-family: var(--mono); font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-soft); font-weight: 500; }
+table.rel td:first-child { font-family: var(--mono); white-space: nowrap; }
+.pill { font-family: var(--mono); font-size: 10.5px; padding: 1px 7px; border-radius: 10px; border: 1px solid var(--brass); color: var(--brass); white-space: nowrap; }
+
+footer { border-top: 1px solid var(--rule); }
+footer .wrap { padding-block: 28px 40px; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 32px; font-size: 13px; color: var(--ink-soft); }
+footer h4 { font-family: var(--display); font-size: 20px; color: var(--ink); margin: 0 0 6px; font-weight: 600; }
+footer p { margin: 0 0 8px; max-width: 60ch; }
+
+@media (max-width: 860px) {
+  .hero .wrap, .manual .wrap, footer .wrap { grid-template-columns: minmax(0, 1fr); }
+  .orbitbox { max-width: 420px; margin: 0 auto; }
+  .plates { grid-template-columns: minmax(0, 1fr); }
+  .plates > div { border-left: 0; border-top: 1px solid var(--rule); }
+  .plates > div:first-child { border-top: 0; }
+  .toc { position: static; display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 0 20px; }
+}
+</style>
+
+<header class="mast">
+  <div class="wrap">
+    <div class="brand">AI Copernic <small>v2026.1</small></div>
+    <div class="stamp" id="stamp">Docs build · 2026-10-01 · <span id="clock">00:00 UTC</span></div>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap">
+    <div>
+      <div class="eyebrow">Document crawler · Search index · AI layer</div>
+      <h1>Put the index at the <em>centre</em>. Let every file orbit it.</h1>
+      <p class="lede">AI Copernic crawls your file systems, extracts text from PDF, Office and image files, and keeps an Elasticsearch index in step with what's on disk. New files are indexed, changed files are updated, deleted files are removed.</p>
+      <div class="cta">
+        <a class="btn primary" href="#install">Install in five minutes</a>
+        <a class="btn" href="#user">Read the user guide</a>
+      </div>
+    </div>
+    <figure class="orbitbox" style="margin:0">
+      <canvas id="orbit" aria-label="Diagram: files on local disk, SSH, FTP and REST uploads orbit a central Elasticsearch index"></canvas>
+      <figcaption>Fig. 1 — De revolutionibus documentorum</figcaption>
+    </figure>
+  </div>
+</section>
+
+<section class="wrap" style="padding-inline:20px">
+  <div class="plates">
+    <div><span class="glyph">LOCAL · MOUNTED</span><h3>Crawl the file system</h3><p>Watch a local folder or mounted drive on a schedule. Adds, updates and deletions reach the index on every pass.</p></div>
+    <div><span class="glyph">SSH · FTP</span><h3>Reach remote servers</h3><p>Crawl directories on remote hosts over SSH or FTP with the same settings file and the same index mapping.</p></div>
+    <div><span class="glyph">REST · OCR</span><h3>Upload through REST</h3><p>Post a binary to the REST endpoint and get it parsed, OCR'd if it's a scan, and indexed in one call.</p></div>
+  </div>
+</section>
+
+<section class="manual">
+  <div class="wrap">
+    <nav class="toc" aria-label="Manual contents">
+      <div><h4>Install</h4><ol><li><a href="#install">Installation guide</a></li></ol></div>
+      <div><h4>Use</h4><ol><li><a href="#user">User guide</a></li><li><a href="#quick">Quick start</a></li></ol></div>
+      <div><h4>Operate</h4><ol><li><a href="#admin">Administration</a></li><li><a href="#dev">Developer guide</a></li></ol></div>
+      <div><h4>History</h4><ol><li><a href="#release">Release notes</a></li><li><a href="#license">License</a></li></ol></div>
+    </nav>
+
+    <main>
+      <article class="chapter" id="install">
+        <header><span class="num">i</span><h2>Installation guide</h2></header>
+        <p>Download the distribution, unzip it, and point it at an Elasticsearch cluster. Text extraction runs on Apache Tika; the bundled clients cover Elasticsearch 7 and 6.</p>
+        <div class="note"><b>Third-party libraries</b>TIFF and JPEG 2000 support depend on libraries that are not Apache-2 compatible, so they ship separately. Drop the JAI Image I/O jars into <code>lib/</code> to enable them.</div>
+        <div class="pages"><a href="#install"><b>Download &amp; unzip</b><span>Distribution archives and checksums</span></a><a href="#install"><b>Docker image</b><span>Run alongside your cluster</span></a></div>
+      </article>
+
+      <article class="chapter" id="user">
+        <header><span class="num">ii</span><h2>User guide</h2></header>
+        <p>Everything you need to crawl your first folder, tune what gets indexed, and search the result.</p>
+        <div class="pages">
+          <a href="#quick"><b>Getting started</b><span>First crawl in one command</span></a>
+          <a href="#user"><b>Tutorial</b><span>From folder to search results</span></a>
+          <a href="#user"><b>Crawler options</b><span>Includes, excludes, update rate</span></a>
+          <a href="#user"><b>OCR integration</b><span>Tesseract for scanned PDFs and images</span></a>
+          <a href="#user"><b>REST service</b><span>Upload documents over HTTP</span></a>
+          <a href="#user"><b>Supported formats</b><span>PDF, Office, OpenDocument, images</span></a>
+          <a href="#user"><b>Tips &amp; tricks</b><span>Moving files, large folders, encodings</span></a>
+        </div>
+      </article>
+
+      <article class="chapter" id="quick">
+        <header><span class="num">iii</span><h2>Quick start</h2></header>
+        <p>Name a job, let Copernic write its settings file, then edit the folder it watches.</p>
+        <div class="codehead"><span>shell</span><button class="copy" data-copy="cmd1" type="button">Copy</button></div>
+<pre class="code" id="cmd1"><span class="c"># create the job and its settings file</span>
+bin/copernic <span class="k">job_name</span>
+
+<span class="c"># reindex everything from scratch, then keep watching</span>
+bin/copernic <span class="k">job_name</span> --restart</pre>
+        <div class="codehead"><span>~/.copernic/job_name/_settings.yaml</span><button class="copy" data-copy="cmd2" type="button">Copy</button></div>
+<pre class="code" id="cmd2"><span class="k">name</span>: "job_name"
+<span class="k">fs</span>:
+  <span class="k">url</span>: "/path/to/docs"
+  <span class="k">update_rate</span>: "15m"
+  <span class="k">ocr</span>:
+    <span class="k">language</span>: "eng"
+<span class="k">elasticsearch</span>:
+  <span class="k">nodes</span>:
+    - <span class="k">url</span>: "http://127.0.0.1:9200"</pre>
+      </article>
+
+      <article class="chapter" id="admin">
+        <header><span class="num">iv</span><h2>Administration</h2></header>
+        <p>Run Copernic in production: monitor job status, size the JVM, route logs, and pick the settings that fit each source.</p>
+        <div class="pages">
+          <a href="#admin"><b>Job status</b><span>Last run, next run, counts</span></a>
+          <a href="#admin"><b>CLI options</b><span>--loop, --restart, --rest</span></a>
+          <a href="#admin"><b>JVM settings</b><span>Heap sizing for big folders</span></a>
+          <a href="#admin"><b>Logger</b><span>Log4j2 configuration</span></a>
+          <a href="#admin"><b>Settings reference</b><span>Every key in _settings.yaml</span></a>
+          <a href="#admin"><b>Local FS</b><span>Paths, filters, attributes</span></a>
+          <a href="#admin"><b>SSH</b><span>Keys, ports, remote paths</span></a>
+          <a href="#admin"><b>FTP</b><span>Credentials and passive mode</span></a>
+          <a href="#admin"><b>Elasticsearch</b><span>Nodes, auth, index names</span></a>
+          <a href="#admin"><b>Workplace Search</b><span>Send documents to Workplace Search</span></a>
+          <a href="#admin"><b>REST settings</b><span>Endpoint URL and limits</span></a>
+        </div>
+      </article>
+
+      <article class="chapter" id="dev">
+        <header><span class="num">v</span><h2>Developer guide</h2></header>
+        <p>Build from source with Maven, run the integration tests against a live cluster, and cut a release.</p>
+        <div class="pages">
+          <a href="#dev"><b>Building</b><span>Maven, test profiles</span></a>
+          <a href="#dev"><b>Writing docs</b><span>Sphinx and reStructuredText</span></a>
+          <a href="#dev"><b>Releasing</b><span>Versioning and publishing</span></a>
+        </div>
+      </article>
+
+      <article class="chapter" id="release">
+        <header><span class="num">vi</span><h2>Release notes</h2></header>
+        <div class="tablewrap">
+          <table class="rel">
+            <thead><tr><th>Version</th><th>Lineage</th><th>Status</th></tr></thead>
+            <tbody>
+              <tr><td>2026.1</td><td>AI Copernic rename and redesign of the 2.9 line</td><td><span class="pill">current</span></td></tr>
+              <tr><td>2.9</td><td>FSCrawler 2.9</td><td>upstream</td></tr>
+              <tr><td>2.8</td><td>FSCrawler 2.8</td><td>archived</td></tr>
+              <tr><td>2.7</td><td>FSCrawler 2.7</td><td>archived</td></tr>
+              <tr><td>2.2 – 2.6</td><td>FSCrawler 2.2 to 2.6</td><td>archived</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </article>
+    </main>
+  </div>
+</section>
+
+<footer id="license">
+  <div class="wrap">
+    <div>
+      <h4>License</h4>
+      <p>Licensed under the Apache License, Version 2.0. Distributed on an "AS IS" basis, without warranties or conditions of any kind.</p>
+      <p>Based on <a href="https://github.com/dadoonet/fscrawler/tree/fscrawler-2.9">FSCrawler 2.9</a>, copyright 2011–2026 David Pilato. AI Copernic is a renamed and restyled documentation front end for that project.</p>
+    </div>
+    <div>
+      <h4>Document record</h4>
+      <p>Generated 2026-10-01 · page opened <span id="opened">—</span>.</p>
+      <p>Source: <code>docs/source/index.rst</code> on branch <code>fscrawler-2.9</code>.</p>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function () {
+  const pad = n => String(n).padStart(2, "0");
+  const now = new Date();
+  document.getElementById("clock").textContent = pad(now.getUTCHours()) + ":" + pad(now.getUTCMinutes()) + " UTC";
+  document.getElementById("opened").textContent = now.toISOString().slice(0, 16).replace("T", " ") + " UTC";
+
+  document.querySelectorAll(".copy").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const el = document.getElementById(btn.dataset.copy);
+      const done = () => { btn.textContent = "Copied"; setTimeout(() => btn.textContent = "Copy", 1400); };
+      const fallback = () => { const r = document.createRange(); r.selectNodeContents(el); const s = getSelection(); s.removeAllRanges(); s.addRange(r); btn.textContent = "Selected"; };
+      try { navigator.clipboard.writeText(el.innerText).then(done, fallback); } catch (e) { fallback(); }
+    });
+  });
+
+  // Orbit diagram
+  const cv = document.getElementById("orbit");
+  const ctx = cv.getContext("2d");
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const css = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+  const rings = [
+    { r: .20, label: "REST", files: ["upload.pdf"], speed: .00045 },
+    { r: .31, label: "LOCAL FS", files: ["report.docx", "scan.tiff", "notes.odt"], speed: .0003 },
+    { r: .41, label: "SSH", files: ["q3.xlsx", "deck.pptx"], speed: .0002 },
+    { r: .49, label: "FTP", files: ["archive.pdf", "memo.rtf"], speed: .00014 }
+  ];
+  let size = 0;
+  function resize() {
+    const dpr = window.devicePixelRatio || 1;
+    size = cv.clientWidth;
+    cv.width = size * dpr; cv.height = size * dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+  function draw(t) {
+    const ink = css("--ink"), soft = css("--ink-soft"), orbit = css("--orbit"), brass = css("--brass"), plate = css("--plate");
+    const c = size / 2;
+    ctx.clearRect(0, 0, size, size);
+    // ecliptic ticks
+    ctx.strokeStyle = orbit; ctx.lineWidth = 1;
+    for (let i = 0; i < 72; i++) {
+      const a = i / 72 * Math.PI * 2, r1 = c * .97, r2 = c * (i % 6 ? .945 : .92);
+      ctx.beginPath(); ctx.moveTo(c + Math.cos(a) * r1, c + Math.sin(a) * r1); ctx.lineTo(c + Math.cos(a) * r2, c + Math.sin(a) * r2); ctx.stroke();
+    }
+    rings.forEach((ring, ri) => {
+      const R = ring.r * size;
+      ctx.setLineDash([2, 4]); ctx.strokeStyle = orbit;
+      ctx.beginPath(); ctx.arc(c, c, R, 0, Math.PI * 2); ctx.stroke(); ctx.setLineDash([]);
+      ctx.fillStyle = soft; ctx.font = "500 9.5px 'IBM Plex Mono', monospace"; ctx.textAlign = "center";
+      ctx.fillText(ring.label, c, c - R - 5);
+      ring.files.forEach((f, fi) => {
+        const a = t * ring.speed + fi / ring.files.length * Math.PI * 2 + ri;
+        const x = c + Math.cos(a) * R, y = c + Math.sin(a) * R;
+        ctx.fillStyle = plate; ctx.strokeStyle = ink; ctx.lineWidth = 1;
+        ctx.beginPath(); ctx.rect(x - 5, y - 6.5, 10, 13); ctx.fill(); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(x - 3, y - 2); ctx.lineTo(x + 3, y - 2); ctx.moveTo(x - 3, y + 1); ctx.lineTo(x + 3, y + 1); ctx.stroke();
+        if (size > 300) { ctx.fillStyle = soft; ctx.font = "9px 'IBM Plex Mono', monospace"; ctx.textAlign = x > c ? "left" : "right"; ctx.fillText(f, x + (x > c ? 9 : -9), y + 3); }
+      });
+    });
+    // the sun: the index
+    const g = ctx.createRadialGradient(c, c, 2, c, c, size * .11);
+    g.addColorStop(0, brass); g.addColorStop(1, "transparent");
+    ctx.fillStyle = g; ctx.beginPath(); ctx.arc(c, c, size * .11, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = brass; ctx.beginPath(); ctx.arc(c, c, size * .045, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = ink; ctx.font = "600 italic 15px 'Cormorant Garamond', serif"; ctx.textAlign = "center";
+    ctx.fillText("Index", c, c + size * .045 + 16);
+  }
+  function loop(t) { draw(t); if (!reduce) requestAnimationFrame(loop); }
+  resize(); addEventListener("resize", () => { resize(); if (reduce) draw(0); });
+  (document.fonts ? document.fonts.ready : Promise.resolve()).then(() => requestAnimationFrame(loop));
+  draw(0);
+})();
+</script>
