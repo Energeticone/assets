@@ -145,6 +145,7 @@ ios-on-huawei/
 ├── security.py          Auto self-signed TLS cert + VAPID key provisioning
 ├── config.py            Env-driven config (matches repo convention)
 ├── requirements.pip     Dependencies
+├── airdrop/             AirDrop → Huawei bridge (OpenDrop catcher + forwarder)
 ├── bridge/
 │   ├── base.py          MessageBridge interface
 │   ├── local.py         App-to-app delivery (works now)

@@ -1,0 +1,3 @@
+requests>=2.31        # used by the forwarder to push files into the app
+# --- The AirDrop catcher itself (install on the Linux helper box only) ---
+# opendrop            # reimplements AirDrop; see README for the owl prerequisite
