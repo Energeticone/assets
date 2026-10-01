@@ -1,0 +1,549 @@
+<title>Copernic Search</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500;1,600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: an observatory console. Search bar is the telescope; results are the sky log; the Ask panel is the astronomer's notebook. */
+:root {
+  --paper: #eef1f4; --plate: #f8f9fb; --ink: #18233a; --ink-soft: #4a5672; --rule: #c9d0dc;
+  --brass: #a8701c; --brass-soft: #f1e3c8; --orbit: #8a97b0; --code-bg: #e3e8ef; --mark: #f5d58f;
+  --ok: #2f7a4f; --warn: #a8551c;
+  --t-word: #2b5797; --t-ppt: #b7472a; --t-xls: #217346; --t-pdf: #b3261e; --t-img: #6b4fa0; --t-web: #1f7a8c; --t-zip: #6d6255; --t-txt: #4a5672;
+  --display: "Cormorant Garamond", "Iowan Old Style", Georgia, serif;
+  --body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #0d1322; --plate: #141c2f; --ink: #e4e8f1; --ink-soft: #9aa6be; --rule: #26314a;
+    --brass: #e0a94d; --brass-soft: #3a2c14; --orbit: #4d5b7a; --code-bg: #0a0f1b; --mark: #6b4e14;
+    --ok: #6cc28f; --warn: #e39a5f;
+    --t-word: #7ea6e6; --t-ppt: #ec8a6e; --t-xls: #6cc28f; --t-pdf: #ef7d74; --t-img: #b49be0; --t-web: #6cc5d6; --t-zip: #b8ab98; --t-txt: #9aa6be;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #0d1322; --plate: #141c2f; --ink: #e4e8f1; --ink-soft: #9aa6be; --rule: #26314a;
+  --brass: #e0a94d; --brass-soft: #3a2c14; --orbit: #4d5b7a; --code-bg: #0a0f1b; --mark: #6b4e14;
+  --ok: #6cc28f; --warn: #e39a5f;
+  --t-word: #7ea6e6; --t-ppt: #ec8a6e; --t-xls: #6cc28f; --t-pdf: #ef7d74; --t-img: #b49be0; --t-web: #6cc5d6; --t-zip: #b8ab98; --t-txt: #9aa6be;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--paper); color: var(--ink); font: 15px/1.55 var(--body); }
+h1, h2, h3 { margin: 0; text-wrap: balance; }
+button, input { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--brass); outline-offset: 2px; }
+.wrap { max-width: 1240px; margin: 0 auto; padding-inline: 20px; }
+
+.mast { border-bottom: 1px solid var(--rule); }
+.mast .wrap { display: flex; flex-wrap: wrap; gap: 6px 20px; align-items: baseline; justify-content: space-between; padding-block: 14px; }
+.brand { font-family: var(--display); font-size: 22px; font-weight: 600; }
+.brand small { font-family: var(--mono); font-size: 11px; color: var(--ink-soft); letter-spacing: .08em; margin-left: 8px; font-weight: 400; }
+.stamp { font-family: var(--mono); font-size: 11px; color: var(--ink-soft); letter-spacing: .06em; text-transform: uppercase; }
+
+.scope { padding-block: 28px 18px; }
+.scope h1 { font-family: var(--display); font-weight: 500; font-size: clamp(32px, 5vw, 52px); line-height: 1; margin-bottom: 18px; }
+.scope h1 em { color: var(--brass); }
+.bar { display: flex; gap: 0; border: 1.5px solid var(--ink); border-radius: 4px; background: var(--plate); }
+.bar input { flex: 1; min-width: 0; border: 0; background: transparent; padding: 14px 16px; font-size: 18px; outline: none; }
+.bar .count { align-self: center; padding-right: 14px; font-family: var(--mono); font-size: 12px; color: var(--ink-soft); white-space: nowrap; }
+.hint { font-size: 12.5px; color: var(--ink-soft); margin-top: 8px; }
+.hint code { font-family: var(--mono); background: var(--code-bg); padding: 0 4px; border-radius: 3px; }
+
+.chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 14px; }
+.chip { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border: 1px solid var(--rule); border-radius: 14px; background: var(--plate); cursor: pointer; font-size: 13px; }
+.chip[aria-pressed="true"] { border-color: var(--ink); background: var(--ink); color: var(--paper); }
+.chip .n { font-family: var(--mono); font-size: 11px; opacity: .75; font-variant-numeric: tabular-nums; }
+.dot { width: 8px; height: 8px; border-radius: 50%; background: var(--c); flex: none; }
+
+.grid { display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 28px; padding-block: 8px 48px; }
+.col { min-width: 0; }
+
+.drop { border: 1.5px dashed var(--orbit); border-radius: 4px; padding: 18px; display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: center; justify-content: space-between; background: var(--plate); margin-bottom: 18px; }
+.drop.over { border-color: var(--brass); background: var(--brass-soft); }
+.drop p { margin: 0; color: var(--ink-soft); font-size: 13.5px; min-width: 0; flex: 1 1 260px; }
+.drop p b { color: var(--ink); font-weight: 600; }
+.btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; border-radius: 3px; border: 1px solid var(--ink); background: transparent; cursor: pointer; font-size: 14px; font-weight: 500; }
+.btn.primary { background: var(--ink); color: var(--paper); }
+.btn.small { padding: 4px 10px; font-size: 12.5px; }
+.btn:disabled { opacity: .45; cursor: default; }
+
+.status { font-family: var(--mono); font-size: 12px; color: var(--ink-soft); margin-bottom: 12px; display: flex; flex-wrap: wrap; gap: 4px 14px; }
+.status b { color: var(--ink); font-weight: 500; }
+.examples { background: var(--brass-soft); border-left: 3px solid var(--brass); padding: 8px 12px; font-size: 13px; margin-bottom: 14px; display: flex; flex-wrap: wrap; gap: 8px 14px; align-items: center; justify-content: space-between; border-radius: 0 3px 3px 0; }
+
+.result { border-top: 1px solid var(--rule); padding-block: 14px; }
+.rhead { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.badge { font-family: var(--mono); font-size: 10.5px; font-weight: 500; letter-spacing: .06em; color: var(--c); border: 1px solid var(--c); border-radius: 3px; padding: 0 5px; flex: none; }
+.rname { font-weight: 600; overflow-wrap: anywhere; min-width: 0; }
+.rpath { font-family: var(--mono); font-size: 11.5px; color: var(--ink-soft); overflow-wrap: anywhere; }
+.score { margin-left: auto; font-family: var(--mono); font-size: 11px; color: var(--ink-soft); font-variant-numeric: tabular-nums; }
+.hits { list-style: none; padding: 0; margin: 8px 0 0; display: grid; gap: 6px; }
+.hits li { display: grid; grid-template-columns: 112px minmax(0, 1fr); gap: 10px; font-size: 14px; }
+.loc { font-family: var(--mono); font-size: 11.5px; color: var(--brass); padding-top: 2px; overflow-wrap: anywhere; }
+.snip { color: var(--ink-soft); overflow-wrap: anywhere; }
+mark { background: var(--mark); color: var(--ink); border-radius: 2px; padding: 0 1px; }
+.empty { padding: 28px 0; color: var(--ink-soft); }
+.empty h3 { font-family: var(--display); font-size: 24px; color: var(--ink); margin-bottom: 6px; font-weight: 600; }
+
+aside.ask { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 16px); align-self: start; background: var(--plate); border: 1px solid var(--rule); border-radius: 4px; padding: 18px; }
+.ask h2 { font-family: var(--display); font-size: 26px; font-weight: 600; margin-bottom: 4px; }
+.ask p.sub { margin: 0 0 12px; font-size: 13px; color: var(--ink-soft); }
+.answer { font-size: 14.5px; white-space: pre-wrap; overflow-wrap: anywhere; border-top: 1px solid var(--rule); margin-top: 14px; padding-top: 12px; min-height: 40px; }
+.answer.muted { color: var(--ink-soft); font-style: italic; }
+.answer sup { font-family: var(--mono); font-size: 10px; color: var(--brass); }
+.cites { list-style: none; padding: 0; margin: 10px 0 0; font-size: 12px; display: grid; gap: 3px; }
+.cites li { font-family: var(--mono); color: var(--ink-soft); overflow-wrap: anywhere; }
+
+.queue { margin-top: 18px; border-top: 1px solid var(--rule); padding-top: 12px; }
+.queue h4 { font-family: var(--mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-soft); margin: 0 0 8px; font-weight: 500; }
+.queue ol { list-style: none; padding: 0; margin: 0; display: grid; gap: 4px; max-height: 220px; overflow: auto; }
+.queue li { display: flex; gap: 8px; align-items: baseline; font-size: 12.5px; min-width: 0; }
+.queue li span:first-child { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.st { font-family: var(--mono); font-size: 11px; white-space: nowrap; }
+.st.done { color: var(--ok); } .st.err { color: var(--warn); } .st.wait { color: var(--ink-soft); }
+
+footer { border-top: 1px solid var(--rule); }
+footer .wrap { padding-block: 20px 36px; font-size: 12.5px; color: var(--ink-soft); display: grid; gap: 6px; }
+
+@media (max-width: 900px) {
+  .grid { grid-template-columns: minmax(0, 1fr); }
+  aside.ask { position: static; order: -1; }
+}
+@media (max-width: 520px) {
+  .hits li { grid-template-columns: minmax(0, 1fr); gap: 0; }
+}
+</style>
+
+<header class="mast">
+  <div class="wrap">
+    <div class="brand">AI Copernic <small>SEARCH LAYER · v2026.1</small></div>
+    <div class="stamp">Built 2026-10-01 · session <span id="sessionTime">—</span></div>
+  </div>
+</header>
+
+<section class="scope">
+  <div class="wrap">
+    <h1>Search every file <em>at once</em>.</h1>
+    <div class="bar">
+      <input id="q" type="search" placeholder="Search Word, PowerPoint, Excel, PDF, web pages, zips and photos" autocomplete="off" aria-label="Search all files">
+      <span class="count" id="qcount"></span>
+    </div>
+    <div class="hint">Use <code>"exact phrase"</code>, <code>-exclude</code>, or <code>type:pdf</code>. Every word must appear in the file; results rank by relevance.</div>
+    <div class="chips" id="chips" role="group" aria-label="Filter by file type"></div>
+  </div>
+</section>
+
+<div class="wrap grid">
+  <main class="col">
+    <div class="drop" id="drop">
+      <p><b>Drop files or folders here.</b> .docx .pptx .xlsx .pdf .zip .html .md .txt .csv .rtf .odt .jpg .png .webp. Files are read in this browser. Only photos and scanned pages go to Claude for OCR.</p>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn primary" id="pick" type="button">Add files</button>
+        <button class="btn" id="pickDir" type="button">Add folder</button>
+      </div>
+      <input id="file" type="file" multiple hidden>
+      <input id="dir" type="file" webkitdirectory multiple hidden>
+    </div>
+    <div class="examples" id="exNote"><span>Showing <b>example files</b> so you can try a search. They disappear when you add your own.</span><button class="btn small" id="clearEx" type="button">Clear examples</button></div>
+    <div class="status" id="status"></div>
+    <div id="results"></div>
+  </main>
+
+  <aside class="ask col" aria-label="Ask your documents">
+    <h2>Ask Copernic</h2>
+    <p class="sub">Ask a question. Claude reads the best-matching passages from all your files and answers with citations.</p>
+    <form id="askForm" style="display:flex;gap:6px">
+      <input id="askQ" type="text" placeholder="Which deck mentions the Q3 budget?" style="flex:1;min-width:0;padding:8px 10px;border:1px solid var(--rule);border-radius:3px;background:var(--paper)" aria-label="Question">
+      <button class="btn primary" id="askBtn" type="submit">Ask</button>
+    </form>
+    <div class="answer muted" id="answer">Answers appear here, with numbered sources from your files.</div>
+    <ol class="cites" id="cites"></ol>
+    <div class="queue" id="queueBox" hidden>
+      <h4>Indexing log</h4>
+      <ol id="queue"></ol>
+    </div>
+  </aside>
+</div>
+
+<footer>
+  <div class="wrap">
+    <div>Built on the AI Copernic crawler (FSCrawler 2.9 lineage, Apache 2.0). This page is the search layer: text extraction for Office, PDF, OpenDocument, web and archive files runs locally. Photos and scanned PDF pages are transcribed by Claude.</div>
+    <div>Files you add stay in this tab and are cleared when you close it.</div>
+  </div>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js"></script>
+<script>
+(() => {
+  const $ = id => document.getElementById(id);
+  const pad = n => String(n).padStart(2, "0");
+  const t0 = new Date();
+  $("sessionTime").textContent = `${t0.getFullYear()}-${pad(t0.getMonth() + 1)}-${pad(t0.getDate())} ${pad(t0.getHours())}:${pad(t0.getMinutes())}`;
+
+  // ---------- types ----------
+  const TYPES = {
+    word: { label: "Word", c: "--t-word" }, ppt: { label: "PowerPoint", c: "--t-ppt" }, xls: { label: "Excel", c: "--t-xls" },
+    pdf: { label: "PDF", c: "--t-pdf" }, img: { label: "Photos", c: "--t-img" }, web: { label: "Web & blogs", c: "--t-web" },
+    zip: { label: "Zip", c: "--t-zip" }, txt: { label: "Text", c: "--t-txt" }
+  };
+  const EXT = {
+    docx: "word", docm: "word", odt: "word", rtf: "word", pptx: "ppt", pptm: "ppt", odp: "ppt", xlsx: "xls", xlsm: "xls", ods: "xls", csv: "xls", tsv: "xls",
+    pdf: "pdf", jpg: "img", jpeg: "img", png: "img", webp: "img", gif: "img", html: "web", htm: "web", xhtml: "web", md: "web", markdown: "web", rss: "web", atom: "web",
+    zip: "zip", txt: "txt", json: "txt", xml: "txt", log: "txt", yaml: "txt", yml: "txt"
+  };
+  const BADGE = { word: "DOC", ppt: "PPT", xls: "XLS", pdf: "PDF", img: "IMG", web: "WEB", zip: "ZIP", txt: "TXT" };
+  const extOf = n => (n.split(".").pop() || "").toLowerCase();
+
+  // ---------- index ----------
+  // docs: {id, name, path, kind, example, segs:[{loc, text, lower}]}
+  let docs = [], nextId = 1, filter = null;
+  const tok = s => s.toLowerCase().normalize("NFKD").replace(/[̀-ͯ]/g, "").match(/[\p{L}\p{N}][\p{L}\p{N}'._-]*/gu) || [];
+  function addDoc(d) {
+    d.id = nextId++;
+    d.segs = d.segs.map(s => ({ loc: s.loc, text: s.text.replace(/\s+/g, " ").trim() })).filter(s => s.text);
+    d.segs.forEach(s => s.lower = s.text.toLowerCase());
+    docs.push(d); scheduleRender();
+  }
+
+  function parseQuery(q) {
+    const out = { phrases: [], terms: [], neg: [], type: null };
+    q = q.replace(/type:(\w+)/gi, (_, t) => { t = t.toLowerCase(); out.type = TYPES[t] ? t : (EXT[t] || null); return " "; });
+    q = q.replace(/"([^"]+)"/g, (_, p) => { out.phrases.push(p.toLowerCase().trim()); return " "; });
+    q.split(/\s+/).filter(Boolean).forEach(w => {
+      if (w.startsWith("-") && w.length > 1) out.neg.push(...tok(w.slice(1)));
+      else out.terms.push(...tok(w));
+    });
+    return out;
+  }
+
+  function search(q) {
+    const p = parseQuery(q);
+    const pool = docs.filter(d => (!filter || d.kind === filter) && (!p.type || d.kind === p.type));
+    if (!p.terms.length && !p.phrases.length) return { p, hits: pool.map(d => ({ d, score: 0, segs: d.segs.slice(0, 2) })) };
+    const needles = [...p.terms, ...p.phrases];
+    const N = pool.length || 1;
+    const df = Object.fromEntries(needles.map(n => [n, pool.filter(d => d.segs.some(s => s.lower.includes(n))).length]));
+    const hits = [];
+    for (const d of pool) {
+      const all = d.segs.map(s => s.lower).join("\n") + "\n" + d.name.toLowerCase();
+      if (!needles.every(n => all.includes(n))) continue;
+      if (p.neg.some(n => all.includes(n))) continue;
+      let score = 0; const scored = [];
+      for (const s of d.segs) {
+        let ss = 0, matched = 0;
+        for (const n of needles) {
+          let c = 0, i = -1; while ((i = s.lower.indexOf(n, i + 1)) !== -1 && c < 20) c++;
+          if (c) { matched++; ss += (1 + Math.log(c)) * Math.log(1 + N / (df[n] || 1)) * (p.phrases.includes(n) ? 2 : 1); }
+        }
+        if (matched) { ss *= matched / needles.length; scored.push({ s, ss }); score += ss; }
+      }
+      if (needles.some(n => d.name.toLowerCase().includes(n))) score += 1.5;
+      scored.sort((a, b) => b.ss - a.ss);
+      hits.push({ d, score, segs: scored.slice(0, 3).map(x => x.s) });
+    }
+    hits.sort((a, b) => b.score - a.score);
+    return { p, hits };
+  }
+
+  // ---------- rendering ----------
+  const esc = s => s.replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+  function snippet(text, needles) {
+    const lower = text.toLowerCase();
+    let at = -1; for (const n of needles) { const i = lower.indexOf(n); if (i !== -1 && (at === -1 || i < at)) at = i; }
+    let start = Math.max(0, at - 90), end = Math.min(text.length, (at === -1 ? 0 : at) + 230);
+    let s = (start ? "…" : "") + text.slice(start, end) + (end < text.length ? "…" : "");
+    let h = esc(s);
+    needles.filter(Boolean).sort((a, b) => b.length - a.length).forEach(n => {
+      const re = new RegExp("(" + esc(n).replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + ")", "gi");
+      h = h.replace(re, "<mark>$1</mark>");
+    });
+    return h.replace(/<mark>(<mark>)+|(<\/mark>)+<\/mark>/g, m => m.includes("/") ? "</mark>" : "<mark>");
+  }
+
+  function renderChips() {
+    const counts = {}; docs.forEach(d => counts[d.kind] = (counts[d.kind] || 0) + 1);
+    const box = $("chips"); box.textContent = "";
+    const mk = (key, label, n, color) => {
+      const b = document.createElement("button"); b.type = "button"; b.className = "chip";
+      b.setAttribute("aria-pressed", String(filter === key));
+      b.innerHTML = (color ? `<span class="dot" style="--c:var(${color})"></span>` : "") + esc(label) + ` <span class="n">${n}</span>`;
+      b.onclick = () => { filter = filter === key ? null : key; render(); };
+      box.append(b);
+    };
+    mk(null, "All files", docs.length);
+    Object.entries(TYPES).forEach(([k, t]) => { if (counts[k]) mk(k, t.label, counts[k], t.c); });
+  }
+
+  function render() {
+    renderChips();
+    const q = $("q").value.trim();
+    const { p, hits } = search(q);
+    const needles = [...p.terms, ...p.phrases];
+    $("qcount").textContent = q ? `${hits.length} of ${docs.length} files` : `${docs.length} files`;
+    const segN = docs.reduce((a, d) => a + d.segs.length, 0);
+    $("status").innerHTML = `<span><b>${docs.length}</b> files</span><span><b>${segN.toLocaleString()}</b> passages indexed</span><span><b>${docs.filter(d => d.ocr).length}</b> read by OCR</span>`;
+    $("exNote").hidden = !docs.some(d => d.example);
+    const box = $("results"); box.textContent = "";
+    if (!docs.length) { box.innerHTML = `<div class="empty"><h3>Nothing indexed yet</h3>Add files or a folder above. Zips are opened and every file inside is searched.</div>`; return; }
+    if (!hits.length) { box.innerHTML = `<div class="empty"><h3>No file contains all of those words</h3>Try fewer words, remove a filter, or check the spelling.</div>`; return; }
+    for (const h of hits.slice(0, 60)) {
+      const t = TYPES[h.d.kind];
+      const el = document.createElement("article"); el.className = "result";
+      el.innerHTML = `<div class="rhead"><span class="badge" style="--c:var(${t.c})">${BADGE[h.d.kind]}</span><span class="rname">${esc(h.d.name)}</span>${h.d.example ? '<span class="rpath">example</span>' : ""}${h.d.ocr ? '<span class="rpath">OCR</span>' : ""}${q ? `<span class="score">${h.score.toFixed(1)}</span>` : ""}</div>${h.d.path !== h.d.name ? `<div class="rpath">${esc(h.d.path)}</div>` : ""}<ul class="hits">${h.segs.map(s => `<li><span class="loc">${esc(s.loc)}</span><span class="snip">${snippet(s.text, needles)}</span></li>`).join("")}</ul>`;
+      box.append(el);
+    }
+    if (hits.length > 60) box.insertAdjacentHTML("beforeend", `<div class="empty">Showing the top 60 of ${hits.length} files. Add words to narrow the search.</div>`);
+  }
+  let raf = 0; const scheduleRender = () => { cancelAnimationFrame(raf); raf = requestAnimationFrame(render); };
+  let deb; $("q").addEventListener("input", () => { clearTimeout(deb); deb = setTimeout(render, 90); });
+
+  // ---------- extractors ----------
+  const xml = s => new DOMParser().parseFromString(s, "application/xml");
+  const byTag = (doc, tag) => Array.from(doc.getElementsByTagNameNS("*", tag));
+  const num = s => parseInt((s.match(/(\d+)\.xml$/) || [0, 0])[1], 10);
+
+  async function docx(zip) {
+    const segs = [];
+    const parts = Object.keys(zip.files).filter(f => /^word\/(document|header\d*|footer\d*|footnotes|comments)\.xml$/.test(f));
+    for (const f of parts) {
+      const d = xml(await zip.file(f).async("string"));
+      const paras = byTag(d, "p").map(p => byTag(p, "t").map(t => t.textContent).join("")).filter(Boolean);
+      const label = f.includes("document") ? "Para" : f.split("/")[1].replace(".xml", "");
+      for (let i = 0; i < paras.length; i += 4) segs.push({ loc: `${label} ${i + 1}`, text: paras.slice(i, i + 4).join(" ") });
+    }
+    return segs;
+  }
+  async function pptx(zip) {
+    const segs = [];
+    const slides = Object.keys(zip.files).filter(f => /^ppt\/slides\/slide\d+\.xml$/.test(f)).sort((a, b) => num(a) - num(b));
+    for (const f of slides) segs.push({ loc: `Slide ${num(f)}`, text: byTag(xml(await zip.file(f).async("string")), "t").map(t => t.textContent).join(" ") });
+    const notes = Object.keys(zip.files).filter(f => /^ppt\/notesSlides\/notesSlide\d+\.xml$/.test(f));
+    for (const f of notes) segs.push({ loc: `Notes ${num(f)}`, text: byTag(xml(await zip.file(f).async("string")), "t").map(t => t.textContent).join(" ") });
+    return segs;
+  }
+  async function xlsx(zip) {
+    const shared = zip.file("xl/sharedStrings.xml") ? byTag(xml(await zip.file("xl/sharedStrings.xml").async("string")), "si").map(si => byTag(si, "t").map(t => t.textContent).join("")) : [];
+    const names = zip.file("xl/workbook.xml") ? byTag(xml(await zip.file("xl/workbook.xml").async("string")), "sheet").map(s => s.getAttribute("name")) : [];
+    const segs = [];
+    const sheets = Object.keys(zip.files).filter(f => /^xl\/worksheets\/sheet\d+\.xml$/.test(f)).sort((a, b) => num(a) - num(b));
+    for (const f of sheets) {
+      const name = names[num(f) - 1] || `Sheet ${num(f)}`;
+      for (const row of byTag(xml(await zip.file(f).async("string")), "row")) {
+        const cells = byTag(row, "c").map(c => {
+          const t = c.getAttribute("t"), v = byTag(c, "v")[0]?.textContent ?? "";
+          return t === "s" ? shared[+v] ?? "" : t === "inlineStr" ? byTag(c, "t").map(x => x.textContent).join("") : v;
+        }).filter(Boolean);
+        if (cells.length) segs.push({ loc: `${name} r${row.getAttribute("r")}`, text: cells.join(" · ") });
+      }
+    }
+    return segs;
+  }
+  async function odf(zip) {
+    const d = xml(await zip.file("content.xml").async("string"));
+    const pages = byTag(d, "page"), tables = byTag(d, "table");
+    if (pages.length) return pages.map((p, i) => ({ loc: `Slide ${i + 1}`, text: p.textContent }));
+    if (tables.length) return tables.flatMap(t => byTag(t, "table-row").map((r, i) => ({ loc: `${t.getAttribute("table:name") || "Sheet"} r${i + 1}`, text: byTag(r, "table-cell").map(c => c.textContent).filter(Boolean).join(" · ") })));
+    return byTag(d, "p").map((p, i) => ({ loc: `Para ${i + 1}`, text: p.textContent }));
+  }
+  function chunkText(text, label = "Part") {
+    const paras = text.split(/\n\s*\n/).map(s => s.trim()).filter(Boolean), segs = [];
+    let buf = "", i = 1;
+    for (const p of paras) { if ((buf + p).length > 700 && buf) { segs.push({ loc: `${label} ${i++}`, text: buf }); buf = ""; } buf += (buf ? " " : "") + p; }
+    if (buf) segs.push({ loc: `${label} ${i}`, text: buf });
+    return segs;
+  }
+  function web(text, ext) {
+    if (ext === "md" || ext === "markdown") return chunkText(text.replace(/[#*_>`]/g, ""), "Section");
+    const d = new DOMParser().parseFromString(text, ext === "rss" || ext === "atom" || /^\s*<\?xml/.test(text) && /<(rss|feed)\b/.test(text) ? "application/xml" : "text/html");
+    const items = byTag(d, "item").concat(byTag(d, "entry"));
+    if (items.length) return items.map((it, i) => ({ loc: `Post ${i + 1}`, text: [byTag(it, "title")[0]?.textContent, (byTag(it, "description")[0] || byTag(it, "content")[0] || byTag(it, "summary")[0])?.textContent?.replace(/<[^>]+>/g, " ")].filter(Boolean).join(" — ") }));
+    d.querySelectorAll?.("script,style,noscript,nav").forEach(n => n.remove());
+    const title = d.querySelector?.("title")?.textContent || "";
+    const blocks = Array.from(d.querySelectorAll?.("h1,h2,h3,p,li,td,blockquote,pre") || []).map(n => n.textContent.trim()).filter(Boolean);
+    return [{ loc: "Title", text: title }, ...chunkText(blocks.join("\n\n"), "Section")];
+  }
+  const rtf = t => chunkText(t.replace(/\\par[d]?/g, "\n\n").replace(/\{\\\*[^}]*\}|\\[a-z]+-?\d* ?|[{}]/gi, ""), "Part");
+
+  async function pdf(buf, name) {
+    const doc = await pdfjsLib.getDocument({ data: buf, isEvalSupported: false }).promise;
+    const segs = [], scans = [];
+    for (let i = 1; i <= doc.numPages; i++) {
+      const page = await doc.getPage(i);
+      const tc = await page.getTextContent();
+      const text = tc.items.map(it => it.str + (it.hasEOL ? "\n" : " ")).join("");
+      if (text.replace(/\s/g, "").length > 8) segs.push({ loc: `Page ${i}`, text });
+      else scans.push(i);
+    }
+    return { segs, scans, doc };
+  }
+  async function pageToBlob(doc, n) {
+    const page = await doc.getPage(n), vp = page.getViewport({ scale: 1 });
+    const scale = Math.min(2, 1600 / Math.max(vp.width, vp.height)), v = page.getViewport({ scale });
+    const c = document.createElement("canvas"); c.width = v.width; c.height = v.height;
+    await page.render({ canvasContext: c.getContext("2d"), viewport: v }).promise;
+    return new Promise(r => c.toBlob(r, "image/jpeg", .85));
+  }
+
+  // ---------- OCR via Claude ----------
+  let samplePromise = null;
+  const getSample = () => samplePromise ??= (window.claude?.use ? window.claude.use("sample") : Promise.resolve(null));
+  const ocrQueue = []; let ocrBusy = false;
+  function queueOCR(job) { ocrQueue.push(job); runOCR(); }
+  async function runOCR() {
+    if (ocrBusy) return; ocrBusy = true;
+    while (ocrQueue.length) {
+      const job = ocrQueue.shift();
+      const sample = await getSample();
+      const caps = sample ? await sample.limits().catch(() => null) : null;
+      if (!sample || !caps?.images) { job.log("OCR unavailable here", "err"); continue; }
+      job.log("OCR…", "wait");
+      try {
+        const blob = await job.blob();
+        const out = await sample.json(
+          `You are the OCR engine for a document search index. The image is ${job.what}. Transcribe every piece of legible text exactly as written, in reading order (signs, labels, handwriting, tables, captions). Then write one plain sentence describing what the image shows so it can be found by content. Reply with JSON only: {"text": "<transcription, or empty string if none>", "description": "<one sentence>"}`,
+          { images: blob, modelTier: "quick" });
+        job.done([{ loc: job.loc, text: out.text || "" }, { loc: job.loc + " · scene", text: out.description || "" }]);
+        job.log("done · OCR", "done");
+      } catch (e) {
+        job.log(e?.code === "not_granted" ? "OCR declined" : e?.code === "rate_limited" ? "OCR busy, skipped" : "OCR failed", "err");
+        if (e?.code === "rate_limited") await new Promise(r => setTimeout(r, 4000));
+      }
+    }
+    ocrBusy = false;
+  }
+
+  // ---------- ingest ----------
+  function logLine(name) {
+    $("queueBox").hidden = false;
+    const li = document.createElement("li");
+    li.innerHTML = `<span title="${esc(name)}">${esc(name)}</span><span class="st wait">reading…</span>`;
+    $("queue").prepend(li);
+    return (msg, cls) => { const s = li.lastChild; s.textContent = msg; s.className = "st " + cls; };
+  }
+  function clearExamples() { docs = docs.filter(d => !d.example); scheduleRender(); }
+
+  async function ingest(name, path, getBuf, depth = 0) {
+    const ext = extOf(name), kind = EXT[ext];
+    const log = logLine(path);
+    if (!kind) { log("type not supported", "err"); return; }
+    if (docs.some(d => d.example)) clearExamples();
+    try {
+      if (kind === "zip") {
+        if (depth > 3) { log("nested too deep", "err"); return; }
+        const zip = await JSZip.loadAsync(await getBuf());
+        const entries = Object.values(zip.files).filter(f => !f.dir && !/(^|\/)(__MACOSX|\.)/.test(f.name));
+        addDoc({ name, path, kind: "zip", segs: [{ loc: "Contents", text: entries.map(f => f.name).join(" ") }] });
+        log(`opened · ${entries.length} files`, "done");
+        for (const f of entries) await ingest(f.name.split("/").pop(), `${path} › ${f.name}`, () => f.async("arraybuffer"), depth + 1);
+        return;
+      }
+      const buf = await getBuf();
+      let segs = [];
+      if (kind === "img") {
+        const d = { name, path, kind, ocr: true, segs: [] };
+        log("queued for OCR", "wait");
+        queueOCR({ what: `a photo or image file named "${name}"`, loc: "Image", blob: async () => new Blob([buf], { type: ext === "jpg" ? "image/jpeg" : `image/${ext}` }), log,
+          done: s => { d.segs = s; addDoc(d); } });
+        return;
+      }
+      if (kind === "pdf") {
+        const { segs: s, scans, doc } = await pdf(buf, name);
+        const d = { name, path, kind, segs: s };
+        addDoc(d);
+        log(scans.length ? `${s.length} pages · ${scans.length} scanned` : `${s.length} pages`, "done");
+        if (scans.length) d.ocr = true;
+        for (const n of scans.slice(0, 30)) queueOCR({ what: `page ${n} of a scanned PDF named "${name}"`, loc: `Page ${n}`, blob: () => pageToBlob(doc, n), log,
+          done: s2 => { s2.forEach(x => { x.text = x.text.replace(/\s+/g, " ").trim(); x.lower = x.text.toLowerCase(); }); d.segs.push(...s2.filter(x => x.text)); scheduleRender(); } });
+        return;
+      }
+      if (["docx", "docm", "pptx", "pptm", "xlsx", "xlsm", "odt", "odp", "ods"].includes(ext)) {
+        const zip = await JSZip.loadAsync(buf);
+        segs = ext.startsWith("doc") ? await docx(zip) : ext.startsWith("ppt") ? await pptx(zip) : ext.startsWith("xls") ? await xlsx(zip) : await odf(zip);
+      } else {
+        const text = new TextDecoder().decode(buf);
+        if (kind === "web") segs = web(text, ext);
+        else if (ext === "rtf") segs = rtf(text);
+        else if (ext === "csv" || ext === "tsv") segs = text.split(/\r?\n/).filter(Boolean).map((r, i) => ({ loc: `Row ${i + 1}`, text: r.replace(/[,\t]/g, " · ") }));
+        else segs = chunkText(text);
+      }
+      addDoc({ name, path, kind, segs });
+      log(`done · ${segs.length} passages`, "done");
+    } catch (e) {
+      console.error(path, e); log(/password|encrypt/i.test(String(e)) ? "encrypted, skipped" : "could not read", "err");
+    }
+  }
+  const addFiles = async list => { for (const f of list) await ingest(f.name, f.webkitRelativePath || f.name, () => f.arrayBuffer()); };
+
+  $("pick").onclick = () => $("file").click();
+  $("pickDir").onclick = () => $("dir").click();
+  $("file").onchange = e => { addFiles([...e.target.files]); e.target.value = ""; };
+  $("dir").onchange = e => { addFiles([...e.target.files]); e.target.value = ""; };
+  $("clearEx").onclick = clearExamples;
+  const drop = $("drop");
+  ["dragenter", "dragover"].forEach(t => document.addEventListener(t, e => { e.preventDefault(); drop.classList.add("over"); }));
+  ["dragleave", "drop"].forEach(t => document.addEventListener(t, e => { e.preventDefault(); if (t === "drop" || !e.relatedTarget) drop.classList.remove("over"); }));
+  async function walk(entry, out) {
+    if (entry.isFile) out.push(await new Promise(r => entry.file(f => { Object.defineProperty(f, "webkitRelativePath", { value: entry.fullPath.slice(1) }); r(f); }, () => r(null))));
+    else if (entry.isDirectory) {
+      const reader = entry.createReader(); let batch;
+      do { batch = await new Promise(r => reader.readEntries(r, () => r([]))); for (const e of batch) await walk(e, out); } while (batch.length);
+    }
+  }
+  document.addEventListener("drop", async e => {
+    const items = [...(e.dataTransfer?.items || [])].map(i => i.webkitGetAsEntry?.()).filter(Boolean);
+    if (items.length) { const out = []; for (const it of items) await walk(it, out); addFiles(out.filter(Boolean)); }
+    else addFiles([...(e.dataTransfer?.files || [])]);
+  });
+
+  // ---------- Ask ----------
+  $("askForm").addEventListener("submit", async e => {
+    e.preventDefault();
+    const q = $("askQ").value.trim(); if (!q) return;
+    const ans = $("answer"), cites = $("cites");
+    cites.textContent = ""; ans.classList.add("muted");
+    const sample = await getSample();
+    if (!sample) { ans.textContent = "Ask needs Claude, which isn't available in this view. Open the page on claude.ai while signed in."; return; }
+    // retrieve: rank passages by any-term overlap so questions in natural language still find context
+    const terms = [...new Set(tok(q).filter(w => w.length > 2))];
+    const pool = [];
+    for (const d of docs) for (const s of d.segs) {
+      let sc = 0; for (const t of terms) if (s.lower.includes(t)) sc += 1 + Math.min(3, s.lower.split(t).length - 2) * .3;
+      if (sc) pool.push({ d, s, sc });
+    }
+    pool.sort((a, b) => b.sc - a.sc);
+    const ctx = pool.slice(0, 14);
+    if (!ctx.length) { ans.textContent = "None of your files mention those words. Try different wording or add more files."; return; }
+    ans.textContent = "Reading your files…";
+    $("askBtn").disabled = true;
+    const sources = ctx.map((c, i) => `[${i + 1}] ${c.d.path} — ${c.s.loc}\n${c.s.text.slice(0, 1200)}`).join("\n\n");
+    try {
+      await sample(`Answer the question using only the numbered passages from the user's files. Cite passages inline like [2]. If the passages don't answer it, say so in one sentence. Keep it under 150 words, plain text, no markdown.\n\nQuestion: ${q}\n\nPassages:\n${sources}`,
+        { onText: ({ text }) => { ans.classList.remove("muted"); ans.innerHTML = esc(text).replace(/\[(\d+)\]/g, "<sup>[$1]</sup>"); }, cache: false });
+      const used = new Set([...ans.textContent.matchAll(/\[(\d+)\]/g)].map(m => +m[1]));
+      ctx.forEach((c, i) => { if (used.has(i + 1)) cites.insertAdjacentHTML("beforeend", `<li>[${i + 1}] ${esc(c.d.name)} · ${esc(c.s.loc)}</li>`); });
+    } catch (err) {
+      ans.classList.add("muted");
+      ans.textContent = err?.code === "not_granted" ? "Ask was declined. You can still search all files with the bar above."
+        : err?.code === "rate_limited" ? "Too many questions at once. Wait a moment and ask again." : "Claude couldn't answer that just now. Try again.";
+    } finally { $("askBtn").disabled = false; }
+  });
+
+  // ---------- examples ----------
+  const EX = [
+    { name: "Q3 Board Update.pptx", kind: "ppt", segs: [["Slide 1", "Q3 Board Update — Energetic One, October 2026"], ["Slide 4", "Q3 budget: revenue $1.84M against plan $1.70M. Marketing spend held at 18% of revenue."], ["Slide 7", "Risks: supplier lead times in Rotterdam extended to 9 weeks; hedging fuel exposure through Q1."], ["Notes 4", "Mention the Q3 budget overrun in logistics is timing, not structural."]] },
+    { name: "FY2026 Forecast.xlsx", kind: "xls", segs: [["Summary r3", "Revenue · Q1 · 1,410,000 · Q2 · 1,620,000 · Q3 · 1,840,000 · Q4 · 2,050,000"], ["Costs r12", "Logistics · Rotterdam · 212,400 · variance · +14%"], ["Costs r18", "Marketing · 18% · budget · 331,200"]] },
+    { name: "Supplier Agreement — Rotterdam.docx", kind: "word", segs: [["Para 1", "This Supplier Agreement is made between Energetic One Ltd and Havenlijn B.V., Rotterdam."], ["Para 9", "Lead time: the Supplier shall deliver within six (6) weeks of a purchase order. Late delivery incurs a 2% credit per week."], ["Para 21", "Termination: either party may terminate on ninety (90) days written notice."]] },
+    { name: "Site inspection 2026-09-14.pdf", kind: "pdf", ocr: true, segs: [["Page 1", "Site inspection report. Warehouse B, Rotterdam. Inspector: M. de Vries."], ["Page 3", "Fire exits clear. Loading bay 4 door seal damaged; repair before winter."]] },
+    { name: "IMG_2041.jpg", kind: "img", ocr: true, segs: [["Image", "LOADING BAY 4 · MAX 12 TONNES · NO PARKING"], ["Image · scene", "A warehouse loading bay door with a yellow warning sign and a pallet of boxes."]] },
+    { name: "blog/why-we-moved-to-rotterdam.html", kind: "web", segs: [["Title", "Why we moved our European hub to Rotterdam"], ["Section 2", "Rotterdam cut our average delivery time to Germany from 5 days to 2. The trade-off is longer supplier lead times in peak season."]] },
+    { name: "archive-2025.zip", kind: "zip", segs: [["Contents", "contracts/old-supplier.docx invoices/2025-11.pdf photos/bay4-before.jpg"]] }
+  ];
+  EX.forEach(e => addDoc({ ...e, path: e.name, example: true, segs: e.segs.map(([loc, text]) => ({ loc, text })) }));
+  $("q").value = "Rotterdam";
+  render();
+})();
+</script>
