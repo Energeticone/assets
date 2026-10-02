@@ -104,6 +104,15 @@ aside.ask { position: sticky; top: calc(env(safe-area-inset-top, 0px) + 16px); a
 .st { font-family: var(--mono); font-size: 11px; white-space: nowrap; }
 .st.done { color: var(--ok); } .st.err { color: var(--warn); } .st.wait { color: var(--ink-soft); }
 
+.sources { display: flex; flex-wrap: wrap; gap: 6px 18px; margin-top: 12px; font-size: 12.5px; }
+.src { display: inline-flex; align-items: center; gap: 6px; color: var(--ink-soft); min-width: 0; }
+.src b { color: var(--ink); font-weight: 600; }
+.sdot { width: 7px; height: 7px; border-radius: 50%; background: var(--orbit); flex: none; }
+.src.ok .sdot { background: var(--ok); } .src.busy .sdot { background: var(--brass); } .src.err .sdot { background: var(--warn); }
+.src.err span:last-child { color: var(--warn); }
+.tag { font-family: var(--mono); font-size: 10.5px; color: var(--ink-soft); border: 1px solid var(--rule); border-radius: 3px; padding: 0 5px; white-space: nowrap; }
+a.rname { color: var(--ink); text-decoration: underline; text-decoration-color: var(--rule); text-underline-offset: 3px; }
+a.rname:hover { text-decoration-color: var(--brass); }
 footer { border-top: 1px solid var(--rule); }
 footer .wrap { padding-block: 20px 36px; font-size: 12.5px; color: var(--ink-soft); display: grid; gap: 6px; }
 
@@ -130,7 +139,8 @@ footer .wrap { padding-block: 20px 36px; font-size: 12.5px; color: var(--ink-sof
       <input id="q" type="search" placeholder="Search Word, PowerPoint, Excel, PDF, web pages, zips and photos" autocomplete="off" aria-label="Search all files">
       <span class="count" id="qcount"></span>
     </div>
-    <div class="hint">Use <code>"exact phrase"</code>, <code>-exclude</code>, or <code>type:pdf</code>. Every word must appear in the file; results rank by relevance.</div>
+    <div class="hint">Use <code>"exact phrase"</code>, <code>-exclude</code>, or <code>type:pdf</code>. Press Enter to search Google Drive and Dropbox at the same time as any files you drop here.</div>
+    <div class="sources" id="sources" aria-live="polite"></div>
     <div class="chips" id="chips" role="group" aria-label="Filter by file type"></div>
   </div>
 </section>
@@ -153,7 +163,7 @@ footer .wrap { padding-block: 20px 36px; font-size: 12.5px; color: var(--ink-sof
 
   <aside class="ask col" aria-label="Ask your documents">
     <h2>Ask Copernic</h2>
-    <p class="sub">Ask a question. Claude reads the best-matching passages from all your files and answers with citations.</p>
+    <p class="sub">Ask a question. Claude reads matching passages from Google Drive, Dropbox and your dropped files, and answers with citations.</p>
     <form id="askForm" style="display:flex;gap:6px">
       <input id="askQ" type="text" placeholder="Which deck mentions the Q3 budget?" style="flex:1;min-width:0;padding:8px 10px;border:1px solid var(--rule);border-radius:3px;background:var(--paper)" aria-label="Question">
       <button class="btn primary" id="askBtn" type="submit">Ask</button>
@@ -170,7 +180,7 @@ footer .wrap { padding-block: 20px 36px; font-size: 12.5px; color: var(--ink-sof
 <footer>
   <div class="wrap">
     <div>Built on the AI Copernic crawler (FSCrawler 2.9 lineage, Apache 2.0). This page is the search layer: text extraction for Office, PDF, OpenDocument, web and archive files runs locally. Photos and scanned PDF pages are transcribed by Claude.</div>
-    <div>Files you add stay in this tab and are cleared when you close it.</div>
+    <div>Google Drive and Dropbox are searched live through your claude.ai connectors, using each service's own index. Files you drop here stay in this tab only. Your computer's disk joins in the next phase.</div>
   </div>
 </footer>
 
@@ -264,8 +274,86 @@ footer .wrap { padding-block: 20px 36px; font-size: 12.5px; color: var(--ink-sof
     return h.replace(/<mark>(<mark>)+|(<\/mark>)+<\/mark>/g, m => m.includes("/") ? "</mark>" : "<mark>");
   }
 
-  function renderChips() {
-    const counts = {}; docs.forEach(d => counts[d.kind] = (counts[d.kind] || 0) + 1);
+  // ---------- cloud sources (claude.ai connectors) ----------
+  const CLOUD = [{ key: "gdrive", label: "Google Drive" }, { key: "dropbox", label: "Dropbox" }];
+  const srcState = { gdrive: { status: "idle" }, dropbox: { status: "idle" } };
+  const cloudHits = { gdrive: [], dropbox: [] };
+  let cloudQuery = "";
+  const mcpReady = window.claude?.use ? window.claude.use("mcp").catch(() => null) : Promise.resolve(null);
+  const mimeKind = m => /wordprocessing|msword|apps\.document|opendocument\.text|rtf/.test(m) ? "word" : /presentation|powerpoint/.test(m) ? "ppt"
+    : /spreadsheet|excel|csv/.test(m) ? "xls" : /pdf/.test(m) ? "pdf" : /^image\//.test(m) ? "img" : /html|markdown/.test(m) ? "web" : /zip/.test(m) ? "zip" : "txt";
+  const kindOf = (name, mime) => EXT[extOf(name)] || (mime ? mimeKind(mime) : "txt");
+  const quoteDrive = s => "'" + s.replace(/\\/g, "\\\\").replace(/'/g, "\\'") + "'";
+  function cloudError(e, label) {
+    switch (e?.code) {
+      case "server_not_connected": return `Not connected. Add ${label} in claude.ai Settings → Connectors.`;
+      case "needs_reauth": return `Sign-in expired. Reconnect ${label} in claude.ai Settings → Connectors.`;
+      case "not_in_manifest": return `${label} is turned off for this page.`;
+      case "selection_required": return `Choose which ${label} account to use when claude.ai asks.`;
+      case "blocked_by_policy": case "approval_required": return `Your organization blocks ${label} here.`;
+      case "server_unavailable": return `${label} didn't respond. Search again in a moment.`;
+      case "not_granted": case "capability_disabled": case "capability_removed": return "Cloud search isn't available in this view.";
+      case "tool_error": return `${label} reported: ${e.message || "search failed"}`;
+      default: return `${label} search failed${e?.message ? ": " + e.message : ""}.`;
+    }
+  }
+  async function searchOne(mcp, c, p, q, retried) {
+    srcState[c.key] = { status: "busy" }; renderSources();
+    const words = [...p.terms, ...p.phrases];
+    try {
+      let hits;
+      if (c.key === "gdrive") {
+        const clauses = words.map(t => `fullText contains ${quoteDrive(t)}`).concat(p.neg.map(t => `not fullText contains ${quoteDrive(t)}`));
+        const r = await mcp.callTool(c.label, "search_files", { query: clauses.join(" and "), pageSize: 25, snippetVerbosity: "BRIEF" });
+        hits = (r.payload?.files || []).map(f => ({ src: c.key, name: f.title || "Untitled", path: "Google Drive", kind: kindOf(f.title || "", f.mimeType || ""), url: f.viewUrl, id: f.id, snippet: f.contentSnippet || "", when: f.modifiedTime || "" }));
+      } else {
+        const r = await mcp.callTool(c.label, "search", { query: words.join(" ") });
+        hits = (r.payload?.results || []).filter(f => f.object_type !== "folder" && f.object_type !== "deleted")
+          .map(f => ({ src: c.key, name: f.title || "Untitled", path: f.path_display || "Dropbox", kind: kindOf(f.title || "", f.mime_type || ""), url: f.url, id: f.id || f.path, snippet: "", match: f.match_type || "", when: f.server_modified || "" }));
+      }
+      if (cloudQuery !== q) return;
+      cloudHits[c.key] = hits.filter(h => !p.neg.some(n => (h.name + " " + h.snippet).toLowerCase().includes(n)));
+      srcState[c.key] = { status: "ok", n: cloudHits[c.key].length };
+    } catch (e) {
+      if (cloudQuery !== q) return;
+      if (e?.retryable && !retried) {
+        await new Promise(r => setTimeout(r, Math.min(e.retryAfterMs || 1200 + Math.random() * 1200, 10000)));
+        return searchOne(mcp, c, p, q, true);
+      }
+      cloudHits[c.key] = []; srcState[c.key] = { status: "err", msg: cloudError(e, c.label) };
+    }
+    renderSources(); render();
+  }
+  async function runCloud(q) {
+    const p = parseQuery(q);
+    cloudQuery = q;
+    if (![...p.terms, ...p.phrases].length) {
+      CLOUD.forEach(c => { cloudHits[c.key] = []; srcState[c.key] = { status: "idle" }; });
+      renderSources(); render(); return;
+    }
+    const mcp = await mcpReady;
+    if (!mcp) {
+      CLOUD.forEach(c => srcState[c.key] = { status: "off", msg: "Works when this page is open on claude.ai." });
+      renderSources(); return;
+    }
+    if (docs.some(d => d.example)) clearExamples();
+    await Promise.all(CLOUD.map(c => searchOne(mcp, c, p, q)));
+  }
+  function renderSources() {
+    const rows = [
+      ...CLOUD.map(c => {
+        const s = srcState[c.key];
+        const txt = s.status === "busy" ? "searching…" : s.status === "ok" ? `${s.n} result${s.n === 1 ? "" : "s"}` : s.status === "idle" ? "ready" : s.msg;
+        return { label: c.label, cls: s.status, txt };
+      }),
+      { label: "Dropped files", cls: "ok", txt: `${docs.filter(d => !d.example).length} in this tab` },
+      { label: "This computer", cls: "idle", txt: "not set up yet" }
+    ];
+    $("sources").innerHTML = rows.map(r => `<div class="src ${r.cls}"><span class="sdot"></span><b>${esc(r.label)}</b><span>${esc(r.txt)}</span></div>`).join("");
+  }
+
+  function renderChips(items) {
+    const counts = {}; items.forEach(k => counts[k] = (counts[k] || 0) + 1);
     const box = $("chips"); box.textContent = "";
     const mk = (key, label, n, color) => {
       const b = document.createElement("button"); b.type = "button"; b.className = "chip";
@@ -274,32 +362,56 @@ footer .wrap { padding-block: 20px 36px; font-size: 12.5px; color: var(--ink-sof
       b.onclick = () => { filter = filter === key ? null : key; render(); };
       box.append(b);
     };
-    mk(null, "All files", docs.length);
+    mk(null, "All files", items.length);
     Object.entries(TYPES).forEach(([k, t]) => { if (counts[k]) mk(k, t.label, counts[k], t.c); });
   }
 
+  const SRC_LABEL = { gdrive: "Google Drive", dropbox: "Dropbox" };
   function render() {
-    renderChips();
     const q = $("q").value.trim();
     const { p, hits } = search(q);
     const needles = [...p.terms, ...p.phrases];
-    $("qcount").textContent = q ? `${hits.length} of ${docs.length} files` : `${docs.length} files`;
+    const live = cloudQuery === q;
+    const cloudAll = live ? [...cloudHits.gdrive, ...cloudHits.dropbox] : [];
+    renderChips([...docs.map(d => d.kind), ...cloudAll.map(c => c.kind)]);
+    const ok = h => (!filter || h.kind === filter) && (!p.type || h.kind === p.type);
+    const lists = [hits.map(h => ({ local: h })), (live ? cloudHits.gdrive : []).filter(ok).map(c => ({ cloud: c })), (live ? cloudHits.dropbox : []).filter(ok).map(c => ({ cloud: c }))];
+    const total = lists.reduce((a, l) => a + l.length, 0), merged = [];
+    for (let i = 0; merged.length < total; i++) lists.forEach(l => { if (l[i]) merged.push(l[i]); });
+    $("qcount").textContent = q ? `${total} results` : `${docs.length} files`;
     const segN = docs.reduce((a, d) => a + d.segs.length, 0);
-    $("status").innerHTML = `<span><b>${docs.length}</b> files</span><span><b>${segN.toLocaleString()}</b> passages indexed</span><span><b>${docs.filter(d => d.ocr).length}</b> read by OCR</span>`;
+    $("status").innerHTML = `<span><b>${docs.length}</b> dropped files</span><span><b>${segN.toLocaleString()}</b> passages indexed here</span><span><b>${docs.filter(d => d.ocr).length}</b> read by OCR</span>`;
     $("exNote").hidden = !docs.some(d => d.example);
     const box = $("results"); box.textContent = "";
-    if (!docs.length) { box.innerHTML = `<div class="empty"><h3>Nothing indexed yet</h3>Add files or a folder above. Zips are opened and every file inside is searched.</div>`; return; }
-    if (!hits.length) { box.innerHTML = `<div class="empty"><h3>No file contains all of those words</h3>Try fewer words, remove a filter, or check the spelling.</div>`; return; }
-    for (const h of hits.slice(0, 60)) {
-      const t = TYPES[h.d.kind];
+    if (!q && !docs.length) { box.innerHTML = `<div class="empty"><h3>Search Google Drive and Dropbox</h3>Type a few words and press Enter. You can also drop files here to search them alongside your cloud drives.</div>`; return; }
+    if (!merged.length) {
+      const pending = CLOUD.some(c => srcState[c.key].status === "busy");
+      box.innerHTML = pending ? `<div class="empty"><h3>Searching your cloud drives…</h3>Results appear as each source answers.</div>`
+        : `<div class="empty"><h3>No file contains all of those words</h3>${q && !live ? "Press Enter to search Google Drive and Dropbox too. " : ""}Try fewer words, remove a filter, or check the spelling.</div>`;
+      return;
+    }
+    for (const m of merged.slice(0, 80)) {
       const el = document.createElement("article"); el.className = "result";
-      el.innerHTML = `<div class="rhead"><span class="badge" style="--c:var(${t.c})">${BADGE[h.d.kind]}</span><span class="rname">${esc(h.d.name)}</span>${h.d.example ? '<span class="rpath">example</span>' : ""}${h.d.ocr ? '<span class="rpath">OCR</span>' : ""}${q ? `<span class="score">${h.score.toFixed(1)}</span>` : ""}</div>${h.d.path !== h.d.name ? `<div class="rpath">${esc(h.d.path)}</div>` : ""}<ul class="hits">${h.segs.map(s => `<li><span class="loc">${esc(s.loc)}</span><span class="snip">${snippet(s.text, needles)}</span></li>`).join("")}</ul>`;
+      if (m.local) {
+        const h = m.local, t = TYPES[h.d.kind];
+        el.innerHTML = `<div class="rhead"><span class="badge" style="--c:var(${t.c})">${BADGE[h.d.kind]}</span><span class="rname">${esc(h.d.name)}</span><span class="tag">${h.d.example ? "example" : "dropped"}</span>${h.d.ocr ? '<span class="tag">OCR</span>' : ""}${q ? `<span class="score">${h.score.toFixed(1)}</span>` : ""}</div>${h.d.path !== h.d.name ? `<div class="rpath">${esc(h.d.path)}</div>` : ""}<ul class="hits">${h.segs.map(s => `<li><span class="loc">${esc(s.loc)}</span><span class="snip">${snippet(s.text, needles)}</span></li>`).join("")}</ul>`;
+      } else {
+        const c = m.cloud, t = TYPES[c.kind];
+        const where = c.snippet ? snippet(c.snippet, needles) : esc(c.match === "FILENAME" ? "Matched in the file name." : c.match ? "Matched in the file's contents." : "");
+        el.innerHTML = `<div class="rhead"><span class="badge" style="--c:var(${t.c})">${BADGE[c.kind]}</span>${c.url ? `<a class="rname" href="${esc(c.url)}" target="_blank" rel="noopener">${esc(c.name)}</a>` : `<span class="rname">${esc(c.name)}</span>`}<span class="tag src-${c.src}">${SRC_LABEL[c.src]}</span>${c.when ? `<span class="score">${esc(c.when.slice(0, 10))}</span>` : ""}</div>${c.path !== "Google Drive" ? `<div class="rpath">${esc(c.path)}</div>` : ""}${where ? `<ul class="hits"><li><span class="loc">${c.snippet ? "Snippet" : "Match"}</span><span class="snip">${where}</span></li></ul>` : ""}`;
+      }
       box.append(el);
     }
-    if (hits.length > 60) box.insertAdjacentHTML("beforeend", `<div class="empty">Showing the top 60 of ${hits.length} files. Add words to narrow the search.</div>`);
+    if (merged.length > 80) box.insertAdjacentHTML("beforeend", `<div class="empty">Showing the first 80 of ${merged.length} results. Add words to narrow the search.</div>`);
   }
-  let raf = 0; const scheduleRender = () => { cancelAnimationFrame(raf); raf = requestAnimationFrame(render); };
-  let deb; $("q").addEventListener("input", () => { clearTimeout(deb); deb = setTimeout(render, 90); });
+  let raf = 0; const scheduleRender = () => { cancelAnimationFrame(raf); raf = requestAnimationFrame(() => { renderSources(); render(); }); };
+  let deb, cdeb;
+  $("q").addEventListener("input", () => {
+    clearTimeout(deb); deb = setTimeout(render, 90);
+    clearTimeout(cdeb); const v = $("q").value.trim();
+    if (v.replace(/[^\p{L}\p{N}]/gu, "").length >= 3) cdeb = setTimeout(() => runCloud(v), 800);
+  });
+  $("q").addEventListener("keydown", e => { if (e.key === "Enter") { clearTimeout(cdeb); runCloud($("q").value.trim()); } });
 
   // ---------- extractors ----------
   const xml = s => new DOMParser().parseFromString(s, "application/xml");
@@ -500,6 +612,26 @@ footer .wrap { padding-block: 20px 36px; font-size: 12.5px; color: var(--ink-sof
   });
 
   // ---------- Ask ----------
+  const STOP = new Set("what which where when who whom whose why how does did have has had with from that this these those there their them they about into over under than then also only just some any all each your yours mine ours were was are been being will would could should shall might must can the and for not but you our its it's tell show find give list me my i a an of to in on at by or is be do".split(" "));
+  async function cloudPassages(q, terms) {
+    const mcp = await mcpReady; if (!mcp) return [];
+    const kw = terms.filter(t => t.length > 3 && !STOP.has(t)).slice(0, 6); if (!kw.length) return [];
+    const out = [];
+    const drive = mcp.callTool("Google Drive", "search_files", { query: kw.map(t => `fullText contains ${quoteDrive(t)}`).join(" or "), pageSize: 6, snippetVerbosity: "MEDIUM" })
+      .then(r => (r.payload?.files || []).forEach(f => f.contentSnippet && out.push({ name: f.title || "Untitled", path: "Google Drive › " + (f.title || ""), loc: "Snippet", text: f.contentSnippet })))
+      .catch(() => {});
+    const box = mcp.callTool("Dropbox", "search", { query: kw.join(" ") })
+      .then(async r => {
+        const files = (r.payload?.results || []).filter(f => f.object_type !== "folder" && f.object_type !== "deleted" && f.id).slice(0, 3);
+        await Promise.all(files.map(f => mcp.callTool("Dropbox", "fetch", { id: f.id }).then(x => {
+          const text = String(x.payload?.text || ""); if (!text) return;
+          const lower = text.toLowerCase(); let at = 0; for (const t of kw) { const i = lower.indexOf(t); if (i > -1) { at = i; break; } }
+          out.push({ name: f.title, path: "Dropbox › " + (f.path_display || f.title), loc: "Excerpt", text: text.slice(Math.max(0, at - 300), at + 1500) });
+        }).catch(() => {})));
+      }).catch(() => {});
+    await Promise.all([drive, box]);
+    return out;
+  }
   $("askForm").addEventListener("submit", async e => {
     e.preventDefault();
     const q = $("askQ").value.trim(); if (!q) return;
@@ -507,24 +639,25 @@ footer .wrap { padding-block: 20px 36px; font-size: 12.5px; color: var(--ink-sof
     cites.textContent = ""; ans.classList.add("muted");
     const sample = await getSample();
     if (!sample) { ans.textContent = "Ask needs Claude, which isn't available in this view. Open the page on claude.ai while signed in."; return; }
-    // retrieve: rank passages by any-term overlap so questions in natural language still find context
+    $("askBtn").disabled = true;
+    ans.textContent = "Searching Google Drive, Dropbox and your dropped files…";
+    // retrieve: rank local passages by any-term overlap, and pull matching passages from the cloud drives
     const terms = [...new Set(tok(q).filter(w => w.length > 2))];
     const pool = [];
     for (const d of docs) for (const s of d.segs) {
       let sc = 0; for (const t of terms) if (s.lower.includes(t)) sc += 1 + Math.min(3, s.lower.split(t).length - 2) * .3;
-      if (sc) pool.push({ d, s, sc });
+      if (sc) pool.push({ name: d.name, path: d.path, loc: s.loc, text: s.text, sc });
     }
     pool.sort((a, b) => b.sc - a.sc);
-    const ctx = pool.slice(0, 14);
-    if (!ctx.length) { ans.textContent = "None of your files mention those words. Try different wording or add more files."; return; }
+    const ctx = [...pool.slice(0, 8), ...await cloudPassages(q, terms)];
+    if (!ctx.length) { ans.textContent = "None of your files mention those words. Try different wording or add more files."; $("askBtn").disabled = false; return; }
     ans.textContent = "Reading your files…";
-    $("askBtn").disabled = true;
-    const sources = ctx.map((c, i) => `[${i + 1}] ${c.d.path} — ${c.s.loc}\n${c.s.text.slice(0, 1200)}`).join("\n\n");
+    const sources = ctx.map((c, i) => `[${i + 1}] ${c.path} — ${c.loc}\n${c.text.slice(0, 1500)}`).join("\n\n");
     try {
-      await sample(`Answer the question using only the numbered passages from the user's files. Cite passages inline like [2]. If the passages don't answer it, say so in one sentence. Keep it under 150 words, plain text, no markdown.\n\nQuestion: ${q}\n\nPassages:\n${sources}`,
+      await sample(`Answer the question using only the numbered passages from the user's own files. Cite passages inline like [2]. If the passages don't answer it, say so in one sentence. Keep it under 150 words, plain text, no markdown.\n\nQuestion: ${q}\n\nPassages:\n${sources}`,
         { onText: ({ text }) => { ans.classList.remove("muted"); ans.innerHTML = esc(text).replace(/\[(\d+)\]/g, "<sup>[$1]</sup>"); }, cache: false });
       const used = new Set([...ans.textContent.matchAll(/\[(\d+)\]/g)].map(m => +m[1]));
-      ctx.forEach((c, i) => { if (used.has(i + 1)) cites.insertAdjacentHTML("beforeend", `<li>[${i + 1}] ${esc(c.d.name)} · ${esc(c.s.loc)}</li>`); });
+      ctx.forEach((c, i) => { if (used.has(i + 1)) cites.insertAdjacentHTML("beforeend", `<li>[${i + 1}] ${esc(c.path)} · ${esc(c.loc)}</li>`); });
     } catch (err) {
       ans.classList.add("muted");
       ans.textContent = err?.code === "not_granted" ? "Ask was declined. You can still search all files with the bar above."
@@ -544,6 +677,6 @@ footer .wrap { padding-block: 20px 36px; font-size: 12.5px; color: var(--ink-sof
   ];
   EX.forEach(e => addDoc({ ...e, path: e.name, example: true, segs: e.segs.map(([loc, text]) => ({ loc, text })) }));
   $("q").value = "Rotterdam";
-  render();
+  renderSources(); render();
 })();
 </script>
