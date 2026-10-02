@@ -77,6 +77,60 @@
     };
   }
 
+  /* ------------------------------------------------------------- haptics */
+  // Cross-platform tactile feedback. Two engines, tried in order:
+  //  1) Vibration API  — Android / Chrome. Patterns are ms (or [on,off,on…]).
+  //  2) iOS "switch" trick — Safari 17.4+ fires a real system tap when a
+  //     <input switch> is toggled inside a user gesture. We keep one off-screen
+  //     (but rendered) and click its label. No-ops cleanly where neither exists.
+  var HAPTIC_PATTERNS = {
+    tick:    8,
+    light:   10,
+    medium:  16,
+    heavy:   24,
+    select:  [6],
+    success: [10, 45, 22],
+    warn:    [18, 40, 18]
+  };
+
+  var _iosHaptic = null;
+  function buildIOSHaptic(shadow) {
+    if (_iosHaptic !== null) return _iosHaptic;
+    try {
+      var label = document.createElement('label');
+      // off-screen but still rendered — a display:none/hidden control won't fire
+      label.style.cssText = 'position:absolute;width:1px;height:1px;overflow:hidden;opacity:0;pointer-events:none;left:-9999px;top:0';
+      label.setAttribute('aria-hidden', 'true');
+      var input = document.createElement('input');
+      input.type = 'checkbox';
+      input.setAttribute('switch', '');           // Safari-only attribute
+      input.tabIndex = -1;
+      // only treat it as usable if Safari actually recognised the switch control
+      var supported = 'webkitEntries' in input || /iP(hone|ad|od)/.test(navigator.platform) ||
+        (navigator.maxTouchPoints > 1 && /Mac/.test(navigator.platform));
+      label.appendChild(input);
+      shadow.appendChild(label);
+      _iosHaptic = supported ? { label: label, input: input } : false;
+    } catch (e) { _iosHaptic = false; }
+    return _iosHaptic;
+  }
+
+  function fireHaptic(kind, shadow) {
+    var pattern = HAPTIC_PATTERNS[kind] != null ? HAPTIC_PATTERNS[kind] : HAPTIC_PATTERNS.light;
+    // 1) Vibration API
+    try {
+      if (navigator && typeof navigator.vibrate === 'function') {
+        if (navigator.vibrate(pattern)) return true;
+      }
+    } catch (e) { /* ignore */ }
+    // 2) iOS switch trick
+    try {
+      var h = buildIOSHaptic(shadow);
+      if (h) { h.label.click(); return true; }
+    } catch (e) { /* ignore */ }
+    return false;
+  }
+
   /* -------------------------------------------------------------- styles */
 
   var CSS = [
@@ -249,6 +303,7 @@
     this.subtitle = opts.subtitle || 'Zinga companion';
     this.responder = opts.responder || offlineBrain;
     this.key = slug(opts.storageKey || this.title);
+    this.haptics = opts.haptics !== false;   // tactile feedback on by default
 
     this.open = false;
     this.activeTab = 'chat';
@@ -365,7 +420,7 @@
     function move(e) {
       var p = point(e);
       var dx = p.x - startX, dy = p.y - startY;
-      if (Math.abs(dx) + Math.abs(dy) > 4) { moved = true; self._dragged = true; }
+      if (!moved && Math.abs(dx) + Math.abs(dy) > 4) { moved = true; self._dragged = true; self._haptic('tick'); }
       var w = window.innerWidth, h = window.innerHeight, s = b.offsetWidth, si = safeInsets();
       b.style.left = clamp(ox + dx, SNAP_MARGIN + si.left, w - s - SNAP_MARGIN - si.right) + 'px';
       b.style.top = clamp(oy + dy, SNAP_MARGIN + si.top, h - s - SNAP_MARGIN - si.bottom) + 'px';
@@ -397,6 +452,7 @@
     setTimeout(function () { b.style.transition = ''; }, 260);
     this.dock = { side: toRight ? 'right' : 'left', top: top };
     save('dock:' + this.key, this.dock);
+    this._haptic('medium');   // it clicks into its edge
     if (this.open) this._reposition();
   };
 
@@ -440,8 +496,10 @@
 
   Zinga.prototype.toggle = function (force) {
     var self = this;
+    var was = this.open;
     this.open = (force == null) ? !this.open : force;
     var sheet = this._isSheet();
+    if (this.open !== was) this._haptic(this.open ? 'medium' : 'light');
     if (this.open) {
       this.panelEl.classList.add('open');
       this._reposition();
@@ -465,7 +523,7 @@
 
   // Swipe the grabber / header down to dismiss the sheet — the iOS gesture.
   Zinga.prototype._enableSheetDismiss = function () {
-    var self = this, startY = null, dy = 0, active = false;
+    var self = this, startY = null, dy = 0, active = false, armed = false;
     function handles(target) {
       return target === self.grabEl || (self.grabEl && self.grabEl.contains(target)) ||
              target.closest && target.closest('.hd') && !target.closest('.x');
@@ -474,7 +532,7 @@
       if (!self._isSheet() || !self.open) return;
       var t = e.target;
       if (!handles(t)) return;
-      startY = point(e).y; dy = 0; active = true;
+      startY = point(e).y; dy = 0; active = true; armed = false;
       self.panelEl.style.transition = 'none';
     }
     function move(e) {
@@ -482,6 +540,9 @@
       dy = Math.max(0, point(e).y - startY);
       self.panelEl.style.transform = 'translateY(' + dy + 'px)';
       self.scrimEl.style.opacity = String(Math.max(0, 1 - dy / 320));
+      // tick once as the drag passes the dismiss threshold (iOS detail)
+      if (!armed && dy > 110) { armed = true; self._haptic('tick'); }
+      else if (armed && dy <= 110) { armed = false; }
       if (e.cancelable) e.preventDefault();
     }
     function up() {
@@ -502,6 +563,7 @@
   };
 
   Zinga.prototype._setTab = function (name) {
+    if (name !== this.activeTab) this._haptic('select');
     this.activeTab = name;
     var map = { chat: 'chat', caps: 'caps', notes: 'notes' };
     this.shadow.querySelectorAll('.tab').forEach(function (t) {
@@ -513,6 +575,11 @@
     this.inputEl.placeholder = name === 'notes' ? 'Add a note at this moment…' : 'Ask about the scene…';
     if (name === 'chat') this._scrollChat();
     if (name === 'caps') this._scrollCaps();
+  };
+
+  Zinga.prototype._haptic = function (kind) {
+    if (!this.haptics) return;
+    fireHaptic(kind, this.shadow);
   };
 
   Zinga.prototype._updateBadge = function () {
@@ -571,6 +638,7 @@
     this.chat.push(me);
     this._persistChat();
     this._renderChat();
+    this._haptic('light');     // message sent
     this._respond(text);
   };
 
@@ -593,6 +661,7 @@
         typing.remove();
         var m = { role: 'ai', text: String(reply || 'I\'m here.'), ts: Date.now() };
         self.chat.push(m); self._persistChat(); self._renderChat();
+        self._haptic('tick');   // reply landed
         if (!self.open) { self.unread++; self._updateBadge(); self.bubbleEl.classList.add('pulse'); }
       })
       .catch(function () {
@@ -664,6 +733,7 @@
     this.notes.sort(function (a, b) { return a.t - b.t; });
     save('notes:' + this.key, this.notes);
     this._renderNotes();
+    this._haptic('success');   // pinned
     this._flash('📌 Pinned at ' + fmtClock(t));
   };
 
@@ -680,11 +750,12 @@
       var jump = el('button', 'jump', fmtClock(n.t));
       jump.title = 'Jump to ' + fmtClock(n.t);
       jump.addEventListener('click', function () {
-        if (self.player && self.player.seek) { self.player.seek(n.t); self._flash('↪ Jumped to ' + fmtClock(n.t)); }
+        if (self.player && self.player.seek) { self.player.seek(n.t); self._haptic('medium'); self._flash('↪ Jumped to ' + fmtClock(n.t)); }
       });
       var txt = el('div', 'txt', n.text);
       var del = el('button', 'del', '✕');
       del.addEventListener('click', function () {
+        self._haptic('light');
         self.notes.splice(i, 1); save('notes:' + self.key, self.notes); self._renderNotes();
       });
       row.appendChild(jump); row.appendChild(txt); row.appendChild(del);
@@ -741,11 +812,14 @@
     return Math.floor(d / 3600) + 'h ago';
   }
 
+  // Enable/disable tactile feedback at runtime.
+  Zinga.prototype.setHaptics = function (on) { this.haptics = !!on; return this; };
+
   /* ------------------------------------------------------------- API */
 
   var api = {
     mount: function (opts) { return new Zinga(opts); },
-    version: '1.0.0'
+    version: '1.1.0'
   };
 
   if (typeof module !== 'undefined' && module.exports) module.exports = api;

@@ -49,6 +49,10 @@
   var playing = false;
   var speed = 1;
   var lastTick = null;
+
+  // light tactile feedback for player controls (Vibration API; no-ops on iOS Safari,
+  // where the Zinga overlay carries the richer switch-based haptics)
+  function buzz(ms) { try { if (navigator.vibrate) navigator.vibrate(ms); } catch (e) {} }
   var firedIndex = -1;
   var captionCbs = [];
   var titleCbs = [];
@@ -143,9 +147,9 @@
   }
 
   /* ---------------------------------------------------------- wiring UI */
-  document.getElementById('playBtn').addEventListener('click', function (e) { e.stopPropagation(); toggle(); });
-  document.getElementById('back10').addEventListener('click', function (e) { e.stopPropagation(); nudge(-10); });
-  document.getElementById('fwd10').addEventListener('click', function (e) { e.stopPropagation(); nudge(10); });
+  document.getElementById('playBtn').addEventListener('click', function (e) { e.stopPropagation(); buzz(12); toggle(); });
+  document.getElementById('back10').addEventListener('click', function (e) { e.stopPropagation(); buzz(8); nudge(-10); });
+  document.getElementById('fwd10').addEventListener('click', function (e) { e.stopPropagation(); buzz(8); nudge(10); });
 
   document.querySelector('.player').addEventListener('click', function (e) {
     // tapping the picture toggles the controls (not while interacting with a control)
@@ -156,6 +160,7 @@
 
   trackEl.addEventListener('click', function (e) {
     var r = trackEl.getBoundingClientRect();
+    buzz(8);
     seek(((e.clientX - r.left) / r.width) * DURATION);
   });
 
@@ -171,6 +176,7 @@
   speedMenu.querySelectorAll('button').forEach(function (b) {
     b.addEventListener('click', function (e) {
       e.stopPropagation();
+      buzz(6);
       speed = parseFloat(b.dataset.speed);
       speedMenu.querySelectorAll('button').forEach(function (x) { x.classList.remove('sel'); });
       b.classList.add('sel');
@@ -182,7 +188,7 @@
 
   // skip intro (demo: jumps forward 25s)
   var skip = document.getElementById('skip');
-  skip.addEventListener('click', function (e) { e.stopPropagation(); nudge(25); skip.classList.add('gone'); });
+  skip.addEventListener('click', function (e) { e.stopPropagation(); buzz(16); nudge(25); skip.classList.add('gone'); });
 
   // fullscreen
   document.getElementById('fsBtn').addEventListener('click', function (e) {

@@ -123,9 +123,10 @@ especially well with this — keep API keys on the server and expose only the
 | `storageKey` | `string` | slug of `title` | Namespaces saved chat/notes/dock position. |
 | `player` | `PlayerAdapter` | `null` | `{ currentTime, seek, onCaption, onTitle }` — all optional. |
 | `responder` | `async (msg, ctx) => string` | offline brain | Chat backend. |
+| `haptics` | `boolean` | `true` | Tactile feedback on interactions (see below). |
 
 Returns the `Zinga` instance. Handy methods: `.toggle()`, `.pushCaption(text, t)`,
-`.addNote(text)`.
+`.addNote(text)`, `.setHaptics(on)`.
 
 ---
 
@@ -139,5 +140,12 @@ Returns the `Zinga` instance. Handy methods: `.toggle()`, `.pushCaption(text, t)
   picture, and brightens on hover/interaction.
 - **Spoiler-safe** — the companion is only ever handed captions up to the current
   timestamp.
+- **Haptics** — subtle taps confirm every interaction: opening the sheet, switching
+  tabs, sending a message, pinning/jumping a note, and the bubble clicking into its
+  edge. Two engines are tried in order — the **Vibration API** (Android/Chrome),
+  then an **iOS 17.4+ fallback** that toggles a hidden `<input switch>` inside the
+  user gesture to fire a real system tap. Both no-op cleanly where unsupported, and
+  all feedback fires from within a user gesture (so iOS allows it). Turn it off with
+  `haptics: false` at mount or `.setHaptics(false)` at runtime.
 
 Zero dependencies. Vanilla JS. ~1 file to embed.
