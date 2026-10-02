@@ -1,0 +1,255 @@
+<title>Copernic Index Plan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500;1,600&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a single-column field plan. Verdict first, then the one diagram, then phases as a real sequence, then decisions and the kill list. */
+:root {
+  --paper: #eef1f4; --plate: #f8f9fb; --ink: #18233a; --ink-soft: #4a5672; --rule: #c9d0dc;
+  --brass: #a8701c; --brass-soft: #f1e3c8; --orbit: #8a97b0; --code-bg: #e3e8ef;
+  --t1: #a8401c; --t2: #2f7a4f;
+  --display: "Cormorant Garamond", "Iowan Old Style", Georgia, serif;
+  --body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #0d1322; --plate: #141c2f; --ink: #e4e8f1; --ink-soft: #9aa6be; --rule: #26314a;
+    --brass: #e0a94d; --brass-soft: #3a2c14; --orbit: #4d5b7a; --code-bg: #0a0f1b; --t1: #ec8a6e; --t2: #6cc28f;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #0d1322; --plate: #141c2f; --ink: #e4e8f1; --ink-soft: #9aa6be; --rule: #26314a;
+  --brass: #e0a94d; --brass-soft: #3a2c14; --orbit: #4d5b7a; --code-bg: #0a0f1b; --t1: #ec8a6e; --t2: #6cc28f;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--paper); color: var(--ink); font: 15.5px/1.6 var(--body); }
+h1, h2, h3 { margin: 0; text-wrap: balance; }
+code { font-family: var(--mono); font-size: 13px; background: var(--code-bg); padding: 1px 5px; border-radius: 3px; }
+a { color: var(--brass); }
+.wrap { max-width: 860px; margin: 0 auto; padding-inline: 20px; padding-block: 0 56px; }
+.mast { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 6px 16px; padding-block: 16px; border-bottom: 1px solid var(--rule); font-family: var(--mono); font-size: 11px; letter-spacing: .07em; text-transform: uppercase; color: var(--ink-soft); }
+.mast b { color: var(--ink); font-weight: 500; }
+
+header.top { padding-block: 34px 8px; }
+.eyebrow { font-family: var(--mono); font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--brass); }
+h1 { font-family: var(--display); font-weight: 500; font-size: clamp(36px, 6vw, 58px); line-height: 1; margin-block: 10px 18px; }
+.verdict { font-family: var(--display); font-size: clamp(21px, 3vw, 26px); line-height: 1.3; font-style: italic; border-left: 3px solid var(--brass); padding-left: 16px; margin: 0 0 18px; max-width: 40em; }
+.lede { color: var(--ink-soft); max-width: 64ch; margin: 0; }
+
+section { padding-top: 36px; }
+h2 { font-family: var(--display); font-size: 30px; font-weight: 600; margin-bottom: 10px; }
+section > p { max-width: 66ch; margin: 0 0 12px; }
+
+.insight { background: var(--brass-soft); border-radius: 3px; padding: 14px 18px; max-width: 70ch; }
+.insight b { display: block; font-family: var(--mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--brass); margin-bottom: 4px; font-weight: 500; }
+
+.diagram { overflow-x: auto; margin-top: 14px; border: 1px solid var(--rule); border-radius: 3px; background: var(--plate); }
+.diagram svg { display: block; min-width: 680px; width: 100%; height: auto; }
+
+.phases { list-style: none; padding: 0; margin: 14px 0 0; display: grid; gap: 0; }
+.phase { display: grid; grid-template-columns: 88px minmax(0, 1fr); gap: 18px; padding-block: 18px; border-top: 1px solid var(--rule); }
+.phase:last-child { border-bottom: 1px solid var(--rule); }
+.ph-n { font-family: var(--display); font-style: italic; font-size: 40px; line-height: .9; color: var(--brass); }
+.ph-n small { display: block; font-family: var(--mono); font-style: normal; font-size: 10.5px; letter-spacing: .08em; color: var(--ink-soft); margin-top: 8px; text-transform: uppercase; }
+.phase h3 { font-size: 17px; font-weight: 600; margin-bottom: 4px; }
+.phase p { margin: 0 0 8px; color: var(--ink-soft); max-width: 64ch; }
+.phase ul { margin: 0 0 8px; padding-left: 18px; display: grid; gap: 3px; max-width: 64ch; }
+.exit { font-size: 13.5px; }
+.exit b { font-family: var(--mono); font-size: 10.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--t2); margin-right: 6px; font-weight: 500; }
+.now { font-family: var(--mono); font-size: 10.5px; border: 1px solid var(--brass); color: var(--brass); border-radius: 10px; padding: 0 7px; margin-left: 6px; vertical-align: 2px; }
+
+.tablewrap { overflow-x: auto; margin-top: 12px; }
+table { border-collapse: collapse; width: 100%; font-size: 14px; }
+th, td { text-align: left; padding: 10px 12px 10px 0; border-bottom: 1px solid var(--rule); vertical-align: top; }
+th { font-family: var(--mono); font-size: 10.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--ink-soft); font-weight: 500; }
+td:first-child { font-weight: 600; min-width: 150px; }
+.door { font-family: var(--mono); font-size: 11px; white-space: nowrap; }
+.door.t1 { color: var(--t1); } .door.t2 { color: var(--t2); }
+
+.kill { list-style: none; padding: 0; margin: 12px 0 0; display: grid; gap: 8px; max-width: 70ch; }
+.kill li { display: grid; grid-template-columns: 20px minmax(0, 1fr); gap: 8px; }
+.kill li::before { content: "×"; color: var(--t1); font-weight: 600; font-size: 17px; line-height: 1.4; }
+.kill b { font-weight: 600; }
+
+.qs { counter-reset: q; list-style: none; padding: 0; margin: 12px 0 0; display: grid; gap: 10px; max-width: 70ch; }
+.qs li { background: var(--plate); border: 1px solid var(--rule); border-radius: 3px; padding: 12px 16px; }
+.qs li b { display: block; }
+.qs li span { color: var(--ink-soft); font-size: 14px; }
+
+footer { margin-top: 40px; font-family: var(--mono); font-size: 11.5px; color: var(--ink-soft); display: grid; gap: 4px; }
+
+@media (max-width: 560px) {
+  .phase { grid-template-columns: minmax(0, 1fr); gap: 6px; }
+  .ph-n { display: flex; align-items: baseline; gap: 10px; }
+  .ph-n small { margin-top: 0; }
+}
+</style>
+
+<div class="wrap">
+  <div class="mast"><span><b>AI Copernic</b> · Persistent index plan</span><span>Issued 2026-10-02 · Rev 1</span></div>
+
+  <header class="top">
+    <div class="eyebrow">Plan · Search layer → persistent index</div>
+    <h1>Copernic Index Plan</h1>
+    <p class="verdict">Search the clouds you already pay for, crawl only what they can't reach, and put one connector in front of both.</p>
+    <p class="lede">Today the search page forgets your files when you close the tab. This plan makes it remember, in four steps. Each step ships something you can use and has a test that decides whether the next step is worth building.</p>
+  </header>
+
+  <section>
+    <h2>Why a connector</h2>
+    <div class="insight"><b>What we know for certain</b>A claude.ai page can't call your own server directly; the browser blocks it. It can call connectors, using your sign-in. So the only bridge from the search page to a persistent index is a connector. Built that way, the same index also works inside any Claude chat, with no extra work.</div>
+    <div class="diagram" role="img" aria-label="Diagram: cloud drives connect to the search page directly in phase 1. Local, NAS, SSH and FTP files go through the crawler with OCR into Elasticsearch, then through the Copernic connector, to both the search page and Claude chat.">
+      <svg viewBox="0 0 760 330" xmlns="http://www.w3.org/2000/svg" font-family="IBM Plex Sans, system-ui, sans-serif">
+        <defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0L10 5L0 10z" style="fill:var(--orbit)"/></marker></defs>
+        <g font-size="10" font-family="IBM Plex Mono, monospace" letter-spacing=".08em" style="fill:var(--ink-soft)">
+          <text x="20" y="24">SOURCES</text><text x="270" y="24">INDEX</text><text x="560" y="24">WHERE YOU SEARCH</text>
+        </g>
+        <!-- cloud sources -->
+        <rect x="20" y="40" width="190" height="96" rx="3" style="fill:var(--plate);stroke:var(--rule)"/>
+        <text x="32" y="62" font-size="13" font-weight="600" style="fill:var(--ink)">Cloud drives</text>
+        <text x="32" y="82" font-size="12" style="fill:var(--ink-soft)">Google Drive · Dropbox</text>
+        <text x="32" y="99" font-size="12" style="fill:var(--ink-soft)">Box · Microsoft 365</text>
+        <text x="32" y="121" font-size="11" style="fill:var(--brass)">already indexed by each vendor</text>
+        <!-- local sources -->
+        <rect x="20" y="186" width="190" height="96" rx="3" style="fill:var(--plate);stroke:var(--rule)"/>
+        <text x="32" y="208" font-size="13" font-weight="600" style="fill:var(--ink)">Files clouds can't see</text>
+        <text x="32" y="228" font-size="12" style="fill:var(--ink-soft)">Local disk · NAS</text>
+        <text x="32" y="245" font-size="12" style="fill:var(--ink-soft)">SSH · FTP · zip archives</text>
+        <text x="32" y="267" font-size="11" style="fill:var(--brass)">needs our crawler</text>
+        <!-- crawler + ES -->
+        <rect x="262" y="186" width="230" height="96" rx="3" style="fill:var(--plate);stroke:var(--ink)"/>
+        <text x="274" y="208" font-size="13" font-weight="600" style="fill:var(--ink)">Copernic crawler + OCR</text>
+        <text x="274" y="226" font-size="12" style="fill:var(--ink-soft)">Tika text · Tesseract OCR · every 15 min</text>
+        <line x1="274" y1="238" x2="480" y2="238" style="stroke:var(--rule)"/>
+        <text x="274" y="258" font-size="13" font-weight="600" style="fill:var(--ink)">Elasticsearch index</text>
+        <text x="274" y="274" font-size="11.5" style="fill:var(--ink-soft)">persistent · one server</text>
+        <!-- connector -->
+        <rect x="262" y="60" width="230" height="76" rx="3" style="fill:var(--brass-soft);stroke:var(--brass)"/>
+        <text x="274" y="82" font-size="13" font-weight="600" style="fill:var(--ink)">Copernic connector (MCP)</text>
+        <text x="274" y="101" font-size="11.5" font-family="IBM Plex Mono, monospace" style="fill:var(--ink-soft)">search · get_passage · sources</text>
+        <text x="274" y="121" font-size="11" style="fill:var(--brass)">read-only · sign-in required</text>
+        <!-- outputs -->
+        <rect x="560" y="60" width="180" height="76" rx="3" style="fill:var(--plate);stroke:var(--ink)"/>
+        <text x="572" y="84" font-size="13" font-weight="600" style="fill:var(--ink)">Copernic Search page</text>
+        <text x="572" y="103" font-size="12" style="fill:var(--ink-soft)">one box, all sources</text>
+        <text x="572" y="120" font-size="12" style="fill:var(--ink-soft)">Ask with citations</text>
+        <rect x="560" y="186" width="180" height="76" rx="3" style="fill:var(--plate);stroke:var(--rule)"/>
+        <text x="572" y="210" font-size="13" font-weight="600" style="fill:var(--ink)">Any Claude chat</text>
+        <text x="572" y="229" font-size="12" style="fill:var(--ink-soft)">"find the Rotterdam</text>
+        <text x="572" y="246" font-size="12" style="fill:var(--ink-soft)">contract" just works</text>
+        <!-- arrows -->
+        <g style="stroke:var(--orbit);fill:none" stroke-width="1.4" marker-end="url(#ar)">
+          <path d="M210 234 H258"/>
+          <path d="M377 186 V140"/>
+          <path d="M492 98 H556"/>
+          <path d="M492 112 C525 112 525 224 556 224"/>
+          <path d="M210 70 C380 20 470 30 556 72" stroke-dasharray="4 4"/>
+        </g>
+        <text x="300" y="38" font-size="10.5" font-family="IBM Plex Mono, monospace" style="fill:var(--brass)">phase 1: page calls cloud connectors directly</text>
+      </svg>
+    </div>
+  </section>
+
+  <section>
+    <h2>The four phases</h2>
+    <p>Each phase ends with a test. If it fails, stop and rethink before building the next one.</p>
+    <ol class="phases">
+      <li class="phase">
+        <div class="ph-n">I<small>2–4 days</small></div>
+        <div>
+          <h3>Search the clouds you already have <span class="now">start here</span></h3>
+          <p>No servers. The search page calls the Google Drive, Dropbox, Box and Microsoft 365 connectors you've already linked, all at once, and merges the results into one ranked list. Files you drop onto the page are saved in your browser, so they're still there next time.</p>
+          <ul>
+            <li>One query goes out to every connected source at the same time; results arrive as each source answers.</li>
+            <li>Each result is labelled with its source; the same file stored in two places shows up once.</li>
+            <li>Ask Copernic answers from passages across all sources.</li>
+          </ul>
+          <p class="exit"><b>Pass if</b>you use it on at least 5 of 7 days for two weeks. If you don't, a persistent index won't change that.</p>
+        </div>
+      </li>
+      <li class="phase">
+        <div class="ph-n">II<small>1–2 weeks</small></div>
+        <div>
+          <h3>Crawl what the clouds can't reach</h3>
+          <p>One server running Elasticsearch and the Copernic crawler, with Tesseract OCR turned on. Point it at your disk, NAS, SSH and FTP folders. It re-checks every 15 minutes for new, changed and deleted files.</p>
+          <ul>
+            <li>Server: 8 GB of memory is the practical minimum for Elasticsearch, with disk at about 1.5× the size of the extracted text.</li>
+            <li>Version check: the 2.9 crawler line works with Elasticsearch 6 and 7. For Elasticsearch 8, move to the 2.10 line.</li>
+            <li>Only build this if phase 1 showed you're missing files that live outside the clouds.</li>
+          </ul>
+          <p class="exit"><b>Pass if</b>a full crawl finishes, and a file you edit can be found with its new text within 15 minutes.</p>
+        </div>
+      </li>
+      <li class="phase">
+        <div class="ph-n">III<small>1–2 weeks</small></div>
+        <div>
+          <h3>Put the Copernic connector in front of the index</h3>
+          <p>A small read-only connector (an MCP server) with three tools. <code>search</code> returns matching passages with the file, its location and a score. <code>get_passage</code> returns the full text of one passage. <code>sources</code> lists what's indexed and when each source was last crawled. Add it to claude.ai as a custom connector; the search page then lists it next to your cloud drives.</p>
+          <ul>
+            <li>Sign-in is required. The connector uses a read-only Elasticsearch key and can never change or delete files.</li>
+            <li>It can run on Vercel, which you already use, because it keeps no state. Elasticsearch stays on the phase 2 server, reachable only over an encrypted connection.</li>
+            <li>Every search is logged with who ran it and when.</li>
+          </ul>
+          <p class="exit"><b>Pass if</b>one query returns results from Google Drive and your NAS in one list in under 2 seconds, and a Claude chat can find a NAS file by name.</p>
+        </div>
+      </li>
+      <li class="phase">
+        <div class="ph-n">IV<small>later</small></div>
+        <div>
+          <h3>Search by meaning, then add other people</h3>
+          <p>Add meaning-based search to the Elasticsearch index, so "late delivery penalties" finds a clause that says "2% credit per week". Then per-user permissions, so each person sees only the files they're allowed to see. Do this only if Copernic becomes a product for other people.</p>
+          <p class="exit"><b>Pass if</b>meaning-based search beats keyword search on 20 real questions you write down in advance.</p>
+        </div>
+      </li>
+    </ol>
+  </section>
+
+  <section>
+    <h2>Decisions and how reversible they are</h2>
+    <div class="tablewrap">
+      <table>
+        <thead><tr><th>Decision</th><th>Call</th><th>Door</th></tr></thead>
+        <tbody>
+          <tr><td>Start with cloud connectors</td><td>Yes. Uses indexes that already exist and costs nothing to try.</td><td><span class="door t2">Reversible</span></td></tr>
+          <tr><td>Search engine</td><td>Elasticsearch, because the crawler already writes to it. OpenSearch is the fallback if Elastic's licence becomes a problem.</td><td><span class="door t2">Reversible</span></td></tr>
+          <tr><td>Hosting</td><td>One rented server for phase 2. Switch to a managed service only if running it yourself takes more than an hour a month.</td><td><span class="door t2">Reversible</span></td></tr>
+          <tr><td>Opening private files to the internet</td><td>Read-only access, sign-in required, no public links, every search logged. A leaked index can't be un-leaked, so slow down here.</td><td><span class="door t1">One-way</span></td></tr>
+          <tr><td>Personal tool or product</td><td>Decide before phase 4. It decides whether you need user accounts, permissions and billing.</td><td><span class="door t1">One-way</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section>
+    <h2>What we are not doing</h2>
+    <ul class="kill">
+      <li><span><b>No new file types.</b> Coverage isn't what's holding this back; keeping files between visits is.</span></li>
+      <li><span><b>No separately hosted website for the search page.</b> claude.ai already handles sign-in, connectors and Claude.</span></li>
+      <li><span><b>No meaning-based search before the index keeps files.</b> Ranking a temporary index better doesn't help anyone.</span></li>
+      <li><span><b>No accounts for other people before you use it daily.</b> If you don't use it every day, nobody else will.</span></li>
+      <li><span><b>No custom OCR engine.</b> Tesseract in the crawler handles bulk scans; Claude handles hard photos.</span></li>
+    </ul>
+  </section>
+
+  <section>
+    <h2>What would sink it</h2>
+    <p>Indexing everything before knowing what you actually search for. Running Elasticsearch on too small a server and spending weekends on it. Showing the same file three times because it sits in Drive, Dropbox and the NAS; fix this by matching on file content. Most of all, an index of private documents reachable without a sign-in.</p>
+  </section>
+
+  <section>
+    <h2>Three answers I need before phase 2</h2>
+    <ol class="qs">
+      <li><b>Where do the files you search for most actually live?</b><span>If it's almost all cloud drives, phase 1 may be the whole job.</span></li>
+      <li><b>Is this for you, or for customers?</b><span>This decides phase 4 and whether security work starts now or later.</span></li>
+      <li><b>Roughly how many files, and how many GB?</b><span>This decides the server size and how long the first crawl takes.</span></li>
+    </ol>
+  </section>
+
+  <footer>
+    <span>Issued 2026-10-02 · AI Copernic v2026.1 · Rev 1</span>
+    <span>Related: <a href="https://claude.ai/artifact/SmaoGt62gy2en58LUNAHTt">Copernic Search</a> · <a href="https://claude.ai/artifact/NEnBrop3AQ5nDjtZYRJvDa">AI Copernic docs</a></span>
+  </footer>
+</div>
