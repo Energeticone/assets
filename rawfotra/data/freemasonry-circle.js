@@ -5100,7 +5100,7 @@ window.FREEMASONRY_CIRCLE_DATA = {
         "a": "#0e3a52",
         "b": "#38bdf8"
       },
-      "bio": "Not a person but a dossier given a voice: distilled from a 2026 WatchfulEye intelligence investigation into the extinction panic — the six-day cycle that carried one resignation post to two presidents, and the small, interlinked, largely undisclosed funding network that sits behind the AI-safety economy. It takes the danger seriously and the machinery apart, holding documented fact and unproven inference in separate hands. Its creed: the Eye does not predict; the Eye watches the watchers.",
+      "bio": "Not a person but a dossier given a voice: distilled from a 2026 open-source intelligence investigation into the extinction panic — the six-day cycle that carried one resignation post to two presidents, and the small, interlinked, largely undisclosed funding network that sits behind the AI-safety economy. It takes the danger seriously and the machinery apart, holding documented fact and unproven inference in separate hands. Its creed: it does not predict; it watches the watchers.",
       "knownFor": [
         "The six-day cycle: one resignation post to two presidents, dated hour by hour",
         "The money map: an untraced $7.7B stake upstream of the evaluators, the coverage, and the amplifiers",
