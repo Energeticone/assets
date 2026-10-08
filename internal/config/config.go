@@ -39,6 +39,7 @@ type (
 		ChainInfoFolder            ChainInfoFolder            `mapstructure:"chain_info_folder"`
 		ChainValidatorsAssetFolder ChainValidatorsAssetFolder `mapstructure:"chain_validators_asset_folder"`
 		DappsFolder                DappsFolder                `mapstructure:"dapps_folder"`
+		CoinInfoFile               CoinInfoFile               `mapstructure:"coin_info_file"`
 	}
 )
 

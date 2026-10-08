@@ -41,6 +41,12 @@ validators_settings:
       - ".golangci.yml"
       - "Makefile"
       - "bin"
+      - "CLAUDE.md"
+      - "vercel.json"
+      - "tipclip"
+      - "travelnow"
+      - "rawfotra"
+      - "hormuz-hawk"
     skip_files:
       - "node_modules"
 
@@ -68,3 +74,23 @@ validators_settings:
 
   dapps_folder:
     ext: ".png"
+
+  # Offline fallback for chain info.json tag validation, used when the
+  # assets-manager API (client_urls.assets_manager_api) is unreachable.
+  # Mirrors the canonical Trust Wallet tag set.
+  coin_info_file:
+    tags:
+      - id: "stablecoin"
+      - id: "wrapped"
+      - id: "synthetics"
+      - id: "nft"
+      - id: "governance"
+      - id: "defi"
+      - id: "gamefi"
+      - id: "memes"
+      - id: "staking"
+      - id: "staking-native"
+      - id: "privacy"
+      - id: "nsfw"
+      - id: "binance-peg"
+      - id: "deflationary"
