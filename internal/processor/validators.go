@@ -182,22 +182,37 @@ func (s *Service) ValidateChainInfoFile(f *file.AssetFile) error {
 		return err
 	}
 
-	receivedTags, err := s.assetsManager.GetTagValues()
-	if err != nil {
-		return fmt.Errorf("failed to get tag values: %w", err)
-	}
-
-	tags := make([]string, len(receivedTags.Tags))
-	for i, t := range receivedTags.Tags {
-		tags[i] = t.ID
-	}
-
-	err = info.ValidateCoin(coinInfo, tags)
+	err := info.ValidateCoin(coinInfo, s.tagValues())
 	if err != nil {
 		return err
 	}
 
 	return nil
+}
+
+// tagValues returns the allowed tag IDs for info.json validation. The remote
+// assets-manager API is tried once per run; when it is unreachable (the
+// upstream api.assets.trustwallet.com no longer resolves) the list configured
+// under validators_settings.coin_info_file.tags is used instead.
+func (s *Service) tagValues() []string {
+	s.tagsOnce.Do(func() {
+		if receivedTags, err := s.assetsManager.GetTagValues(); err == nil && len(receivedTags.Tags) > 0 {
+			s.allowedTags = make([]string, len(receivedTags.Tags))
+			for i, t := range receivedTags.Tags {
+				s.allowedTags[i] = t.ID
+			}
+
+			return
+		}
+
+		configTags := config.Default.ValidatorsSettings.CoinInfoFile.Tags
+		s.allowedTags = make([]string, len(configTags))
+		for i, t := range configTags {
+			s.allowedTags[i] = t.ID
+		}
+	})
+
+	return s.allowedTags
 }
 
 func (s *Service) ValidateAssetInfoFile(f *file.AssetFile) error {

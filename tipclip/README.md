@@ -90,8 +90,10 @@ tipclip/
 │   ├── tip.html       Tip page — what an NFC tap opens (works with zero install)
 │   ├── signup.html    Wearer onboarding — signup → payout connect → claim clip
 │   └── dashboard.html Wearer dashboard — earnings, tips feed, payout status
-├── ios/
-│   └── TipClipApp.swift  SwiftUI sketch: Core NFC tag reading + BLE nearby-wearer scan
+├── ios/               Native iOS app (Xcode 16 project — see ios/README.md)
+│   ├── TipClip.xcodeproj
+│   └── TipClip/       SwiftUI app: NFC tap-to-tip, wearer onboarding + dashboard,
+│                      demo mode (no server needed) or live mode against server/
 └── hardware/
     └── README.md      Clip industrial design, NFC tag selection, tag encoding, BLE option
 ```
