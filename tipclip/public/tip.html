@@ -92,9 +92,11 @@
 </div>
 
 <script>
-// __CLIP_ID__ is substituted by the server when served from /t/<clipId>;
-// fall back to ?clip= for direct static use.
+// __CLIP_ID__ is substituted by the node server when served from /t/<clipId>;
+// on Vercel the /t/:clipId rewrite serves this file as-is, so fall back to
+// parsing the path, then ?clip=, then the demo clip.
 const CLIP_ID = ('__CLIP_ID__'.startsWith('__') ? null : '__CLIP_ID__')
+  || (location.pathname.match(/\/t\/([^/?#]+)/) || [])[1]
   || new URLSearchParams(location.search).get('clip') || 'demo';
 
 const $ = (id) => document.getElementById(id);
@@ -189,13 +191,44 @@ function updatePay() {
   $('payAmt').textContent = ok ? fmt(selectedCents) : '';
 }
 
+// ---------------------------------------------------------------------------
+// Simulated wallet sheet: the functional prototype shows the same approval
+// moment the real wallet would (sheet slides up, one confirm), then settles
+// through the backend's mock provider. In production the confirm step is the
+// real Apple Pay / Google Pay / Samsung Pay sheet driven by the payment
+// gateway's SDK — in the UAE, a gateway such as Network International
+// (N-Genius), Telr, PayTabs or Checkout.com, all of which support these
+// wallets and slot in behind POST /api/tip's provider abstraction.
+// ---------------------------------------------------------------------------
+function walletSheet(amountCents) {
+  return new Promise((resolve) => {
+    const name = walletName || 'TipClip Pay';
+    const sheet = document.createElement('div');
+    sheet.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.55);display:flex;align-items:flex-end;justify-content:center;z-index:50';
+    sheet.innerHTML = `
+      <div style="width:100%;max-width:420px;background:var(--card);border:1px solid var(--line);
+                  border-radius:24px 24px 0 0;padding:24px 20px calc(24px + env(safe-area-inset-bottom));text-align:center">
+        <div style="font-weight:700;font-size:15px;margin-bottom:4px">${name}</div>
+        <div style="color:var(--muted);font-size:13px;margin-bottom:14px">TIPCLIP · ${wearerName}</div>
+        <div style="font-size:30px;font-weight:800;margin-bottom:18px">${fmt(amountCents)}</div>
+        <button id="wsConfirm" style="width:100%;border:0;border-radius:14px;padding:15px;font-size:16px;font-weight:700;
+                background:var(--accent);color:var(--accent-ink);cursor:pointer">
+          ${name === 'TipClip Pay' ? 'Confirm payment' : 'Double-tap simulated — Confirm'}</button>
+        <button id="wsCancel" style="width:100%;border:0;background:none;color:var(--muted);padding:12px;cursor:pointer">Cancel</button>
+        <div style="color:var(--muted);font-size:11px">Simulated approval — no card is charged in this prototype</div>
+      </div>`;
+    document.body.appendChild(sheet);
+    sheet.querySelector('#wsConfirm').onclick = () => { sheet.remove(); resolve(true); };
+    sheet.querySelector('#wsCancel').onclick = () => { sheet.remove(); resolve(false); };
+  });
+}
+
 $('payBtn').onclick = async () => {
   $('payBtn').disabled = true;
   $('err').style.display = 'none';
   try {
-    // Production: create the PaymentIntent here, then confirm it with the
-    // Apple Pay / Google Pay sheet (Stripe Payment Element). The prototype's
-    // mock provider settles instantly.
+    const approved = await walletSheet(selectedCents);
+    if (!approved) { $('payBtn').disabled = false; return; }
     const res = await fetch('/api/tip', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -207,6 +240,12 @@ $('payBtn').onclick = async () => {
     $('doneSub').textContent = $('phone').value.trim()
       ? 'A text receipt is on its way. Thanks for making someone’s day! 💚'
       : 'Thanks for making someone’s day! 💚';
+    // Functional testing without Twilio: show the texts both sides would get.
+    if (out.smsPreview && out.smsPreview.length) {
+      $('doneSub').insertAdjacentHTML('afterend', out.smsPreview.map((s) =>
+        `<div style="margin-top:12px;text-align:left;background:var(--card);border:1px solid var(--line);
+                     border-radius:14px;padding:12px 14px;font-size:13px;color:var(--muted)">📱 ${s}</div>`).join(''));
+    }
     document.body.classList.add('tipped');
   } catch (e) {
     $('err').textContent = e.message;

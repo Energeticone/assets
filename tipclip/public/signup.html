@@ -4,6 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>TipClip — get your clip</title>
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+<meta name="theme-color" content="#0b0d12">
 <style>
   :root { --bg:#0b0d12; --card:#151923; --ink:#f4f6fb; --muted:#8b93a7; --accent:#22c55e; --line:#232a3a; }
   * { box-sizing: border-box; margin: 0; }
@@ -167,8 +170,13 @@ $('claimBtn').onclick = async () => {
   $('dashLink').href = `/dashboard.html?wearer=${state.wearerId}`;
   $('tapLink').href = `/t/${state.clipId}`;
   $('tapLink').textContent = location.origin + '/t/' + state.clipId;
+  // Remember the account so the installed app (Add to Home Screen) opens
+  // straight onto this wearer's dashboard.
+  try { localStorage.setItem('tipclip_wearer', state.wearerId); } catch {}
   goto(4);
 };
+
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(() => {});
 </script>
 </body>
 </html>

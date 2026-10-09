@@ -4,6 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>TipClip — my tips</title>
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+<meta name="theme-color" content="#0b0d12">
 <style>
   :root { --bg:#0b0d12; --card:#151923; --ink:#f4f6fb; --muted:#8b93a7; --accent:#22c55e; --line:#232a3a; }
   * { box-sizing: border-box; margin: 0; }
@@ -59,7 +62,12 @@
 </div>
 
 <script>
-const WEARER = new URLSearchParams(location.search).get('wearer') || 'w_demo';
+// Installed wearer app (PWA) → remembered account from signup; the plain demo
+// link falls back to Marcus.
+let stored = null;
+try { stored = localStorage.getItem('tipclip_wearer'); } catch {}
+const WEARER = new URLSearchParams(location.search).get('wearer') || stored || 'w_demo';
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(() => {});
 const fmt = (c) => (c / 100).toLocaleString('en-US', { style: 'currency', currency: 'USD' });
 const ago = (iso) => {
   const s = (Date.now() - new Date(iso)) / 1000;

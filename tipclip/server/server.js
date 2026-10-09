@@ -165,7 +165,7 @@ const server = http.createServer(async (req, res) => {
     }
 
     // Static files
-    const rel = url.pathname === '/' ? 'tip.html' : url.pathname.slice(1);
+    const rel = url.pathname === '/' ? 'index.html' : url.pathname.slice(1);
     const file = path.join(PUBLIC_DIR, path.normalize(rel));
     if (file.startsWith(PUBLIC_DIR) && fs.existsSync(file) && fs.statSync(file).isFile()) {
       res.writeHead(200, { 'Content-Type': MIME[path.extname(file)] || 'application/octet-stream' });

@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TipClip — tap to tip</title>
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+<meta name="theme-color" content="#0b0d12">
+<style>
+  :root { --bg:#0b0d12; --card:#151923; --ink:#f4f6fb; --muted:#8b93a7; --accent:#22c55e; --line:#232a3a; }
+  * { box-sizing: border-box; margin: 0; }
+  body { background: var(--bg); color: var(--ink); min-height: 100vh;
+    font: 16px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    display: flex; justify-content: center; padding: 40px 16px; }
+  .wrap { width: 100%; max-width: 460px; text-align: center; }
+  h1 { font-size: 30px; margin-bottom: 6px; }
+  .sub { color: var(--muted); margin-bottom: 30px; }
+  .card { display: block; background: var(--card); border: 1px solid var(--line); border-radius: 20px;
+    padding: 22px; margin-bottom: 14px; text-decoration: none; color: var(--ink); text-align: left; }
+  .card:active { transform: scale(.99); }
+  .card b { display: block; font-size: 18px; margin-bottom: 4px; }
+  .card span { color: var(--muted); font-size: 14px; }
+  .tag { display: inline-block; font-size: 11px; color: var(--accent); border: 1px solid rgba(34,197,94,.35);
+    border-radius: 999px; padding: 2px 10px; margin-bottom: 8px; }
+  .fine { color: var(--muted); font-size: 12px; margin-top: 24px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>💸 TipClip</h1>
+  <p class="sub">Cashless tips for valets, ushers, porters — tap a bracelet, tip in seconds.</p>
+
+  <a class="card" href="/t/demo">
+    <span class="tag">I'M TIPPING · no install</span>
+    <b>Try the tap-to-tip flow</b>
+    <span>This is exactly what opens when a phone touches a TipClip bracelet.
+      Pick an amount, approve on the simulated wallet sheet (Apple&nbsp;Pay /
+      Google&nbsp;Pay / Samsung&nbsp;Pay), see the receipt texts.</span>
+  </a>
+
+  <a class="card" href="/signup.html">
+    <span class="tag">I WEAR THE BRACELET · installable app</span>
+    <b>Worker app — get set up &amp; get paid</b>
+    <span>Sign up, connect a payout, claim your bracelet, then watch tips land
+      live on your dashboard. Use your browser's <b>Add&nbsp;to&nbsp;Home&nbsp;Screen /
+      Install</b> to keep it as an app.</span>
+  </a>
+
+  <a class="card" href="/dashboard.html">
+    <span class="tag">DEMO DASHBOARD</span>
+    <b>Marcus's live earnings</b>
+    <span>Open this on a second phone, tip Marcus from the first, and watch
+      the dashboard update.</span>
+  </a>
+
+  <p class="fine">Functional prototype — wallet approval is simulated and no card is
+    charged. Payments plug in behind one interface (in the UAE: Network
+    International, Telr, PayTabs or Checkout.com). Demo data resets
+    periodically.</p>
+</div>
+<script>
+  if ('serviceWorker' in navigator) navigator.serviceWorker.register('/sw.js').catch(() => {});
+</script>
+</body>
+</html>
