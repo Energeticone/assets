@@ -58,8 +58,18 @@ So the architecture is:
 
 ## 3. Money flow
 
+One integration covers every wallet, because they all ride the same rails:
+
+| Tipper's phone | Tap with no app installed | With the TipClip app |
+|---|---|---|
+| iPhone | Safari tip page → **Apple Pay** | iOS app → Apple Pay |
+| Android (Chrome) | Tip page → **Google Pay** (Payment Request API) | Android app → Google Pay API |
+| Samsung Galaxy | Samsung Internet tip page → **Samsung Pay** (Payment Request API) | Android app → Samsung Pay SDK |
+| Anything else | Tip page → card entry | Card entry |
+
 ```
-Tipper's Apple Pay ──▶ Stripe PaymentIntent (destination charge)
+Tipper's Apple Pay / Google Pay / Samsung Pay
+                 ──▶ Stripe PaymentIntent (destination charge)
                           │  platform fee (e.g. $0.30 + 5%) retained
                           ▼
                    Wearer's Stripe Connect Express account
@@ -94,6 +104,9 @@ tipclip/
 │   ├── TipClip.xcodeproj
 │   └── TipClip/       SwiftUI app: NFC tap-to-tip, wearer onboarding + dashboard,
 │                      demo mode (no server needed) or live mode against server/
+├── android/           Native Android app (Compose — see android/README.md)
+│   └── app/           NFC tap launches the app; Google Pay wired, Samsung Pay
+│                      SDK stubbed; same onboarding/dashboard/demo mode
 └── hardware/
     └── README.md      Clip industrial design, NFC tag selection, tag encoding, BLE option
 ```

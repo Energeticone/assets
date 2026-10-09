@@ -79,9 +79,9 @@
 
     <input class="phone" id="phone" type="tel" inputmode="tel" placeholder="Your mobile # for a text receipt (optional)">
 
-    <button class="pay" id="payBtn" disabled> Pay <span id="payAmt"></span></button>
+    <button class="pay" id="payBtn" disabled><span id="payLabel">Pay</span> <span id="payAmt"></span></button>
     <div class="err" id="err"></div>
-    <div class="fine">Secured by Apple Pay / Google Pay · Appears on your statement as TIPCLIP</div>
+    <div class="fine" id="walletFine">Secured by Apple Pay / Google Pay / Samsung Pay · Appears on your statement as TIPCLIP</div>
   </div>
 
   <div class="done">
@@ -101,6 +101,40 @@ const $ = (id) => document.getElementById(id);
 const fmt = (c) => (c / 100).toLocaleString('en-US', { style: 'currency', currency: 'USD' }).replace(/\.00$/, '');
 let selectedCents = null;
 let wearerName = '';
+
+// ---------------------------------------------------------------------------
+// Wallet detection — one page covers every phone that taps a clip:
+//   Safari (iPhone tap)            → Apple Pay
+//   Chrome/Android (Android tap)   → Google Pay
+//   Samsung Internet (Galaxy tap)  → Samsung Pay
+// All three surface through the same W3C Payment Request API; in production
+// the Stripe Payment Element drives it (Apple Pay + Google Pay natively, and
+// Samsung Internet exposes Samsung Pay through the same API), confirming the
+// PaymentIntent clientSecret returned by POST /api/tip. The prototype detects
+// the wallet for honest button branding and settles via the mock provider.
+// ---------------------------------------------------------------------------
+async function detectWallet() {
+  try {
+    if (window.ApplePaySession && ApplePaySession.canMakePayments()) return 'Apple Pay';
+    if (!window.PaymentRequest) return null;
+    const probe = (method) => new PaymentRequest(
+      [{ supportedMethods: method }],
+      { total: { label: 'TipClip', amount: { currency: 'USD', value: '1.00' } } }
+    ).canMakePayment().catch(() => false);
+    if (await probe('https://spay.samsung.com')) return 'Samsung Pay';
+    if (await probe('https://google.com/pay')) return 'Google Pay';
+  } catch { /* fall through to plain card button */ }
+  return null;
+}
+
+let walletName = null;
+detectWallet().then((name) => {
+  walletName = name;
+  if (name) {
+    $('payLabel').textContent = `Pay with ${name}`;
+    $('walletFine').textContent = `Secured by ${name} · Appears on your statement as TIPCLIP`;
+  }
+});
 
 async function load() {
   const res = await fetch(`/api/clip/${CLIP_ID}`);

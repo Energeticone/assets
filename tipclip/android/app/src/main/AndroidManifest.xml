@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.NFC" />
+    <!-- NFC is the headline feature but not required: amounts can be entered
+         by clip code, so tablets and NFC-less phones can still install. -->
+    <uses-feature android:name="android.hardware.nfc" android:required="false" />
+
+    <application
+        android:label="@string/app_name"
+        android:theme="@android:style/Theme.Material.NoActionBar"
+        android:usesCleartextTraffic="true">
+        <!-- usesCleartextTraffic allows http://10.0.2.2:8787 (the prototype
+             server from the emulator) during development. Remove for release. -->
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:launchMode="singleTask">
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+
+            <!-- Tapping a TipClip launches the app directly: Android routes the
+                 tag's NDEF URI record here. Without the app installed the same
+                 tap opens the tip page in the browser — zero-install tipping. -->
+            <intent-filter>
+                <action android:name="android.nfc.action.NDEF_DISCOVERED" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:scheme="https" android:host="tipcl.ip" android:pathPrefix="/t/" />
+            </intent-filter>
+
+            <!-- tipclip://t/<clipId> deep links -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="tipclip" />
+            </intent-filter>
+
+            <!-- App Links for https://tipcl.ip/t/… (requires assetlinks.json
+                 hosted on the domain; see android/README.md) -->
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https" android:host="tipcl.ip" android:pathPrefix="/t/" />
+            </intent-filter>
+        </activity>
+
+        <!-- Google Pay -->
+        <meta-data
+            android:name="com.google.android.gms.wallet.api.enabled"
+            android:value="true" />
+    </application>
+</manifest>
