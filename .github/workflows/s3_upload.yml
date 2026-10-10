@@ -19,7 +19,8 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Confiugre AWS credentials
+      - name: Configure AWS credentials
+        if: github.repository_owner == 'trustwallet'
         uses: aws-actions/configure-aws-credentials@v1
         with:
           role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
@@ -49,4 +50,3 @@ jobs:
         env:
           PATHS: ${{ steps.filter.outputs.paths }}
           DISTRIBUTION: ${{ secrets.AWS_DISTRIBUTION }}
-
