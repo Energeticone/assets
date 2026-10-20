@@ -33,9 +33,6 @@ jobs:
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
-        with:
-          # Enable Pages (with GitHub Actions as the source) if not already on
-          enablement: true
 
       - name: Build RAWFOTRA (minified)
         # The Pages site serves only the mangled build output, never the source.
