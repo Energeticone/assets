@@ -1,0 +1,8 @@
+# Kerry runs fully offline with zero dependencies on the standard library alone.
+# These are optional and only needed for specific generalists / conveniences:
+
+# Frontier-model generalist (KERRY_GENERALIST=anthropic). Claude Opus 4.8 by default.
+anthropic>=0.69.0
+
+# Loads KERRY_* settings and ANTHROPIC_API_KEY from a local .env file.
+python-dotenv>=1.0.0
