@@ -7,3 +7,5 @@ node_modules/
 .env
 .env.test
 bin/
+__pycache__/
+.pytest_cache/

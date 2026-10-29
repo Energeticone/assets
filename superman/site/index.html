@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Superman</title>
+<meta name="description" content="Superman — an AI agent orchestration system. You orchestrate; agents plan, implement, review and test; the system remembers everything; you review the final output.">
+<style>
+:root{
+  --bg:#0b0e14; --panel:#11151f; --panel2:#161b28; --border:#232a3b;
+  --text:#e8ecf4; --muted:#9aa4b8; --accent:#4f8ef7; --accent2:#8b7cf7;
+  --good:#3ecf8e; --warn:#f7b84f; --mono:ui-monospace,'SF Mono',Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: light){
+  :root:not([data-theme="dark"]){
+    --bg:#f6f7fa; --panel:#ffffff; --panel2:#eef1f7; --border:#dde2ec;
+    --text:#13192a; --muted:#5a6478; --accent:#2563eb; --accent2:#6d28d9;
+  }
+}
+*{box-sizing:border-box;margin:0}
+body{background:var(--bg);color:var(--text);font:16px/1.65 system-ui,-apple-system,'Segoe UI',sans-serif;padding:0 16px}
+.wrap{max-width:880px;margin:0 auto;padding:56px 0 80px}
+.badge{display:inline-block;font:600 12px/1 var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--accent);border:1px solid var(--border);border-radius:999px;padding:7px 14px;margin-bottom:22px}
+h1{font-size:clamp(40px,8vw,64px);line-height:1.05;letter-spacing:-.02em;margin-bottom:14px}
+h1 span{background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-background-clip:text;background-clip:text;color:transparent}
+.tag{color:var(--muted);font-size:19px;max-width:620px;margin-bottom:34px}
+h2{font-size:14px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin:52px 0 18px}
+pre{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:20px 22px;overflow-x:auto;font:13.5px/1.7 var(--mono)}
+pre .c{color:var(--muted)} pre .a{color:var(--accent)} pre .g{color:var(--good)} pre .r{color:#f0637c}
+.vs{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.vs pre{height:100%}
+@media(max-width:640px){.vs{grid-template-columns:1fr}}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
+.card{background:var(--panel);border:1px solid var(--border);border-radius:12px;padding:18px 20px}
+.card b{display:block;margin-bottom:6px;font-size:15px}
+.card p{color:var(--muted);font-size:14px}
+.run{background:var(--panel);border:1px solid var(--border);border-left:3px solid var(--good);border-radius:12px;padding:20px 22px}
+.run p{color:var(--muted);font-size:15px;margin-top:8px}
+.pill{display:inline-block;font:600 12px var(--mono);color:var(--good);background:color-mix(in srgb,var(--good) 12%,transparent);border-radius:6px;padding:3px 10px;margin-right:6px}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+.links{margin-top:40px;display:flex;gap:18px;flex-wrap:wrap;font-size:15px}
+footer{margin-top:56px;color:var(--muted);font-size:13px;border-top:1px solid var(--border);padding-top:18px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="badge">AI agent orchestration</div>
+  <h1><span>Superman</span></h1>
+  <p class="tag">You hand it a task in plain language. Agents plan, implement, review and test it. The system remembers everything. You review one final report.</p>
+
+  <div class="vs">
+    <pre><span class="c">Wrong approach:</span>
+You <span class="r">&rarr;</span> AI chat <span class="r">&rarr;</span> copy output
+    <span class="r">&rarr;</span> paste <span class="r">&rarr;</span> repeat</pre>
+    <pre><span class="c">Right approach:</span>
+You <span class="g">&rarr;</span> orchestrate
+    <span class="g">&rarr;</span> agents plan, implement,
+      review, test
+    <span class="g">&rarr;</span> system remembers everything
+    <span class="g">&rarr;</span> you review final output</pre>
+  </div>
+
+  <h2>The team</h2>
+  <pre>YOU
+ └─ <span class="a">Engineering Lead</span> ── picks the specialists and skills each task needs
+     ├─ <span class="a">Explore agent</span> ──── researches the codebase and docs first
+     ├─ <span class="a">Planner</span> ────────── understands the task, breaks it down
+     ├─ <span class="a">Implementer</span> ────── writes the code through sandboxed tools
+     ├─ <span class="a">Reviewers</span> ──────── core reviewer + specialists, in parallel
+     │    ├─ Frontend Specialist
+     │    ├─ Security Reviewer
+     │    ├─ Database Expert
+     │    └─ Testing Engineer
+     ├─ <span class="a">Tester</span> ─────────── runs and interprets the test command
+     └─ <span class="a">Documentation Writer</span> ─ updates docs once everything is green</pre>
+
+  <h2>How it keeps context small</h2>
+  <div class="grid">
+    <div class="card"><b>Knowledge graph</b><p>The repo is indexed into files, imports and symbols. A task like &ldquo;bug in authentication&rdquo; pulls only the relevant slice — the auth module and everything it links to.</p></div>
+    <div class="card"><b>Skills</b><p>Reusable expertise packages: a SKILL.md of rules, runnable check scripts, and reference material (e.g. OWASP). The Lead activates the ones each task needs.</p></div>
+    <div class="card"><b>Persistent memory</b><p>Every run distills durable learnings — conventions, decisions, pitfalls — that every future run reads. Full transcripts and verdicts are kept per run.</p></div>
+    <div class="card"><b>Fix cycles</b><p>Reviewer blockers and test failures feed straight back to the implementer, automatically, until everything is green or the cycle cap is hit.</p></div>
+    <div class="card"><b>Pluggable brain</b><p>Claude (claude-opus-5) by default via the Anthropic SDK, or any OpenAI-compatible endpoint — e.g. Kimi K3 at api.moonshot.ai.</p></div>
+    <div class="card"><b>Safety rails</b><p>Agents are sandboxed to the workspace; shell commands are allowlisted with timeouts; every tool call of every agent is logged and auditable.</p></div>
+  </div>
+
+  <h2>First live run — real model, real code, real tests</h2>
+  <div class="run">
+    <span class="pill">SUCCESS</span><span class="pill">133s</span><span class="pill">18 tests passed</span>
+    <p><b>Task:</b> &ldquo;Validate emails before adding signups — add an is_valid_email helper, reject invalid addresses, cover everything with pytest.&rdquo;</p>
+    <p>The Lead brought in the Testing Engineer and Security Reviewer. Three reviewers approved in parallel — all three independently flagged the same whitespace-normalization gap, and the Security Reviewer verified the regex can&rsquo;t catastrophically backtrack and noted the header-injection edge case. The Tester ran genuine pytest: 18 passed. Learnings were saved to persistent memory for the next run.</p>
+  </div>
+
+  <h2>Use it</h2>
+  <pre><span class="c"># install</span>
+pip install ./superman
+export ANTHROPIC_API_KEY=sk-ant-...
+
+<span class="c"># run a task against any project</span>
+superman run <span class="g">"Add input validation to signup.py and cover it with tests"</span>
+
+<span class="c"># you review the final output; the system remembers everything</span>
+superman review
+superman history | memory | skills | graph <span class="g">"auth bug"</span></pre>
+
+  <div class="links">
+    <a href="https://github.com/Energeticone/assets/pull/13">Pull request #13</a>
+    <a href="https://github.com/Energeticone/assets/tree/claude/superman-project-yhashi/superman">Source on GitHub</a>
+  </div>
+
+  <footer>Superman · built with Claude Code · 23 offline tests, zero-key demo included</footer>
+</div>
+</body>
+</html>
