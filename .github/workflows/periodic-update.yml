@@ -7,10 +7,12 @@ on:
 jobs:
   periodic-auto-update:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v2
         with:
-          token: ${{ secrets.COMMIT_TOKEN }}
+          token: ${{ secrets.COMMIT_TOKEN || github.token }}
           ref: ${{ github.head_ref }} 
 
       - name: Set up Go
